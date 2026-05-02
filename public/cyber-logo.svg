@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a0535"/>
+      <stop offset="100%" stop-color="#050010"/>
+    </radialGradient>
+    <linearGradient id="chartGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#7C3AED"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+    <linearGradient id="arrowGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#EC4899"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="98" fill="url(#bgGrad)" stroke="#7C3AED" stroke-width="1.5" opacity="0.8"/>
+  <!-- Bar chart bars -->
+  <rect x="42" y="95" width="16" height="40" rx="3" fill="url(#chartGrad)" filter="url(#glow)" opacity="0.9"/>
+  <rect x="64" y="75" width="16" height="60" rx="3" fill="url(#chartGrad)" filter="url(#glow)" opacity="0.9"/>
+  <rect x="86" y="55" width="16" height="80" rx="3" fill="url(#chartGrad)" filter="url(#glow)" opacity="0.9"/>
+  <rect x="108" y="65" width="16" height="70" rx="3" fill="url(#chartGrad)" filter="url(#glow)" opacity="0.9"/>
+  <rect x="130" y="45" width="16" height="90" rx="3" fill="url(#chartGrad)" filter="url(#glow)" opacity="0.9"/>
+  <!-- Trend arrow -->
+  <polyline points="42,115 70,90 95,70 120,75 150,42" stroke="url(#arrowGrad)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" filter="url(#glow)"/>
+  <!-- Arrow head -->
+  <polygon points="150,42 140,38 144,50" fill="#EC4899" filter="url(#glow)"/>
+  <!-- CYBER text -->
+  <text x="100" y="160" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="22" font-weight="900" letter-spacing="3" fill="white" filter="url(#glow)">CYBER</text>
+  <!-- MARKETING DIGITAL text -->
+  <text x="100" y="178" text-anchor="middle" font-family="Orbitron, sans-serif" font-size="7.5" font-weight="400" letter-spacing="1.5" fill="#A855F7">MARKETING DIGITAL</text>
+</svg>
