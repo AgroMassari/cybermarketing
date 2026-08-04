@@ -19,105 +19,113 @@ export type PricingTable = {
 // IDs match exactly the SERVICE_GROUPS id field in App.tsx
 export const PRICING_DATA: Record<string, PricingTable> = {
 
-  // ──────────── INSTAGRAM (datos del PDF) ────────────
+  // ──────────── INSTAGRAM ────────────
 
-  "ig-seg-latinos": {
-    0: { ARS: 3990,   USD: 3.63,  EUR: 3.32,  BRL: 15.68,  MXN: 49,   UYU: 110,  COP: 11114  },
-    1: { ARS: 18990,  USD: 17.27, EUR: 15.82, BRL: 74.64,  MXN: 233,  UYU: 523,  COP: 52921  },
-    2: { ARS: 35990,  USD: 32.72, EUR: 29.98, BRL: 141.41, MXN: 442,  UYU: 992,  COP: 100318 },
-    3: { ARS: 79990,  USD: 72.72, EUR: 66.65, BRL: 314.35, MXN: 983,  UYU: 2204, COP: 222923 },
-    4: { ARS: 85990,  USD: 78.18, EUR: 71.66, BRL: 337.97, MXN: 1057, UYU: 2370, COP: 239689 },
-    5: { ARS: 164990, USD: 150.00,EUR: 137.50,BRL: 648.39, MXN: 2028, UYU: 4545, COP: 460000 },
+  "ig-seg-premium": {
+    // 250 / 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000
+    0: { ARS: 8900,   USD: 6.38,  EUR: 5.51,  BRL: 34.90,  MXN: 130,  UYU: 239,  COP: 28200  },
+    1: { ARS: 12300,  USD: 8.81,  EUR: 7.62,  BRL: 48.30,  MXN: 180,  UYU: 331,  COP: 38900  },
+    2: { ARS: 22700,  USD: 16.26, EUR: 14.07, BRL: 89.20,  MXN: 332,  UYU: 611,  COP: 71900  },
+    3: { ARS: 53500,  USD: 38.34, EUR: 33.16, BRL: 210.20, MXN: 782,  UYU: 1440, COP: 169400 },
+    4: { ARS: 98500,  USD: 70.59, EUR: 61.06, BRL: 387.10, MXN: 1440, UYU: 2651, COP: 311900 },
+    5: { ARS: 178500, USD: 127.93,EUR: 110.67,BRL: 701.50, MXN: 2610, UYU: 4805, COP: 565200 },
+    6: { ARS: 338500, USD: 242.61,EUR: 209.90,BRL: 1330.00,MXN: 4950, UYU: 9113, COP: 1071800},
   },
 
   "ig-seg-globales": {
-    0: { ARS: 5900,   USD: 4.22,  EUR: 3.48,  BRL: 23.19,  MXN: 86,   UYU: 159,  COP: 16437  },
-    1: { ARS: 11100,  USD: 7.95,  EUR: 6.55,  BRL: 43.62,  MXN: 162,  UYU: 299,  COP: 30932  },
-    2: { ARS: 26500,  USD: 18.98, EUR: 15.65, BRL: 104.18, MXN: 387,  UYU: 714,  COP: 73822  },
-    3: { ARS: 49000,  USD: 35.09, EUR: 28.94, BRL: 192.75, MXN: 716,  UYU: 1320, COP: 136589 },
-    4: { ARS: 89000,  USD: 63.78, EUR: 52.59, BRL: 350.20, MXN: 1301, UYU: 2396, COP: 248055 },
-    5: { ARS: 169000, USD: 121.00,EUR: 99.82, BRL: 664.52, MXN: 2471, UYU: 4545, COP: 471063 },
-    6: { ARS: 390000, USD: 279.37,EUR: 230.52,BRL: 1533.33,MXN: 5702, UYU: 10481,COP: 1087500},
+    // 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000 / 50.000
+    0: { ARS: 5900,   USD: 4.22,  EUR: 3.65,  BRL: 23.20,  MXN: 86,   UYU: 159,  COP: 18700  },
+    1: { ARS: 11100,  USD: 7.95,  EUR: 6.87,  BRL: 43.60,  MXN: 162,  UYU: 299,  COP: 35100  },
+    2: { ARS: 26500,  USD: 18.98, EUR: 16.40, BRL: 104.10, MXN: 387,  UYU: 714,  COP: 83900  },
+    3: { ARS: 49000,  USD: 35.10, EUR: 30.33, BRL: 192.50, MXN: 716,  UYU: 1320, COP: 155100 },
+    4: { ARS: 89000,  USD: 63.75, EUR: 55.09, BRL: 349.60, MXN: 1301, UYU: 2396, COP: 281800 },
+    5: { ARS: 169000, USD: 121.06,EUR: 104.62,BRL: 664.00, MXN: 2471, UYU: 4545, COP: 535100 },
+    6: { ARS: 390000, USD: 279.57,EUR: 241.44,BRL: 1532.00,MXN: 5702, UYU: 10481,COP: 1235000},
   },
 
-  "ig-seg-premium": {
-    0: { ARS: 8400,   USD: 6.00,  EUR: 4.99,  BRL: 33.03,  MXN: 123,  UYU: 226,  COP: 23400  },
-    1: { ARS: 11800,  USD: 8.45,  EUR: 7.01,  BRL: 46.41,  MXN: 173,  UYU: 318,  COP: 32889  },
-    2: { ARS: 22200,  USD: 15.87, EUR: 13.18, BRL: 87.30,  MXN: 325,  UYU: 598,  COP: 61833  },
-    3: { ARS: 53000,  USD: 37.93, EUR: 31.49, BRL: 208.47, MXN: 776,  UYU: 1427, COP: 147778 },
-    4: { ARS: 98000,  USD: 70.07, EUR: 58.21, BRL: 385.36, MXN: 1434, UYU: 2637, COP: 273056 },
-    5: { ARS: 178000, USD: 127.36,EUR: 105.77,BRL: 700.39, MXN: 2604, UYU: 4791, COP: 496296 },
-    6: { ARS: 338000, USD: 241.78,EUR: 200.90,BRL: 1329.73,MXN: 4945, UYU: 9098, COP: 942407 },
-  },
-
-  "ig-likes-mundiales": {
-    0: { ARS: 500,  USD: 0.36, EUR: 0.31, BRL: 1.96,  MXN: 6,  UYU: 13,  COP: 1392  },
-    1: { ARS: 1250, USD: 0.89, EUR: 0.78, BRL: 4.91,  MXN: 15, UYU: 34,  COP: 3482  },
-    2: { ARS: 2000, USD: 1.43, EUR: 1.25, BRL: 7.86,  MXN: 24, UYU: 55,  COP: 5571  },
-    3: { ARS: 2800, USD: 2.00, EUR: 1.75, BRL: 11.00, MXN: 34, UYU: 77,  COP: 7799  },
-    4: { ARS: 3500, USD: 2.50, EUR: 2.19, BRL: 13.75, MXN: 43, UYU: 96,  COP: 9750  },
-    5: { ARS: 8000, USD: 5.71, EUR: 5.00, BRL: 31.43, MXN: 98, UYU: 222, COP: 22286 },
+  "ig-seg-latinos": {
+    // 100 / 500 / 1.000 / 2.500 / 5.000 / 10.000
+    0: { ARS: 8990,   USD: 6.20,  EUR: 5.35,  BRL: 34.10,  MXN: 110,  UYU: 250,  COP: 24200  },
+    1: { ARS: 23990,  USD: 16.55, EUR: 14.25, BRL: 90.90,  MXN: 295,  UYU: 660,  COP: 64500  },
+    2: { ARS: 40990,  USD: 28.25, EUR: 24.35, BRL: 155.35, MXN: 505,  UYU: 1130, COP: 110300 },
+    3: { ARS: 84990,  USD: 58.60, EUR: 50.50, BRL: 322.10, MXN: 1045, UYU: 2350, COP: 228600 },
+    4: { ARS: 90990,  USD: 62.75, EUR: 54.10, BRL: 344.85, MXN: 1120, UYU: 2510, COP: 244800 },
+    5: { ARS: 169990, USD: 117.25,EUR: 101.05,BRL: 644.25, MXN: 2090, UYU: 4690, COP: 457300 },
   },
 
   "ig-likes-latinos": {
-    0: { ARS: 1000,  USD: 0.71,  EUR: 0.62,  BRL: 3.93,  MXN: 12,  UYU: 27,  COP: 2786  },
-    1: { ARS: 2375,  USD: 1.70,  EUR: 1.48,  BRL: 9.33,  MXN: 29,  UYU: 65,  COP: 6618  },
-    2: { ARS: 4500,  USD: 3.21,  EUR: 2.81,  BRL: 17.68, MXN: 55,  UYU: 124, COP: 12536 },
-    3: { ARS: 6600,  USD: 4.71,  EUR: 4.12,  BRL: 25.93, MXN: 81,  UYU: 182, COP: 18393 },
-    4: { ARS: 8500,  USD: 6.07,  EUR: 5.31,  BRL: 33.39, MXN: 104, UYU: 234, COP: 23679 },
-    5: { ARS: 20000, USD: 14.29, EUR: 12.50, BRL: 78.57, MXN: 246, UYU: 551, COP: 55714 },
+    // 250 / 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000
+    0: { ARS: 3500,  USD: 2.40,  EUR: 2.04,  BRL: 13.20,  MXN: 43,  UYU: 96,  COP: 9400   },
+    1: { ARS: 5450,  USD: 3.75,  EUR: 3.18,  BRL: 20.60,  MXN: 67,  UYU: 150, COP: 14600  },
+    2: { ARS: 8300,  USD: 5.70,  EUR: 4.85,  BRL: 31.40,  MXN: 102, UYU: 229, COP: 22200  },
+    3: { ARS: 15500, USD: 10.65, EUR: 9.06,  BRL: 58.50,  MXN: 190, UYU: 427, COP: 41500  },
+    4: { ARS: 28250, USD: 19.42, EUR: 16.51, BRL: 106.60, MXN: 347, UYU: 778, COP: 75600  },
+    5: { ARS: 54650, USD: 37.56, EUR: 31.90, BRL: 206.40, MXN: 672, UYU: 1506,COP: 146300 },
+    6: { ARS: 99400, USD: 68.32, EUR: 58.05, BRL: 375.50, MXN: 1222,UYU: 2738,COP: 266000 },
   },
 
   "ig-likes-globales": {
-    0: { ARS: 2700,   USD: 1.93,  EUR: 1.69,  BRL: 10.61,  MXN: 33,  UYU: 74,  COP: 7521   },
-    1: { ARS: 4600,   USD: 3.29,  EUR: 2.87,  BRL: 18.07,  MXN: 56,  UYU: 127, COP: 12814  },
-    2: { ARS: 9400,   USD: 6.71,  EUR: 5.87,  BRL: 36.93,  MXN: 115, UYU: 259, COP: 26186  },
-    3: { ARS: 17900,  USD: 12.79, EUR: 11.19, BRL: 70.36,  MXN: 220, UYU: 494, COP: 49886  },
-    4: { ARS: 35500,  USD: 25.36, EUR: 22.19, BRL: 139.50, MXN: 436, UYU: 980, COP: 98943  },
-    5: { ARS: 65000,  USD: 46.43, EUR: 40.62, BRL: 255.71, MXN: 799, UYU: 1793,COP: 181286 },
-    6: { ARS: 150000, USD: 107.14,EUR: 93.75, BRL: 589.86, MXN: 1843,UYU: 4136,COP: 418286 },
+    // 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000 / 50.000
+    0: { ARS: 3700,   USD: 2.54,  EUR: 2.15,  BRL: 13.99,  MXN: 46,  UYU: 102, COP: 9905   },
+    1: { ARS: 5600,   USD: 3.85,  EUR: 3.26,  BRL: 21.17,  MXN: 69,  UYU: 154, COP: 14991  },
+    2: { ARS: 10400,  USD: 7.15,  EUR: 6.05,  BRL: 39.31,  MXN: 128, UYU: 287, COP: 27841  },
+    3: { ARS: 18900,  USD: 12.99, EUR: 11.00, BRL: 71.44,  MXN: 232, UYU: 521, COP: 50595  },
+    4: { ARS: 36500,  USD: 25.09, EUR: 21.24, BRL: 137.97, MXN: 449, UYU: 1006,COP: 97711  },
+    5: { ARS: 66000,  USD: 45.36, EUR: 38.41, BRL: 249.48, MXN: 812, UYU: 1818,COP: 176682 },
+    6: { ARS: 151000, USD: 103.78,EUR: 87.88, BRL: 570.78, MXN: 1857,UYU: 4160,COP: 404227 },
+  },
+
+  "ig-likes-mundiales": {
+    // alias for globales
+    0: { ARS: 3700,   USD: 2.54,  EUR: 2.15,  BRL: 13.99,  MXN: 46,  UYU: 102, COP: 9905   },
+    1: { ARS: 5600,   USD: 3.85,  EUR: 3.26,  BRL: 21.17,  MXN: 69,  UYU: 154, COP: 14991  },
+    2: { ARS: 10400,  USD: 7.15,  EUR: 6.05,  BRL: 39.31,  MXN: 128, UYU: 287, COP: 27841  },
+    3: { ARS: 18900,  USD: 12.99, EUR: 11.00, BRL: 71.44,  MXN: 232, UYU: 521, COP: 50595  },
+    4: { ARS: 36500,  USD: 25.09, EUR: 21.24, BRL: 137.97, MXN: 449, UYU: 1006,COP: 97711  },
+    5: { ARS: 66000,  USD: 45.36, EUR: 38.41, BRL: 249.48, MXN: 812, UYU: 1818,COP: 176682 },
+    6: { ARS: 151000, USD: 103.78,EUR: 87.88, BRL: 570.78, MXN: 1857,UYU: 4160,COP: 404227 },
   },
 
   "ig-likes-latinos-arg": {
-    0: { ARS: 2100,  USD: 1.50,  EUR: 1.31,  BRL: 8.25,   MXN: 25,  UYU: 57,  COP: 5850   },
-    1: { ARS: 4050,  USD: 2.89,  EUR: 2.53,  BRL: 15.91,  MXN: 49,  UYU: 110, COP: 11286  },
-    2: { ARS: 6900,  USD: 4.93,  EUR: 4.31,  BRL: 27.11,  MXN: 84,  UYU: 188, COP: 19243  },
-    3: { ARS: 14100, USD: 10.07, EUR: 8.81,  BRL: 55.43,  MXN: 173, UYU: 388, COP: 39300  },
-    4: { ARS: 26850, USD: 19.18, EUR: 16.78, BRL: 105.54, MXN: 330, UYU: 739, COP: 74836  },
-    5: { ARS: 53250, USD: 38.04, EUR: 33.28, BRL: 209.29, MXN: 654, UYU: 1466,COP: 148464 },
-    6: { ARS: 97500, USD: 69.64, EUR: 60.94, BRL: 383.14, MXN: 1198,UYU: 2683,COP: 271821 },
+    // alias for latinos
+    0: { ARS: 3500,  USD: 2.40,  EUR: 2.04,  BRL: 13.20,  MXN: 43,  UYU: 96,  COP: 9400   },
+    1: { ARS: 5450,  USD: 3.75,  EUR: 3.18,  BRL: 20.60,  MXN: 67,  UYU: 150, COP: 14600  },
+    2: { ARS: 8300,  USD: 5.70,  EUR: 4.85,  BRL: 31.40,  MXN: 102, UYU: 229, COP: 22200  },
+    3: { ARS: 15500, USD: 10.65, EUR: 9.06,  BRL: 58.50,  MXN: 190, UYU: 427, COP: 41500  },
+    4: { ARS: 28250, USD: 19.42, EUR: 16.51, BRL: 106.60, MXN: 347, UYU: 778, COP: 75600  },
+    5: { ARS: 54650, USD: 37.56, EUR: 31.90, BRL: 206.40, MXN: 672, UYU: 1506,COP: 146300 },
+    6: { ARS: 99400, USD: 68.32, EUR: 58.05, BRL: 375.50, MXN: 1222,UYU: 2738,COP: 266000 },
   },
 
   "ig-vistas-reels": {
-    0: { ARS: 2500,  USD: 2.54,  EUR: 2.15,  BRL: 13.99,  MXN: 32,  UYU: 102, COP: 9905   },
-    1: { ARS: 4250,  USD: 3.85,  EUR: 3.26,  BRL: 21.17,  MXN: 55,  UYU: 154, COP: 14991  },
-    2: { ARS: 6100,  USD: 7.15,  EUR: 6.05,  BRL: 39.31,  MXN: 78,  UYU: 287, COP: 27841  },
-    3: { ARS: 8500,  USD: 12.99, EUR: 11.00, BRL: 71.44,  MXN: 109, UYU: 521, COP: 50595  },
-    4: { ARS: 13100, USD: 25.09, EUR: 21.24, BRL: 137.97, MXN: 168, UYU: 1006,COP: 97711  },
-    5: { ARS: 27600, USD: 45.36, EUR: 38.41, BRL: 249.48, MXN: 355, UYU: 1818,COP: 176682 },
-    6: { ARS: 47600, USD: 103.78,EUR: 87.88, BRL: 570.78, MXN: 612, UYU: 4160,COP: 404227 },
+    // 2.000 / 5.000 / 10.000 / 20.000 / 50.000 / 150.000 / 300.000
+    0: { ARS: 2500,  USD: 1.79,  EUR: 1.47,  BRL: 9.80,   MXN: 32,  UYU: 71,  COP: 7100   },
+    1: { ARS: 4250,  USD: 3.04,  EUR: 2.50,  BRL: 16.70,  MXN: 55,  UYU: 121, COP: 12100  },
+    2: { ARS: 6100,  USD: 4.36,  EUR: 3.59,  BRL: 24.00,  MXN: 78,  UYU: 174, COP: 17400  },
+    3: { ARS: 8500,  USD: 6.07,  EUR: 5.00,  BRL: 33.40,  MXN: 109, UYU: 243, COP: 24300  },
+    4: { ARS: 13100, USD: 9.36,  EUR: 7.70,  BRL: 51.40,  MXN: 168, UYU: 374, COP: 37400  },
+    5: { ARS: 27600, USD: 19.71, EUR: 16.23, BRL: 108.20, MXN: 355, UYU: 789, COP: 78900  },
+    6: { ARS: 47600, USD: 34.00, EUR: 28.00, BRL: 186.70, MXN: 612, UYU: 1360,COP: 136000 },
   },
 
   "ig-vistas-historias": {
-    0: { ARS: 2500,  USD: 2.54,  EUR: 2.15,  BRL: 13.99,  MXN: 32,  UYU: 102, COP: 9905   },
-    1: { ARS: 4250,  USD: 3.85,  EUR: 3.26,  BRL: 21.17,  MXN: 55,  UYU: 154, COP: 14991  },
-    2: { ARS: 6100,  USD: 7.15,  EUR: 6.05,  BRL: 39.31,  MXN: 78,  UYU: 287, COP: 27841  },
-    3: { ARS: 8500,  USD: 12.99, EUR: 11.00, BRL: 71.44,  MXN: 109, UYU: 521, COP: 50595  },
-    4: { ARS: 13100, USD: 25.09, EUR: 21.24, BRL: 137.97, MXN: 168, UYU: 1006,COP: 97711  },
-    5: { ARS: 27600, USD: 45.36, EUR: 38.41, BRL: 249.48, MXN: 355, UYU: 1818,COP: 176682 },
-    6: { ARS: 47600, USD: 103.78,EUR: 87.88, BRL: 570.78, MXN: 612, UYU: 4160,COP: 404227 },
+    0: { ARS: 2500,  USD: 1.79,  EUR: 1.47,  BRL: 9.80,   MXN: 32,  UYU: 71,  COP: 7100   },
+    1: { ARS: 4250,  USD: 3.04,  EUR: 2.50,  BRL: 16.70,  MXN: 55,  UYU: 121, COP: 12100  },
+    2: { ARS: 6100,  USD: 4.36,  EUR: 3.59,  BRL: 24.00,  MXN: 78,  UYU: 174, COP: 17400  },
+    3: { ARS: 8500,  USD: 6.07,  EUR: 5.00,  BRL: 33.40,  MXN: 109, UYU: 243, COP: 24300  },
+    4: { ARS: 13100, USD: 9.36,  EUR: 7.70,  BRL: 51.40,  MXN: 168, UYU: 374, COP: 37400  },
+    5: { ARS: 27600, USD: 19.71, EUR: 16.23, BRL: 108.20, MXN: 355, UYU: 789, COP: 78900  },
+    6: { ARS: 47600, USD: 34.00, EUR: 28.00, BRL: 186.70, MXN: 612, UYU: 1360,COP: 136000 },
   },
 
-  // ──────────── INSTAGRAM (sin datos PDF → base +2000 ARS) ────────────
-
   "ig-visualizaciones-videos": {
-    0: { ARS: 2890,  USD: 2.63,  EUR: 2.41,  BRL: 11.56,  MXN: 44,  UYU: 103,  COP: 10982  },
-    1: { ARS: 3750,  USD: 3.41,  EUR: 3.13,  BRL: 15.00,  MXN: 58,  UYU: 134,  COP: 14250  },
-    2: { ARS: 5500,  USD: 5.00,  EUR: 4.58,  BRL: 22.00,  MXN: 85,  UYU: 196,  COP: 20900  },
-    3: { ARS: 7900,  USD: 7.18,  EUR: 6.58,  BRL: 31.60,  MXN: 122, UYU: 282,  COP: 30020  },
-    4: { ARS: 12500, USD: 11.36, EUR: 10.42, BRL: 50.00,  MXN: 192, UYU: 446,  COP: 47500  },
-    5: { ARS: 27000, USD: 24.55, EUR: 22.50, BRL: 108.00, MXN: 415, UYU: 964,  COP: 102600 },
-    6: { ARS: 47000, USD: 42.73, EUR: 39.17, BRL: 188.00, MXN: 723, UYU: 1679, COP: 178600 },
+    0: { ARS: 2500,  USD: 1.79,  EUR: 1.47,  BRL: 9.80,   MXN: 32,  UYU: 71,  COP: 7100   },
+    1: { ARS: 4250,  USD: 3.04,  EUR: 2.50,  BRL: 16.70,  MXN: 55,  UYU: 121, COP: 12100  },
+    2: { ARS: 6100,  USD: 4.36,  EUR: 3.59,  BRL: 24.00,  MXN: 78,  UYU: 174, COP: 17400  },
+    3: { ARS: 8500,  USD: 6.07,  EUR: 5.00,  BRL: 33.40,  MXN: 109, UYU: 243, COP: 24300  },
+    4: { ARS: 13100, USD: 9.36,  EUR: 7.70,  BRL: 51.40,  MXN: 168, UYU: 374, COP: 37400  },
+    5: { ARS: 27600, USD: 19.71, EUR: 16.23, BRL: 108.20, MXN: 355, UYU: 789, COP: 78900  },
+    6: { ARS: 47600, USD: 34.00, EUR: 28.00, BRL: 186.70, MXN: 612, UYU: 1360,COP: 136000 },
   },
 
   "ig-comentarios": {
@@ -138,9 +146,10 @@ export const PRICING_DATA: Record<string, PricingTable> = {
     5: { ARS: 14000, USD: 12.73, EUR: 11.67, BRL: 56.00,  MXN: 215, UYU: 500,  COP: 53200  },
   },
 
-  // ──────────── TIKTOK (datos del PDF) ────────────
+  // ──────────── TIKTOK ────────────
 
   "tt-seguidores": {
+    // 200 / 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000
     0: { ARS: 5200,   USD: 3.71,  EUR: 3.25,  BRL: 20.43,  MXN: 69,   UYU: 145, COP: 14486  },
     1: { ARS: 7900,   USD: 5.64,  EUR: 4.94,  BRL: 31.04,  MXN: 104,  UYU: 220, COP: 22007  },
     2: { ARS: 12500,  USD: 8.93,  EUR: 7.81,  BRL: 49.11,  MXN: 165,  UYU: 348, COP: 34821  },
@@ -151,50 +160,55 @@ export const PRICING_DATA: Record<string, PricingTable> = {
   },
 
   "tt-likes": {
-    0: { ARS: 2700,  USD: 3.71,  EUR: 3.25,  BRL: 20.43,  MXN: 33,  UYU: 145, COP: 13380  },
-    1: { ARS: 3900,  USD: 5.64,  EUR: 4.94,  BRL: 31.04,  MXN: 48,  UYU: 220, COP: 18730  },
-    2: { ARS: 7500,  USD: 8.93,  EUR: 7.81,  BRL: 49.11,  MXN: 92,  UYU: 348, COP: 26760  },
-    3: { ARS: 12800, USD: 17.14, EUR: 15.00, BRL: 94.29,  MXN: 157, UYU: 669, COP: 40140  },
-    4: { ARS: 22300, USD: 30.00, EUR: 26.25, BRL: 165.00, MXN: 274, UYU: 1170,COP: 72250  },
-    5: { ARS: 40300, USD: 41.43, EUR: 36.25, BRL: 227.86, MXN: 495, UYU: 1616,COP: 98990  },
-    6: { ARS: 96300, USD: 72.86, EUR: 63.75, BRL: 400.71, MXN: 1185,UYU: 2841,COP: 152530 },
+    // 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000 / 50.000
+    0: { ARS: 2700,  USD: 1.85,  EUR: 1.60,  BRL: 10.25,  MXN: 33,  UYU: 75,  COP: 7300   },
+    1: { ARS: 3900,  USD: 2.70,  EUR: 2.30,  BRL: 14.80,  MXN: 48,  UYU: 108, COP: 10500  },
+    2: { ARS: 7500,  USD: 5.15,  EUR: 4.40,  BRL: 28.40,  MXN: 92,  UYU: 207, COP: 20200  },
+    3: { ARS: 12800, USD: 8.80,  EUR: 7.50,  BRL: 48.50,  MXN: 157, UYU: 355, COP: 34500  },
+    4: { ARS: 22300, USD: 15.35, EUR: 13.10, BRL: 84.50,  MXN: 274, UYU: 620, COP: 60100  },
+    5: { ARS: 40300, USD: 27.75, EUR: 23.70, BRL: 152.60, MXN: 495, UYU: 1110,COP: 108500 },
+    6: { ARS: 96300, USD: 66.40, EUR: 56.60, BRL: 364.80, MXN: 1185,UYU: 2650,COP: 259500 },
   },
 
   "tt-visualizaciones": {
-    0: { ARS: 5000,  USD: 1.85,  EUR: 1.60,  BRL: 10.25,  MXN: 61,  UYU: 75,  COP: 7300   },
-    1: { ARS: 7000,  USD: 2.70,  EUR: 2.30,  BRL: 14.80,  MXN: 86,  UYU: 108, COP: 10500  },
-    2: { ARS: 10000, USD: 5.15,  EUR: 4.40,  BRL: 28.40,  MXN: 123, UYU: 207, COP: 20200  },
-    3: { ARS: 15000, USD: 8.80,  EUR: 7.50,  BRL: 48.50,  MXN: 184, UYU: 355, COP: 34500  },
-    4: { ARS: 27000, USD: 15.35, EUR: 13.10, BRL: 84.50,  MXN: 332, UYU: 620, COP: 60100  },
-    5: { ARS: 37000, USD: 27.75, EUR: 23.70, BRL: 152.60, MXN: 455, UYU: 1110,COP: 108500 },
-    6: { ARS: 57000, USD: 66.40, EUR: 56.60, BRL: 364.80, MXN: 701, UYU: 2650,COP: 259500 },
+    // 2.000 / 5.000 / 10.000 / 20.000 / 50.000 / 150.000 / 300.000
+    0: { ARS: 5000,  USD: 3.44,  EUR: 2.92,  BRL: 18.90,  MXN: 61,  UYU: 138, COP: 13380  },
+    1: { ARS: 7000,  USD: 4.81,  EUR: 4.09,  BRL: 26.40,  MXN: 86,  UYU: 193, COP: 18730  },
+    2: { ARS: 10000, USD: 6.87,  EUR: 5.84,  BRL: 37.70,  MXN: 123, UYU: 276, COP: 26760  },
+    3: { ARS: 15000, USD: 10.31, EUR: 8.76,  BRL: 56.60,  MXN: 184, UYU: 414, COP: 40140  },
+    4: { ARS: 27000, USD: 18.56, EUR: 15.76, BRL: 101.90, MXN: 332, UYU: 744, COP: 72250  },
+    5: { ARS: 37000, USD: 25.43, EUR: 21.65, BRL: 139.60, MXN: 455, UYU: 1020,COP: 98990  },
+    6: { ARS: 57000, USD: 39.18, EUR: 33.40, BRL: 215.10, MXN: 701, UYU: 1572,COP: 152530 },
   },
 
-  // ──────────── FACEBOOK (datos del PDF) ────────────
+  // ──────────── FACEBOOK ────────────
 
   "fb-seguidores": {
-    0: { ARS: 3100,   USD: 2.82,  EUR: 1.84,  BRL: 12.19,  MXN: 38,   UYU: 85,  COP: 8639   },
-    1: { ARS: 4700,   USD: 4.27,  EUR: 2.79,  BRL: 18.47,  MXN: 58,   UYU: 130, COP: 13093  },
-    2: { ARS: 9700,   USD: 8.82,  EUR: 5.76,  BRL: 38.12,  MXN: 119,  UYU: 267, COP: 27031  },
-    3: { ARS: 16900,  USD: 15.36, EUR: 10.03, BRL: 66.44,  MXN: 208,  UYU: 466, COP: 47093  },
-    4: { ARS: 29900,  USD: 27.18, EUR: 17.75, BRL: 117.55, MXN: 368,  UYU: 825, COP: 83357  },
-    5: { ARS: 55900,  USD: 50.82, EUR: 33.21, BRL: 219.78, MXN: 688,  UYU: 1542,COP: 155786 },
-    6: { ARS: 125900, USD: 114.45,EUR: 74.76, BRL: 494.97, MXN: 1549, UYU: 3473,COP: 350850 },
+    // 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000 / 50.000
+    0: { ARS: 3100,   USD: 2.13,  EUR: 1.81,  BRL: 11.70,  MXN: 38,   UYU: 85,  COP: 8300   },
+    1: { ARS: 4700,   USD: 3.23,  EUR: 2.74,  BRL: 17.80,  MXN: 58,   UYU: 130, COP: 12600  },
+    2: { ARS: 9700,   USD: 6.67,  EUR: 5.66,  BRL: 36.70,  MXN: 119,  UYU: 267, COP: 26000  },
+    3: { ARS: 16900,  USD: 11.62, EUR: 9.87,  BRL: 63.90,  MXN: 208,  UYU: 466, COP: 45300  },
+    4: { ARS: 29900,  USD: 20.55, EUR: 17.46, BRL: 113.00, MXN: 368,  UYU: 824, COP: 80100  },
+    5: { ARS: 55900,  USD: 38.42, EUR: 32.65, BRL: 211.40, MXN: 688,  UYU: 1541,COP: 149800 },
+    6: { ARS: 125900, USD: 86.53, EUR: 73.52, BRL: 476.10, MXN: 1549, UYU: 3469,COP: 337000 },
   },
 
   "fb-likes-post": {
-    0: { ARS: 2900,  USD: 2.07,  EUR: 1.72,  BRL: 11.40,  MXN: 36,  UYU: 80,  COP: 8083   },
-    1: { ARS: 4500,  USD: 3.21,  EUR: 2.67,  BRL: 17.68,  MXN: 55,  UYU: 124, COP: 12536  },
-    2: { ARS: 7500,  USD: 5.36,  EUR: 4.45,  BRL: 29.46,  MXN: 92,  UYU: 207, COP: 20893  },
-    3: { ARS: 15900, USD: 11.36, EUR: 9.44,  BRL: 62.50,  MXN: 195, UYU: 439, COP: 44286  },
-    4: { ARS: 28500, USD: 20.36, EUR: 16.92, BRL: 112.05, MXN: 350, UYU: 786, COP: 79393  },
-    5: { ARS: 50900, USD: 36.39, EUR: 30.24, BRL: 200.20, MXN: 626, UYU: 1403,COP: 141857 },
-    6: { ARS: 96000, USD: 68.66, EUR: 57.03, BRL: 377.64, MXN: 1181,UYU: 2648,COP: 267619 },
+    // 200 / 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000
+    0: { ARS: 2900,  USD: 1.99,  EUR: 1.69,  BRL: 10.90,  MXN: 36,  UYU: 80,  COP: 7800   },
+    1: { ARS: 4500,  USD: 3.09,  EUR: 2.63,  BRL: 17.00,  MXN: 55,  UYU: 124, COP: 12000  },
+    2: { ARS: 7500,  USD: 5.15,  EUR: 4.38,  BRL: 28.30,  MXN: 92,  UYU: 207, COP: 20100  },
+    3: { ARS: 15900, USD: 10.93, EUR: 9.29,  BRL: 60.00,  MXN: 195, UYU: 438, COP: 42600  },
+    4: { ARS: 28500, USD: 19.59, EUR: 16.65, BRL: 107.50, MXN: 350, UYU: 785, COP: 76300  },
+    5: { ARS: 50900, USD: 34.98, EUR: 29.75, BRL: 192.10, MXN: 626, UYU: 1402,COP: 136200 },
+    6: { ARS: 96000, USD: 65.98, EUR: 56.04, BRL: 362.30, MXN: 1181,UYU: 2645,COP: 256900 },
   },
 
-  // ──────────── YOUTUBE (datos del PDF) ────────────
+  // ──────────── YOUTUBE ────────────
 
   "yt-subscriptores": {
+    // 100 / 200 / 300 / 500 / 1.000 / 1.500 / 2.000
     0: { ARS: 19500,  USD: 13.93, EUR: 11.98, BRL: 76.60,  MXN: 251,  UYU: 557, COP: 55700  },
     1: { ARS: 34000,  USD: 24.29, EUR: 20.89, BRL: 133.60, MXN: 437,  UYU: 971, COP: 97100  },
     2: { ARS: 48000,  USD: 34.29, EUR: 29.49, BRL: 188.60, MXN: 617,  UYU: 1371,COP: 137100 },
@@ -215,6 +229,7 @@ export const PRICING_DATA: Record<string, PricingTable> = {
   },
 
   "yt-likes-megusta": {
+    // 100 / 200 / 500 / 1.000 / 2.500 / 5.000 / 10.000
     0: { ARS: 2000,  USD: 1.43,  EUR: 1.25,  BRL: 7.86,   MXN: 26,  UYU: 56,  COP: 5571   },
     1: { ARS: 2900,  USD: 2.07,  EUR: 1.81,  BRL: 11.39,  MXN: 38,  UYU: 81,  COP: 8079   },
     2: { ARS: 5500,  USD: 3.93,  EUR: 3.44,  BRL: 21.61,  MXN: 73,  UYU: 307, COP: 15321  },
@@ -235,6 +250,7 @@ export const PRICING_DATA: Record<string, PricingTable> = {
   },
 
   "yt-visitas-mundiales": {
+    // 1.000 / 2.500 / 5.000 / 10.000 / 20.000 / 50.000
     0: { ARS: 5400,   USD: 3.86,  EUR: 3.33,  BRL: 21.20,  MXN: 79,   UYU: 145, COP: 17100  },
     1: { ARS: 12750,  USD: 9.12,  EUR: 7.87,  BRL: 50.10,  MXN: 186,  UYU: 343, COP: 40300  },
     2: { ARS: 24000,  USD: 17.18, EUR: 14.85, BRL: 94.30,  MXN: 351,  UYU: 646, COP: 75900  },
@@ -244,6 +260,7 @@ export const PRICING_DATA: Record<string, PricingTable> = {
   },
 
   "yt-visitas-argentinas": {
+    // 500 / 1.000 / 2.500 / 5.000 / 10.000 / 25.000
     0: { ARS: 7500,   USD: 5.37,  EUR: 4.64,  BRL: 29.50,  MXN: 110,  UYU: 202, COP: 23700  },
     1: { ARS: 15000,  USD: 10.74, EUR: 9.28,  BRL: 58.90,  MXN: 219,  UYU: 404, COP: 47500  },
     2: { ARS: 37500,  USD: 26.84, EUR: 23.20, BRL: 147.30, MXN: 548,  UYU: 1010,COP: 118700 },
@@ -251,8 +268,6 @@ export const PRICING_DATA: Record<string, PricingTable> = {
     4: { ARS: 150000, USD: 107.37,EUR: 92.81, BRL: 589.20, MXN: 2193, UYU: 4038,COP: 474900 },
     5: { ARS: 375000, USD: 268.43,EUR: 232.03,BRL: 1473.00,MXN: 5481, UYU: 10096,COP:1187200},
   },
-
-  // ──────────── YOUTUBE (sin datos PDF → base +2000 ARS) ────────────
 
   "yt-comentarios": {
     0: { ARS: 4500,   USD: 4.09,  EUR: 3.75,  BRL: 18.00,  MXN: 69,   UYU: 161,  COP: 17100  },
@@ -272,7 +287,7 @@ export const PRICING_DATA: Record<string, PricingTable> = {
     5: { ARS: 35990, USD: 32.72, EUR: 29.99, BRL: 143.96, MXN: 554, UYU: 1285, COP: 136762 },
   },
 
-  // ──────────── SPOTIFY (sin datos PDF → base +2000 ARS) ────────────
+  // ──────────── SPOTIFY (sin cambios) ────────────
 
   "sp-reproducciones-mundiales": {
     0: { ARS: 6000,   USD: 5.45,  EUR: 5.00,  BRL: 24.00,  MXN: 92,   UYU: 214,  COP: 22800  },
@@ -301,15 +316,15 @@ export function getPrice(
   currency: Currency
 ): number {
   const dynamicPrice = PRICING_DATA[serviceId]?.[tierIndex]?.[currency];
-  if (dynamicPrice !== undefined) return dynamicPrice;
+  if (dynamicPrice !== undefined && dynamicPrice > 0) return dynamicPrice;
 
-  // Fallback genérico (no debería usarse — todos los servicios ya tienen datos)
+  // Fallback genérico
   if (currency === "ARS") return baseArsPrice;
-  if (currency === "USD") return Math.round((baseArsPrice / 1100) * 100) / 100;
-  if (currency === "EUR") return Math.round((baseArsPrice / 1200) * 100) / 100;
-  if (currency === "BRL") return Math.round((baseArsPrice / 250) * 100) / 100;
-  if (currency === "COP") return Math.round(baseArsPrice * 3.8);
-  if (currency === "MXN") return Math.round((baseArsPrice / 65) * 10) / 10;
-  if (currency === "UYU") return Math.round((baseArsPrice / 28) * 10) / 10;
+  if (currency === "USD") return Math.round((baseArsPrice / 1395) * 100) / 100;
+  if (currency === "EUR") return Math.round((baseArsPrice / 1620) * 100) / 100;
+  if (currency === "BRL") return Math.round((baseArsPrice / 280) * 100) / 100;
+  if (currency === "COP") return Math.round(baseArsPrice * 2.9);
+  if (currency === "MXN") return Math.round((baseArsPrice / 69) * 10) / 10;
+  if (currency === "UYU") return Math.round((baseArsPrice / 37) * 10) / 10;
   return baseArsPrice;
 }
