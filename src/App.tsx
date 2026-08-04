@@ -12,7 +12,8 @@ import {
 } from "lucide-react";
 import { FaFacebook, FaSpotify } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
-import { useEffect, useState, createContext, useContext } from "react";
+import { useEffect, useState, createContext, useContext, useMemo } from "react";
+import { Currency, CURRENCY_SYMBOLS, PRICING_DATA, getPrice } from "./data/pricing";
 
 const WHATSAPP_NUMBER = "5491161789518";
 
@@ -261,13 +262,13 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Eye size={16} />,
     tiers: [
-      { tierQty: "2.000",   price: 890 },
-      { tierQty: "5.000",   price: 1750,  discount: "-19%" },
-      { tierQty: "10.000",  price: 3500,  discount: "-22%" },
-      { tierQty: "20.000",  price: 5900,  discount: "-34%" },
-      { tierQty: "50.000",  price: 10500, discount: "-53%" },
-      { tierQty: "150.000", price: 25000, discount: "-62%" },
-      { tierQty: "300.000", price: 45000, discount: "-66%" },
+      { tierQty: "2.000",   price: 2890 },
+      { tierQty: "5.000",   price: 3750,  discount: "-23%" },
+      { tierQty: "10.000",  price: 5500,  discount: "-32%" },
+      { tierQty: "20.000",  price: 7900,  discount: "-36%" },
+      { tierQty: "50.000",  price: 12500, discount: "-57%" },
+      { tierQty: "150.000", price: 27000, discount: "-64%" },
+      { tierQty: "300.000", price: 47000, discount: "-67%" },
     ],
   },
   {
@@ -282,12 +283,12 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <MessageCircle size={16} />,
     tiers: [
-      { tierQty: "10",    price: 500 },
-      { tierQty: "25",    price: 1250 },
-      { tierQty: "50",    price: 2500 },
-      { tierQty: "100",   price: 4000,  discount: "20% OFF" },
-      { tierQty: "500",   price: 18750, discount: "25% OFF" },
-      { tierQty: "1.000", price: 30000, discount: "40% OFF" },
+      { tierQty: "10",    price: 2500 },
+      { tierQty: "25",    price: 3250 },
+      { tierQty: "50",    price: 4500 },
+      { tierQty: "100",   price: 6000,  discount: "17% OFF" },
+      { tierQty: "500",   price: 20750, discount: "21% OFF" },
+      { tierQty: "1.000", price: 32000, discount: "38% OFF" },
     ],
   },
   {
@@ -302,12 +303,12 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Send size={16} />,
     tiers: [
-      { tierQty: "500",    price: 1000 },
-      { tierQty: "1.000",  price: 2000 },
-      { tierQty: "2.500",  price: 4500 },
-      { tierQty: "5.000",  price: 5000 },
-      { tierQty: "10.000", price: 7500,  discount: "25% OFF" },
-      { tierQty: "20.000", price: 12000, discount: "40% OFF" },
+      { tierQty: "500",    price: 3000 },
+      { tierQty: "1.000",  price: 4000 },
+      { tierQty: "2.500",  price: 6500 },
+      { tierQty: "5.000",  price: 7000 },
+      { tierQty: "10.000", price: 9500,  discount: "19% OFF" },
+      { tierQty: "20.000", price: 14000, discount: "32% OFF" },
     ],
   },
 
@@ -554,12 +555,12 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <MessageCircle size={16} />,
     tiers: [
-      { tierQty: "10",  price: 2500 },
-      { tierQty: "25",  price: 6250 },
-      { tierQty: "50",  price: 12500 },
-      { tierQty: "100", price: 22500,  discount: "10% OFF" },
-      { tierQty: "250", price: 53125,  discount: "15% OFF" },
-      { tierQty: "500", price: 100000, discount: "20% OFF" },
+      { tierQty: "10",  price: 4500 },
+      { tierQty: "25",  price: 8250 },
+      { tierQty: "50",  price: 14500 },
+      { tierQty: "100", price: 24500,  discount: "8% OFF" },
+      { tierQty: "250", price: 55125,  discount: "12% OFF" },
+      { tierQty: "500", price: 102000, discount: "19% OFF" },
     ],
   },
   {
@@ -574,12 +575,12 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Eye size={16} />,
     tiers: [
-      { tierQty: "100 esp.",   price: 4990 },
-      { tierQty: "200 esp.",   price: 9490 },
-      { tierQty: "300 esp.",   price: 13790 },
-      { tierQty: "400 esp.",   price: 17590 },
-      { tierQty: "500 esp.",   price: 21190 },
-      { tierQty: "1.000 esp.", price: 33990 },
+      { tierQty: "100 esp.",   price: 6990 },
+      { tierQty: "200 esp.",   price: 11490 },
+      { tierQty: "300 esp.",   price: 15790 },
+      { tierQty: "400 esp.",   price: 19590 },
+      { tierQty: "500 esp.",   price: 23190 },
+      { tierQty: "1.000 esp.", price: 35990 },
     ],
   },
 
@@ -598,12 +599,12 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Headphones size={16} />,
     tiers: [
-      { tierQty: "1.000",  price: 4000 },
-      { tierQty: "2.500",  price: 9000,  discount: "10% OFF" },
-      { tierQty: "5.000",  price: 17000, discount: "15% OFF" },
-      { tierQty: "10.000", price: 32000, discount: "20% OFF" },
-      { tierQty: "25.000", price: 70000, discount: "25% OFF" },
-      { tierQty: "50.000", price: 130000, discount: "30% OFF" },
+      { tierQty: "1.000",  price: 6000 },
+      { tierQty: "2.500",  price: 11000, discount: "8% OFF" },
+      { tierQty: "5.000",  price: 19000, discount: "11% OFF" },
+      { tierQty: "10.000", price: 34000, discount: "18% OFF" },
+      { tierQty: "25.000", price: 72000, discount: "22% OFF" },
+      { tierQty: "50.000", price: 132000, discount: "27% OFF" },
     ],
   },
   {
@@ -618,12 +619,12 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Headphones size={16} />,
     tiers: [
-      { tierQty: "1.000",  price: 10000 },
-      { tierQty: "2.500",  price: 22500,  discount: "10% OFF" },
-      { tierQty: "5.000",  price: 42500,  discount: "15% OFF" },
-      { tierQty: "10.000", price: 80000,  discount: "20% OFF" },
-      { tierQty: "25.000", price: 187500, discount: "25% OFF" },
-      { tierQty: "50.000", price: 350000, discount: "30% OFF" },
+      { tierQty: "1.000",  price: 12000 },
+      { tierQty: "2.500",  price: 24500,  discount: "9% OFF" },
+      { tierQty: "5.000",  price: 44500,  discount: "13% OFF" },
+      { tierQty: "10.000", price: 82000,  discount: "18% OFF" },
+      { tierQty: "25.000", price: 189500, discount: "24% OFF" },
+      { tierQty: "50.000", price: 352000, discount: "29% OFF" },
     ],
   },
 ];
@@ -647,6 +648,8 @@ type CartContextType = {
   count: number;
   open: boolean;
   setOpen: (v: boolean) => void;
+  currency: Currency;
+  setCurrency: (v: Currency) => void;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -678,11 +681,13 @@ function CartProvider({ children }: { children: React.ReactNode }) {
     }).filter(Boolean));
   };
 
+  const [currency, setCurrency] = useState<Currency>("ARS");
+
   const total = items.reduce((acc, i) => acc + i.price * i.qty, 0);
   const count = items.reduce((acc, i) => acc + i.qty, 0);
 
   return (
-    <CartContext.Provider value={{ items, add, remove, changeQty, total, count, open, setOpen }}>
+    <CartContext.Provider value={{ items, add, remove, changeQty, total, count, open, setOpen, currency, setCurrency }}>
       {children}
     </CartContext.Provider>
   );
@@ -690,9 +695,10 @@ function CartProvider({ children }: { children: React.ReactNode }) {
 
 // ─── WHATSAPP CHECKOUT ────────────────────────────────────────────────────────
 
-function buildWhatsAppMessage(items: CartItem[], total: number, currency: "ARS" | "USD"): string {
+function buildWhatsAppMessage(items: CartItem[], total: number, currency: Currency): string {
+  const sym = CURRENCY_SYMBOLS[currency];
   const lines = items.map(i =>
-    `• ${i.serviceName}${i.tierQty ? ` — ${i.tierQty}` : ""} x${i.qty} = $${(i.price * i.qty).toLocaleString("es-AR")} ARS`
+    `• ${i.serviceName}${i.tierQty ? ` — ${i.tierQty}` : ""} x${i.qty} = ${sym}${(i.price * i.qty).toLocaleString("es-AR")} ${currency}`
   );
   const msg = [
     "¡Hola! Acabo de realizar el pago de mi pedido.",
@@ -700,7 +706,7 @@ function buildWhatsAppMessage(items: CartItem[], total: number, currency: "ARS" 
     "📋 *DETALLE DEL PEDIDO:*",
     ...lines,
     "",
-    `💰 *Total: $${total.toLocaleString("es-AR")} ARS*`,
+    `💰 *Total: ${sym}${total.toLocaleString("es-AR")} ${currency}*`,
     "",
     `✅ *El pago fue realizado por transferencia bancaria en ${currency}.*`,
     "",
@@ -744,13 +750,16 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 // ─── PAYMENT MODAL ────────────────────────────────────────────────────────────
 
 function PaymentModal({
-  items, total, onBack, onConfirm
+  items, total, onBack, onConfirm, currency
 }: {
   items: CartItem[];
   total: number;
   onBack: () => void;
-  onConfirm: (currency: "ARS" | "USD") => void;
+  onConfirm: () => void;
+  currency: Currency;
 }) {
+  const sym = CURRENCY_SYMBOLS[currency];
+  // Only show ARS and USD bank tabs — for other currencies show both options
   const [tab, setTab] = useState<"ARS" | "USD">("ARS");
   const data = tab === "ARS" ? PAYMENT_ARS : PAYMENT_USD;
 
@@ -779,7 +788,7 @@ function PaymentModal({
           </div>
           <div className="text-right">
             <p className="text-[10px] text-white/40 font-mono">TOTAL</p>
-            <p className="font-cinzel text-lg text-primary font-bold">${total.toLocaleString("es-AR")} ARS</p>
+            <p className="font-cinzel text-lg text-primary font-bold">{sym}{total.toLocaleString("es-AR")} {currency}</p>
           </div>
         </div>
 
@@ -790,7 +799,7 @@ function PaymentModal({
             {items.map(i => (
               <div key={i.id} className="flex items-center justify-between gap-2 text-xs font-sans">
                 <span className="text-white/60 truncate">{i.serviceName} — {i.tierQty} ×{i.qty}</span>
-                <span className="text-primary font-mono font-bold shrink-0">${(i.price * i.qty).toLocaleString("es-AR")}</span>
+                <span className="text-primary font-mono font-bold shrink-0">{sym}{(i.price * i.qty).toLocaleString("es-AR")}</span>
               </div>
             ))}
           </div>
@@ -835,7 +844,7 @@ function PaymentModal({
         {/* CTA */}
         <div className="px-5 py-5 border-t border-white/10 space-y-3">
           <button
-            onClick={() => onConfirm(tab)}
+            onClick={() => onConfirm()}
             className="w-full flex items-center justify-center gap-3 py-4 rounded-xl font-bold text-white text-base transition-all duration-300 hover:brightness-110 active:scale-95"
             style={{ background: "linear-gradient(135deg, #059669, #10b981, #34d399)", boxShadow: "0 0 30px rgba(16,185,129,0.35)" }}
           >
@@ -854,7 +863,8 @@ function PaymentModal({
 // ─── CART DRAWER ──────────────────────────────────────────────────────────────
 
 function CartDrawer() {
-  const { items, remove, changeQty, total, open, setOpen } = useCart();
+  const { items, remove, changeQty, total, open, setOpen, currency } = useCart();
+  const sym = CURRENCY_SYMBOLS[currency];
   const [showPayment, setShowPayment] = useState(false);
 
   const handleCheckout = () => {
@@ -862,7 +872,7 @@ function CartDrawer() {
     setShowPayment(true);
   };
 
-  const handleConfirm = (currency: "ARS" | "USD") => {
+  const handleConfirm = () => {
     const msg = buildWhatsAppMessage(items, total, currency);
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, "_blank");
     setShowPayment(false);
@@ -913,7 +923,7 @@ function CartDrawer() {
                   <p className="font-sans text-white text-sm font-semibold truncate">{item.serviceName}</p>
                   <p className="font-mono text-primary/80 text-xs mt-0.5">{item.tierQty}</p>
                   <p className="font-sans text-primary text-sm font-bold mt-0.5">
-                    ${(item.price * item.qty).toLocaleString("es-AR")} ARS
+                    {sym}{(item.price * item.qty).toLocaleString("es-AR")} {currency}
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
@@ -937,7 +947,7 @@ function CartDrawer() {
           <div className="flex items-center justify-between">
             <span className="font-sans text-white/60 text-sm">Total</span>
             <span className="font-cinzel text-xl text-primary font-bold">
-              ${total.toLocaleString("es-AR")} ARS
+              {sym}{total.toLocaleString("es-AR")} {currency}
             </span>
           </div>
           <button
@@ -950,7 +960,7 @@ function CartDrawer() {
             PAGAR AHORA
           </button>
           <p className="text-center text-white/30 text-xs font-sans">
-            Transferencia bancaria · Pesos ARS o Dólares USD
+            Transferencia bancaria · {currency === "ARS" ? "Pesos ARS" : currency === "USD" ? "Dólares USD" : currency}
           </p>
         </div>
       </aside>
@@ -961,13 +971,39 @@ function CartDrawer() {
           total={total}
           onBack={() => setShowPayment(false)}
           onConfirm={handleConfirm}
+          currency={currency}
         />
       )}
     </>
   );
 }
 
+function CurrencySelector() {
+  const { currency, setCurrency } = useCart();
+  const currencies: Currency[] = ["ARS", "USD", "EUR", "COP", "MXN", "UYU", "BRL"];
+  return (
+    <div className="relative group">
+      <button className="flex items-center justify-center w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:border-primary transition-all text-xs font-bold text-white/80">
+        {currency}
+      </button>
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:flex flex-col gap-1 p-2 rounded-xl border border-white/10 shadow-xl"
+           style={{ background: "rgba(8,2,20,0.95)", backdropFilter: "blur(10px)" }}>
+        {currencies.map(c => (
+          <button
+            key={c}
+            onClick={() => setCurrency(c)}
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-colors ${currency === c ? "bg-primary/20 text-primary" : "text-white/60 hover:text-white hover:bg-white/5"}`}
+          >
+            {c}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 // ─── FLOATING NAV ─────────────────────────────────────────────────────────────
+
 
 function FloatingNav() {
   const { count, setOpen } = useCart();
@@ -999,6 +1035,8 @@ function FloatingNav() {
       </a>
       <a href="#garantia" className="text-white/50 hover:text-primary transition-colors"><Shield size={22} /></a>
       <a href="#contacto" className="text-white/50 hover:text-primary transition-colors"><MessageCircle size={22} /></a>
+      <div className="w-[1px] h-6 bg-white/10 mx-1"></div>
+      <CurrencySelector />
     </motion.nav>
   );
 }
@@ -1084,10 +1122,10 @@ function Hero() {
 // ─── SERVICE CARD ─────────────────────────────────────────────────────────────
 
 function ServiceCard({ service }: { service: ServiceGroup }) {
-  const { add } = useCart();
+  const { add, currency } = useCart();
   const [addedTier, setAddedTier] = useState<string | null>(null);
 
-  const handleAdd = (tier: ServiceTier) => {
+  const handleAdd = (tier: ServiceTier, finalPrice: number) => {
     const fullName = service.subtitle
       ? `${service.name} — ${service.subtitle}`
       : service.name;
@@ -1095,7 +1133,7 @@ function ServiceCard({ service }: { service: ServiceGroup }) {
       id: `${service.id}-${tier.tierQty}`,
       serviceName: fullName,
       tierQty: tier.tierQty,
-      price: tier.price,
+      price: finalPrice,
     });
     setAddedTier(tier.tierQty);
     setTimeout(() => setAddedTier(null), 1500);
@@ -1136,7 +1174,9 @@ function ServiceCard({ service }: { service: ServiceGroup }) {
       {/* Pricing rows */}
       <div className="px-3 pb-3 flex-1">
         <div className="space-y-1">
-          {service.tiers.map(tier => (
+          {service.tiers.map((tier, index) => {
+            const finalPrice = getPrice(service.id, index, tier.price, currency);
+            return (
             <div
               key={tier.tierQty}
               className="flex items-center justify-between gap-2 py-1.5 px-2.5 rounded-lg"
@@ -1161,10 +1201,10 @@ function ServiceCard({ service }: { service: ServiceGroup }) {
               {/* Right: price + button */}
               <div className="flex items-center gap-1.5 shrink-0">
                 <span className="font-mono font-bold text-primary text-xs whitespace-nowrap">
-                  ${tier.price.toLocaleString("es-AR")}
+                  {CURRENCY_SYMBOLS[currency]}{finalPrice.toLocaleString("es-AR")}
                 </span>
                 <button
-                  onClick={() => handleAdd(tier)}
+                  onClick={() => handleAdd(tier, finalPrice)}
                   className="w-6 h-6 rounded-lg flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95"
                   style={addedTier === tier.tierQty
                     ? { background: "rgba(34,197,94,0.2)", color: "#4ade80" }
@@ -1179,7 +1219,8 @@ function ServiceCard({ service }: { service: ServiceGroup }) {
                 </button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
