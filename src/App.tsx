@@ -729,7 +729,7 @@ function PaymentModal({ items, total, onBack, whatsAppUrl, onClose, currency, se
   };
 
   return (
-    <div style={{ position:'fixed', inset:0, zIndex:80, display:'flex', alignItems:'flex-end', justifyContent:'center', background:'rgba(18,0,61,.6)', backdropFilter:'blur(6px)' }}>
+    <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:80, display:'flex', alignItems:'flex-end', justifyContent:'center', background:'rgba(18,0,61,.65)', WebkitTransform:'translateZ(0)', transform:'translateZ(0)' }}>
       <motion.div initial={{ y:80, opacity:0 }} animate={{ y:0, opacity:1 }} transition={{ type:"spring", stiffness:320, damping:26 }}
         style={{ width:'100%', maxWidth:480, maxHeight:'95vh', display:'flex', flexDirection:'column', borderRadius:'24px 24px 0 0', background:'#fff', overflow:'hidden', boxShadow:'0 -20px 60px rgba(118,40,240,.18)' }}>
         <div style={{ display:'flex', alignItems:'center', gap:12, padding:'20px 24px', borderBottom:'1px solid #f3edfc' }}>
@@ -754,7 +754,7 @@ function PaymentModal({ items, total, onBack, whatsAppUrl, onClose, currency, se
           </div>
         </div>
         
-        <div style={{ flex:1, overflowY:'auto', padding:'16px 24px', display:'flex', flexDirection:'column', gap:8 }}>
+        <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'16px 24px', display:'flex', flexDirection:'column', gap:8 }}>
           {data.length > 0 ? (
             <>
               {data.map(row=><CopyRow key={row.label} label={row.label} value={row.value}/>)}
@@ -795,8 +795,8 @@ function CartDrawer() {
   const handleClose = () => { setShowPayment(false); setOpen(false); };
   return (
     <>
-      <div onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ position:'fixed', inset:0, zIndex:60, background:'rgba(18,0,61,.4)', backdropFilter:'blur(4px)', opacity:open?1:0, pointerEvents:open?'auto':'none', transition:'opacity 0.3s' }}/>
-      <aside style={{ position:'fixed', right:0, top:0, height:'100%', width:'100%', maxWidth:420, zIndex:70, display:'flex', flexDirection:'column', background:'#fff', boxShadow:'-12px 0 50px rgba(118,40,240,.12)', transform:open?'translateX(0)':'translateX(100%)', transition:'transform 0.3s ease-out' }}>
+      <div onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:60, background:'rgba(18,0,61,.5)', opacity:open?1:0, pointerEvents:open?'auto':'none', transition:'opacity 0.3s' }}/>
+      <aside style={{ position:'fixed', right:0, top:0, height:'100dvh', height:'-webkit-fill-available', width:'100%', maxWidth:420, zIndex:70, display:'flex', flexDirection:'column', background:'#fff', boxShadow:'-12px 0 50px rgba(118,40,240,.12)', transform:open?'translateX(0)':'translateX(100%)', transition:'transform 0.3s ease-out', WebkitTransform: open?'translateX(0)':'translateX(100%)' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 24px', borderBottom:'1px solid #f3edfc' }}>
           <h2 style={{ fontSize:20, fontWeight:900, color:'#121212', margin:0 }}>Tu carrito</h2>
           <button onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ background:'none', border:'none', cursor:'pointer', color:'#9a92a8', display:'flex' }}><X size={22}/></button>
@@ -807,7 +807,7 @@ function CartDrawer() {
             <p style={{ fontWeight:600, fontSize:14, margin:0 }}>Tu carrito está vacío</p>
           </div>
         ) : (
-          <div style={{ flex:1, overflowY:'auto', padding:'16px 24px', display:'flex', flexDirection:'column', gap:12 }}>
+          <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'16px 24px', display:'flex', flexDirection:'column', gap:12 }}>
             {items.map(item=>(
               <div key={item.id} style={{ display:'flex', alignItems:'center', gap:12, padding:14, borderRadius:16, background:'#fcfbff', border:'1px solid rgba(141,44,255,.08)' }}>
                 <div style={{ flex:1, minWidth:0 }}>

@@ -46,6 +46,8 @@
   }
   html {
     scroll-behavior: smooth;
+    /* iOS Safari viewport fix */
+    height: -webkit-fill-available;
   }
   body {
     font-family: 'Poppins', sans-serif;
@@ -53,7 +55,23 @@
     -moz-osx-font-smoothing: grayscale;
     background-color: var(--background);
     color: var(--foreground);
+    /* Prevent iOS scroll bounce on body when modal is open */
+    overscroll-behavior: none;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
   }
+}
+
+/* iOS Safari fixed overlay fix - prevents blank screen */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Use transform instead of inset for better iOS compat */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* Hero gradient - pixel perfect from source */
