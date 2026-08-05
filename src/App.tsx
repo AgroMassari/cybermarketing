@@ -820,7 +820,7 @@ function CartDrawer() {
   return (
     <>
       <div onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:60, background:'rgba(18,0,61,.5)', opacity:open?1:0, pointerEvents:open?'auto':'none', transition:'opacity 0.3s' }}/>
-      <aside style={{ position:'fixed', right:0, top:0, height:'100dvh', height:'-webkit-fill-available', width:'100%', maxWidth:420, zIndex:70, display:'flex', flexDirection:'column', background:'#fff', boxShadow:'-12px 0 50px rgba(118,40,240,.12)', transform:open?'translateX(0)':'translateX(100%)', transition:'transform 0.3s ease-out', WebkitTransform: open?'translateX(0)':'translateX(100%)' }}>
+      <aside style={{ position:'fixed', right:0, top:0, height:'100dvh', width:'100%', maxWidth:420, zIndex:70, display:'flex', flexDirection:'column', background:'#fff', boxShadow:'-12px 0 50px rgba(118,40,240,.12)', transform:open?'translateX(0)':'translateX(100%)', transition:'transform 0.3s ease-out', WebkitTransform: open?'translateX(0)':'translateX(100%)' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 24px', borderBottom:'1px solid #f3edfc' }}>
           <h2 style={{ fontSize:20, fontWeight:900, color:'#121212', margin:0 }}>Tu carrito</h2>
           <button onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ background:'none', border:'none', cursor:'pointer', color:'#9a92a8', display:'flex' }}><X size={22}/></button>
@@ -914,7 +914,7 @@ const SERVICE_SHORTCUTS = [
   { label:'Facebook', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
   { label:'Youtube', icon: <Youtube size={18} strokeWidth={2} /> },
   { label:'Spotify', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 11.973c2.5-1.473 5.5-.973 7.5.527"></path><path d="M9 15c1.5-1 4-1 5 .5"></path><path d="M7 9c3-2 7-2 9 0"></path></svg> },
-  { label:'OFERTAS ??', icon: null }
+  { label:'PROMOS VIGENTES 🔥', icon: null }
 ];
 
 function Header() {
@@ -1318,6 +1318,161 @@ function Catalog() {
   );
 }
 
+// ─── PROMOS VIGENTES ────────────────────────────────────────────────────────────
+const IG_PACKS = [
+  {
+    name: 'Pack Avanzado',
+    emoji: '🚀',
+    popular: false,
+    highlight: 'MÁS POTENTE',
+    desc: '10.000 seguidores global economics + 1.500 likes',
+    prices: { ARS: '$40.000', UYU: '$1.160 UYU', MXN: '$640 MXN', COP: '$153.000 COP', BRL: 'R$ 167', USD: 'US$ 31,50', EUR: '€ 27,20' },
+  },
+  {
+    name: 'Pack Intermedio',
+    emoji: '⚡',
+    popular: true,
+    highlight: 'MÁS ELEGIDO',
+    desc: '5.000 seguidores economics + 1.500 likes',
+    prices: { ARS: '$27.000', UYU: '$783 UYU', MXN: '$320 MXN', COP: '$58.000 COP', BRL: 'R$ 92', USD: 'US$ 18,06', EUR: '€ 15,66' },
+  },
+  {
+    name: 'Pack Básico',
+    emoji: '💜',
+    popular: false,
+    highlight: 'BUENA ENTRADA',
+    desc: '3.000 seguidores economics + 1.000 likes',
+    prices: { ARS: '$20.000', UYU: '$493 UYU', MXN: '$234 MXN', COP: '$65.400 COP', BRL: 'R$ 69', USD: 'US$ 13,38', EUR: '€ 11,56' },
+  },
+  {
+    name: 'Pack Inicial',
+    emoji: '✨',
+    popular: false,
+    highlight: 'PARA EMPEZAR',
+    desc: '1.000 seguidores economics + 1.000 likes',
+    prices: { ARS: '$10.500', UYU: '$305 UYU', MXN: '$121 MXN', COP: '$22.400 COP', BRL: 'R$ 36,00', USD: 'US$ 7,02', EUR: '€ 6,17' },
+  },
+];
+
+const FLAG_LABELS: Record<string, string> = {
+  ARS: '🇦🇷 ARS',
+  UYU: '🇺🇾 UYU',
+  MXN: '🇲🇽 MXN',
+  COP: '🇨🇴 COP',
+  BRL: '🇧🇷 BRL',
+  USD: '🇺🇸 USD',
+  EUR: '🇪🇺 EUR',
+};
+
+function PromosVigentes() {
+  const [activeCurrency, setActiveCurrency] = useState<string>('ARS');
+  const currencies = Object.keys(FLAG_LABELS);
+
+  return (
+    <section id="promos-vigentes" style={{
+      padding: '72px 24px 80px',
+      background: `radial-gradient(ellipse at 20% 50%, rgba(127,31,255,.22) 0%, transparent 50%),
+                   radial-gradient(ellipse at 80% 20%, rgba(200,80,255,.16) 0%, transparent 45%),
+                   linear-gradient(160deg, #0d0020 0%, #1a003a 50%, #0d0020 100%)`,
+    }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+
+        {/* Header */}
+        <motion.div initial={{ opacity:0, y:24 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+          style={{ textAlign:'center', marginBottom:48 }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'7px 20px', borderRadius:24,
+            background:'linear-gradient(135deg,rgba(255,80,0,.15),rgba(255,200,0,.1))',
+            border:'1px solid rgba(255,160,0,.35)', marginBottom:18 }}>
+            <span style={{ fontSize:16 }}>🔥</span>
+            <span style={{ fontWeight:800, fontSize:11, color:'#ffb347', textTransform:'uppercase', letterSpacing:'0.14em' }}>PROMOS VIGENTES — INSTAGRAM</span>
+            <span style={{ fontSize:16 }}>🔥</span>
+          </div>
+          <h2 style={{ fontWeight:900, fontSize:'clamp(28px,4vw,52px)', color:'#fff', margin:'0 0 14px', letterSpacing:'-1.5px', lineHeight:1.05 }}>
+            Packs combinados con <span style={{ background:'linear-gradient(135deg,#bf5bff,#ff6ef7)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>descuento</span>
+          </h2>
+          <p style={{ fontSize:15, color:'rgba(255,255,255,.7)', maxWidth:560, margin:'0 auto 28px', lineHeight:1.7, fontWeight:500 }}>
+            Combiná seguidores + likes a un precio especial. Elegí tu moneda y consultanos por WhatsApp.
+          </p>
+
+          {/* Currency pills */}
+          <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8 }}>
+            {currencies.map(c => (
+              <button key={c} onClick={() => setActiveCurrency(c)}
+                style={{ padding:'7px 16px', borderRadius:24, border:`1.5px solid ${activeCurrency===c ? '#bf5bff' : 'rgba(255,255,255,.15)'}`,
+                  background: activeCurrency===c ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : 'rgba(255,255,255,.06)',
+                  color:'#fff', fontWeight:700, fontSize:12, cursor:'pointer', fontFamily:'Poppins,sans-serif',
+                  transition:'all .18s', boxShadow: activeCurrency===c ? '0 4px 18px rgba(127,31,255,.4)' : 'none' }}>
+                {FLAG_LABELS[c]}
+              </button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Cards */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(250px, 1fr))', gap:20 }}>
+          {IG_PACKS.map((pack, i) => (
+            <motion.div key={pack.name}
+              initial={{ opacity:0, y:28 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*.08 }}
+              style={{ position:'relative', borderRadius:24, overflow:'hidden',
+                border: pack.popular ? '2px solid #bf5bff' : '1px solid rgba(255,255,255,.1)',
+                background: pack.popular
+                  ? 'linear-gradient(150deg,rgba(127,31,255,.25),rgba(190,91,255,.12))'
+                  : 'rgba(255,255,255,.05)',
+                backdropFilter:'blur(8px)',
+                boxShadow: pack.popular ? '0 12px 48px rgba(127,31,255,.35)' : '0 4px 24px rgba(0,0,0,.25)',
+                padding:'28px 24px 24px' }}>
+
+              {pack.popular && (
+                <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:'linear-gradient(90deg,#7f1fff,#ff6ef7)' }}/>
+              )}
+
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
+                <span style={{ fontSize:28 }}>{pack.emoji}</span>
+                <span style={{ fontSize:10, fontWeight:800, letterSpacing:'0.12em', textTransform:'uppercase',
+                  padding:'4px 12px', borderRadius:12,
+                  background: pack.popular ? 'rgba(191,91,255,.3)' : 'rgba(255,255,255,.1)',
+                  color: pack.popular ? '#e8b4ff' : 'rgba(255,255,255,.7)' }}>
+                  {pack.highlight}
+                </span>
+              </div>
+
+              <h3 style={{ fontWeight:900, fontSize:20, color:'#fff', margin:'0 0 8px', letterSpacing:'-0.5px' }}>{pack.name}</h3>
+              <p style={{ fontSize:13, color:'rgba(255,255,255,.65)', margin:'0 0 20px', lineHeight:1.6, fontWeight:500 }}>{pack.desc}</p>
+
+              <div style={{ background:'rgba(0,0,0,.25)', borderRadius:14, padding:'14px 16px', marginBottom:20 }}>
+                <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Precio en {FLAG_LABELS[activeCurrency]}</div>
+                <div style={{ fontWeight:900, fontSize:28, color:'#fff', letterSpacing:'-1px' }}>
+                  {pack.prices[activeCurrency as keyof typeof pack.prices]}
+                </div>
+              </div>
+
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:6 }}>
+                {Object.entries(pack.prices).filter(([c]) => c !== activeCurrency).map(([c, val]) => (
+                  <div key={c} style={{ fontSize:11, color:'rgba(255,255,255,.5)', fontWeight:600 }}>
+                    {FLAG_LABELS[c]}: <span style={{ color:'rgba(255,255,255,.75)' }}>{val}</span>
+                  </div>
+                ))}
+              </div>
+
+              <a href={`https://wa.me/5491161789518?text=${encodeURIComponent(`Hola! Quiero el ${pack.name} de Instagram (${pack.desc}) — Precio: ${pack.prices[activeCurrency as keyof typeof pack.prices]} ${activeCurrency}`)}`}
+                target="_blank" rel="noreferrer"
+                style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginTop:20,
+                  padding:'12px', borderRadius:14, textDecoration:'none',
+                  background: pack.popular ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : 'rgba(127,31,255,.35)',
+                  color:'#fff', fontWeight:700, fontSize:13, border: pack.popular ? 'none' : '1px solid rgba(127,31,255,.5)',
+                  boxShadow: pack.popular ? '0 6px 24px rgba(127,31,255,.4)' : 'none',
+                  transition:'all .18s' }}>
+                <FaWhatsapp size={16}/>
+                Consultar por WhatsApp
+              </a>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── BENEFITS (Prueba Social - purple dark) ───────────────────────────────────
 function Benefits() {
   const benefits = [
@@ -1546,6 +1701,7 @@ function Home() {
       <div style={{ paddingTop:117 }}>
         <Hero/>
         <StatsBar/>
+        <PromosVigentes/>
         <Catalog/>
         <Benefits/>
         <HowItWorks/>
