@@ -14,6 +14,7 @@ import { FaFacebook, FaSpotify, FaWhatsapp } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 import { useEffect, useState, createContext, useContext, useMemo, useRef } from "react";
 import { Currency, CURRENCY_SYMBOLS, PRICING_DATA, getPrice } from "./data/pricing";
+import { ErrorBoundary } from "./ErrorBoundary";
 
 const WHATSAPP_NUMBER = "5491161789518";
 
@@ -860,7 +861,11 @@ function CartDrawer() {
           </button>
         </div>
       </aside>
-      {showPayment && open && <PaymentModal items={items} total={total} onBack={()=>setShowPayment(false)} currency={currency} />}
+      {showPayment && open && (
+        <ErrorBoundary>
+          <PaymentModal items={items} total={total} onBack={()=>setShowPayment(false)} currency={currency} />
+        </ErrorBoundary>
+      )}
     </>
   );
 }
