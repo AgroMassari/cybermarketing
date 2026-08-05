@@ -775,7 +775,7 @@ function PaymentModal({ items, total, onBack, onConfirm, currency, setCurrency }
             </p>
           </div>
         </div>
-        <div style={{ padding:'20px 24px', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:12 }}>
+        <div style={{ padding:'20px 24px calc(20px + env(safe-area-inset-bottom, 0px))', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:12 }}>
           <button onClick={onConfirm} style={{ width:'100%', padding:16, borderRadius:16, border:'none', cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background:'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow:'0 6px 24px rgba(22,163,74,.35)', display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
             <CheckCircle2 size={20}/> YA TRANSFERÍ — CONFIRMAR PEDIDO
           </button>
@@ -791,7 +791,7 @@ function CartDrawer() {
   const sym = CURRENCY_SYMBOLS[currency];
   const [showPayment, setShowPayment] = useState(false);
   const handleConfirm = () => {
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMsg(items,total,currency)}`,"_blank");
+    window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMsg(items,total,currency)}`;
     setShowPayment(false); setOpen(false);
   };
   return (
@@ -827,7 +827,7 @@ function CartDrawer() {
             ))}
           </div>
         )}
-        <div style={{ padding:'20px 24px', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:16 }}>
+        <div style={{ padding:'20px 24px calc(20px + env(safe-area-inset-bottom, 0px))', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:16 }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
             <span style={{ fontWeight:600, color:'#9a92a8', fontSize:13 }}>Total</span>
             <span style={{ fontWeight:900, color:'#121212', fontSize:24 }}>{sym}{total.toLocaleString("es-AR")} {currency}</span>
@@ -1245,7 +1245,17 @@ function Catalog() {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:20 }}>
           {PLATFORM_CARDS.map((p,i)=>(
             <motion.div key={p.id} initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*.07 }}>
-              <button onClick={()=>{ if(p.available) setActivePlatform(activePlatform===p.id?null:p.id); }}
+              <button onClick={()=>{ 
+                  if(p.available) {
+                    const isActivating = activePlatform !== p.id;
+                    setActivePlatform(isActivating ? p.id : null); 
+                    if(isActivating) {
+                      setTimeout(() => {
+                        document.getElementById('services-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }, 50);
+                    }
+                  }
+                }}
                 style={{ width:'100%', background:'#fff', borderRadius:20, padding:'32px 20px 24px', border: activePlatform===p.id?'2px solid #7628f0':'2px solid transparent', boxShadow: activePlatform===p.id?'0 8px 30px rgba(118,40,240,.2)':'0 4px 16px rgba(118,40,240,.07)', cursor:p.available?'pointer':'default', transition:'all 0.25s', display:'flex', flexDirection:'column', alignItems:'center', gap:14, textAlign:'center', fontFamily:'Poppins,sans-serif' }}>
                 <img src={p.icon} alt={p.label} style={{ width: 100, height: 100, objectFit: 'contain', filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))' }} />
                 <strong style={{ fontWeight:900, fontSize:15, color:'#121212', letterSpacing:'0.04em' }}>{p.label}</strong>
@@ -1266,7 +1276,7 @@ function Catalog() {
 
       {/* Service tiers for selected platform */}
       {activePlatform && filteredServices.length > 0 && (
-        <div style={{ background:'#fff', borderTop:'1px solid rgba(118,40,240,.08)' }}>
+        <div id="services-grid" style={{ background:'#fff', borderTop:'1px solid rgba(118,40,240,.08)' }}>
           <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 24px 60px' }}>
             <h3 style={{ fontWeight:900, fontSize:22, color:'#121212', marginBottom:28, letterSpacing:'-0.5px' }}>
               Servicios de {PLATFORM_CARDS.find(p=>p.id===activePlatform)?.label}
