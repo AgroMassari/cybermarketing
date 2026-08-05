@@ -687,15 +687,47 @@ function buildWhatsAppMsg(items: CartItem[], total: number, currency: Currency) 
   return encodeURIComponent(["¡Hola! Quiero confirmar mi pedido.","","📋 *DETALLE:*",...ls,"",`💰 *Total: ${sym}${total.toLocaleString("es-AR")} ${currency}*`,"","Ya realicé la transferencia. ¡Gracias!"].join("\n"));
 }
 
-function PaymentModal({ total, onBack, whatsAppUrl, currency }: { total:number; onBack:()=>void; whatsAppUrl:string; currency:Currency }) {
-  const sym = CURRENCY_SYMBOLS[currency];
-  
+// Helper: get price of a cart item in a given currency using the pricing table
+function getItemPriceInCurrency(item: CartItem, targetCurrency: Currency): number {
+  for (const svc of SERVICE_GROUPS) {
+    if (item.id.startsWith(svc.id + '-') || item.id === svc.id) {
+      const tier = svc.tiers.find(t => t.tierQty === item.tierQty);
+      if (tier) {
+        const p = getPrice(tier, targetCurrency);
+        return p > 0 ? p : item.price; // fallback to original if 0
+      }
+    }
+  }
+  return item.price; // fallback
+}
+
+function PaymentModal({ items, total, onBack, currency }: { items:CartItem[]; total:number; onBack:()=>void; currency:Currency }) {
   const initialTab: PayMethod = currency === "ARS" ? "ARS" :
                                  currency === "MXN" ? "MXN" :
                                  currency === "EUR" ? "EUR" :
                                  (currency === "UYU" || currency === "BRL") ? "PREX" : "OTRA";
   const [tab, setTab] = useState<PayMethod>(initialTab);
-  
+
+  // Map tab → currency for pricing lookup
+  const tabCurrency: Currency = tab === "ARS" ? "ARS" :
+                                tab === "MXN" ? "MXN" :
+                                tab === "EUR" ? "EUR" :
+                                tab === "PREX" ? "UYU" : "USD";
+
+  // Recalculate total in selected tab currency
+  const displayTotal = items.reduce((acc, item) => {
+    return acc + getItemPriceInCurrency(item, tabCurrency) * item.qty;
+  }, 0);
+  const displaySym = CURRENCY_SYMBOLS[tabCurrency];
+  const displayCurrency = tab === "PREX" ? "UYU" : tab === "OTRA" ? "USD" : tabCurrency;
+
+  // Build WhatsApp message in selected currency
+  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+    ["¡Hola! Quiero confirmar mi pedido.","","📋 *DETALLE:*",
+     ...items.map(i => `• ${i.serviceName} — ${i.tierQty} x${i.qty} = ${displaySym}${(getItemPriceInCurrency(i, tabCurrency)*i.qty).toLocaleString("es-AR")} ${displayCurrency}`),
+     "",`💰 *Total: ${displaySym}${displayTotal.toLocaleString("es-AR")} ${displayCurrency}*`,"","Ya realicé la transferencia. ¡Gracias!"].join("\n")
+  )}`;
+
   let data: {label:string, value:string}[] = [];
   if (tab === "ARS") data = PAYMENT_ARS;
   else if (tab === "MXN") data = PAYMENT_MXN;
@@ -713,25 +745,20 @@ function PaymentModal({ total, onBack, whatsAppUrl, currency }: { total:number; 
           </div>
           <div style={{ textAlign:'right' }}>
             <p style={{ fontSize:10, color:'#9a92a8', margin:0, textTransform:'uppercase', letterSpacing:'0.08em' }}>TOTAL</p>
-            <p style={{ fontSize:18, fontWeight:900, color:'#7628f0', margin:0 }}>{sym}{total.toLocaleString("es-AR")} {currency}</p>
+            <p style={{ fontSize:20, fontWeight:900, color:'#7628f0', margin:0 }}>{displaySym}{displayTotal.toLocaleString("es-AR")} {displayCurrency}</p>
           </div>
         </div>
 
         <div style={{ padding:'12px 24px 0' }}>
-          <p style={{ fontSize:11, color:'#9a92a8', margin:'0 0 8px', fontWeight:500 }}>Seleccioná tu método de pago:</p>
+          <p style={{ fontSize:11, color:'#9a92a8', margin:'0 0 8px', fontWeight:500 }}>Seleccioná tu moneda de pago:</p>
           <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom: 8, whiteSpace: 'nowrap' }}>
             {(['ARS','MXN','EUR','PREX','OTRA'] as const).map(t => (
               <button key={t} onClick={() => setTab(t)}
                 style={{ flexShrink: 0, padding:'8px 14px', borderRadius:14, border:'none', cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:12, transition:'all 0.2s', background: tab===t ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : '#f6f2ff', color: tab===t ? '#fff' : '#7628f0' }}>
-                {t==='ARS' ? '🇦🇷 ARS' : t==='MXN' ? '🇲🇽 MXN' : t==='EUR' ? '💶 EUR' : t==='PREX' ? '🌎 Prex (UYU/BRL)' : '🌐 Otra moneda'}
+                {t==='ARS' ? '🇦🇷 ARS' : t==='MXN' ? '🇲🇽 MXN' : t==='EUR' ? '💶 EUR' : t==='PREX' ? '🌎 Prex (UYU/BRL)' : '🌐 Otra'}
               </button>
             ))}
           </div>
-          {tab !== initialTab && (
-            <p style={{ fontSize:11, color:'#e97c2e', fontWeight:600, margin:'4px 0 8px', background:'#fff8f2', padding:'6px 10px', borderRadius:8, border:'1px solid #fcd9b6' }}>
-              ⚠️ El precio mostrado es en {currency}. Para ver el precio en otra moneda, cerrá y cambiá la divisa desde el selector arriba.
-            </p>
-          )}
         </div>
         
         <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'16px 24px', display:'flex', flexDirection:'column', gap:8 }}>
@@ -747,11 +774,8 @@ function PaymentModal({ total, onBack, whatsAppUrl, currency }: { total:number; 
 
           <div style={{ background: '#f6f2ff', border: '1px solid #e9d5ff', borderRadius: 12, padding: '16px', marginTop: 12 }}>
             <h3 style={{ fontSize: 14, fontWeight: 800, color: '#7628f0', margin: '0 0 8px 0' }}>¿Querés pagar en otra moneda?</h3>
-            <p style={{ fontSize: 12, color: '#4f4f59', margin: '0 0 8px 0', lineHeight: 1.4 }}>
-              Aceptamos múltiples monedas y métodos de pago, como USDT, dólares (USD), euros (EUR), soles peruanos (PEN), pesos colombianos (COP), pesos mexicanos (MXN), entre otras.
-            </p>
-            <p style={{ fontSize: 12, color: '#4f4f59', margin: 0, lineHeight: 1.4 }}>
-              Si la moneda o el método de pago que necesitás está disponible, seleccionalo al realizar tu pedido y completá el pago a la brevedad para agilizar la confirmación y el procesamiento de tu compra.
+            <p style={{ fontSize: 12, color: '#4f4f59', margin: 0, lineHeight: 1.5 }}>
+              Aceptamos USDT, dólares (USD), euros (EUR), soles peruanos (PEN), pesos colombianos (COP), pesos mexicanos (MXN), entre otras. Seleccioná la pestaña correspondiente y contactános por WhatsApp.
             </p>
           </div>
         </div>
@@ -817,7 +841,7 @@ function CartDrawer() {
           </button>
         </div>
       </aside>
-      {showPayment && open && <PaymentModal total={total} onBack={()=>setShowPayment(false)} whatsAppUrl={whatsAppUrl} currency={currency} />}
+      {showPayment && open && <PaymentModal items={items} total={total} onBack={()=>setShowPayment(false)} currency={currency} />}
     </>
   );
 }
