@@ -1699,9 +1699,9 @@ function Home() {
     <div style={{ minHeight:'100vh', fontFamily:'Poppins,sans-serif', background:'#f5f6f9' }}>
       <Header/>
       <div style={{ paddingTop:117 }}>
+        <PromosVigentes/>
         <Hero/>
         <StatsBar/>
-        <PromosVigentes/>
         <Catalog/>
         <Benefits/>
         <HowItWorks/>
