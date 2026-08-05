@@ -687,46 +687,20 @@ function buildWhatsAppMsg(items: CartItem[], total: number, currency: Currency) 
   return encodeURIComponent(["¡Hola! Quiero confirmar mi pedido.","","📋 *DETALLE:*",...ls,"",`💰 *Total: ${sym}${total.toLocaleString("es-AR")} ${currency}*`,"","Ya realicé la transferencia. ¡Gracias!"].join("\n"));
 }
 
-function CopyRow({ label, value }: { label: string; value: string }) {
-  const [copied, setCopied] = useState(false);
-  return (
-    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, padding:'10px 14px', borderRadius:12, background:'#f6f2ff', border:'1px solid rgba(141,44,255,.1)' }}>
-      <div style={{ minWidth:0 }}>
-        <p style={{ fontSize:10, color:'#9a92a8', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em', margin:0 }}>{label}</p>
-        <p style={{ fontSize:13, color:'#121212', fontWeight:700, wordBreak:'break-all', margin:'2px 0 0' }}>{value}</p>
-      </div>
-      <button onClick={() => { navigator.clipboard.writeText(value).then(() => { setCopied(true); setTimeout(()=>setCopied(false),2000); }); }}
-        style={{ flexShrink:0, width:32, height:32, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', border:'none', cursor:'pointer', background: copied ? '#dcfce7' : 'rgba(118,40,240,.12)', color: copied ? '#16a34a' : '#7628f0' }}>
-        {copied ? <CheckCircle2 size={14}/> : <Copy size={14}/>}
-      </button>
-    </div>
-  );
-}
-
-type PayMethod = "ARS" | "MXN" | "EUR" | "PREX" | "OTRA";
-
-function PaymentModal({ items, total, onBack, whatsAppUrl, onClose, currency, setCurrency }: { items:CartItem[]; total:number; onBack:()=>void; whatsAppUrl:string; onClose:()=>void; currency:Currency; setCurrency:(c:Currency)=>void }) {
+function PaymentModal({ total, onBack, whatsAppUrl, currency }: { total:number; onBack:()=>void; whatsAppUrl:string; currency:Currency }) {
   const sym = CURRENCY_SYMBOLS[currency];
   
-  let activeTab = "OTRA";
-  if (currency === "ARS") activeTab = "ARS";
-  else if (currency === "MXN") activeTab = "MXN";
-  else if (currency === "EUR") activeTab = "EUR";
-  else if (currency === "UYU" || currency === "BRL") activeTab = "PREX";
+  const initialTab: PayMethod = currency === "ARS" ? "ARS" :
+                                 currency === "MXN" ? "MXN" :
+                                 currency === "EUR" ? "EUR" :
+                                 (currency === "UYU" || currency === "BRL") ? "PREX" : "OTRA";
+  const [tab, setTab] = useState<PayMethod>(initialTab);
   
   let data: {label:string, value:string}[] = [];
-  if (activeTab === "ARS") data = PAYMENT_ARS;
-  else if (activeTab === "MXN") data = PAYMENT_MXN;
-  else if (activeTab === "EUR") data = PAYMENT_EUR;
-  else if (activeTab === "PREX") data = PAYMENT_PREX;
-
-  const handleTabClick = (t: string) => {
-    if (t === 'ARS') setCurrency('ARS');
-    else if (t === 'MXN') setCurrency('MXN');
-    else if (t === 'EUR') setCurrency('EUR');
-    else if (t === 'PREX') setCurrency('UYU');
-    else if (t === 'OTRA') setCurrency('USD');
-  };
+  if (tab === "ARS") data = PAYMENT_ARS;
+  else if (tab === "MXN") data = PAYMENT_MXN;
+  else if (tab === "EUR") data = PAYMENT_EUR;
+  else if (tab === "PREX") data = PAYMENT_PREX;
 
   return (
     <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:80, display:'flex', alignItems:'flex-end', justifyContent:'center', background:'rgba(18,0,61,.65)', WebkitTransform:'translateZ(0)', transform:'translateZ(0)' }}>
@@ -742,16 +716,22 @@ function PaymentModal({ items, total, onBack, whatsAppUrl, onClose, currency, se
             <p style={{ fontSize:18, fontWeight:900, color:'#7628f0', margin:0 }}>{sym}{total.toLocaleString("es-AR")} {currency}</p>
           </div>
         </div>
-        
-        <div style={{ padding:'16px 24px 4px' }}>
+
+        <div style={{ padding:'12px 24px 0' }}>
+          <p style={{ fontSize:11, color:'#9a92a8', margin:'0 0 8px', fontWeight:500 }}>Seleccioná tu método de pago:</p>
           <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom: 8, whiteSpace: 'nowrap' }}>
             {(['ARS','MXN','EUR','PREX','OTRA'] as const).map(t => (
-              <button key={t} onClick={() => handleTabClick(t)}
-                style={{ flexShrink: 0, padding:'8px 14px', borderRadius:14, border:'none', cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:12, transition:'all 0.2s', background: activeTab===t ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : '#f6f2ff', color: activeTab===t ? '#fff' : '#7628f0' }}>
+              <button key={t} onClick={() => setTab(t)}
+                style={{ flexShrink: 0, padding:'8px 14px', borderRadius:14, border:'none', cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:12, transition:'all 0.2s', background: tab===t ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : '#f6f2ff', color: tab===t ? '#fff' : '#7628f0' }}>
                 {t==='ARS' ? '🇦🇷 ARS' : t==='MXN' ? '🇲🇽 MXN' : t==='EUR' ? '💶 EUR' : t==='PREX' ? '🌎 Prex (UYU/BRL)' : '🌐 Otra moneda'}
               </button>
             ))}
           </div>
+          {tab !== initialTab && (
+            <p style={{ fontSize:11, color:'#e97c2e', fontWeight:600, margin:'4px 0 8px', background:'#fff8f2', padding:'6px 10px', borderRadius:8, border:'1px solid #fcd9b6' }}>
+              ⚠️ El precio mostrado es en {currency}. Para ver el precio en otra moneda, cerrá y cambiá la divisa desde el selector arriba.
+            </p>
+          )}
         </div>
         
         <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'16px 24px', display:'flex', flexDirection:'column', gap:8 }}>
@@ -837,7 +817,7 @@ function CartDrawer() {
           </button>
         </div>
       </aside>
-      {showPayment && open && <PaymentModal items={items} total={total} onBack={()=>setShowPayment(false)} whatsAppUrl={whatsAppUrl} onClose={handleClose} currency={currency} setCurrency={setCurrency} />}
+      {showPayment && open && <PaymentModal total={total} onBack={()=>setShowPayment(false)} whatsAppUrl={whatsAppUrl} currency={currency} />}
     </>
   );
 }
