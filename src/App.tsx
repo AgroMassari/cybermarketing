@@ -705,7 +705,7 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 
 type PayMethod = "ARS" | "MXN" | "EUR" | "PREX" | "OTRA";
 
-function PaymentModal({ items, total, onBack, onConfirm, currency, setCurrency }: { items:CartItem[]; total:number; onBack:()=>void; onConfirm:()=>void; currency:Currency; setCurrency:(c:Currency)=>void }) {
+function PaymentModal({ items, total, onBack, whatsAppUrl, onClose, currency, setCurrency }: { items:CartItem[]; total:number; onBack:()=>void; whatsAppUrl:string; onClose:()=>void; currency:Currency; setCurrency:(c:Currency)=>void }) {
   const sym = CURRENCY_SYMBOLS[currency];
   
   let activeTab = "OTRA";
@@ -776,9 +776,10 @@ function PaymentModal({ items, total, onBack, onConfirm, currency, setCurrency }
           </div>
         </div>
         <div style={{ padding:'20px 24px calc(20px + env(safe-area-inset-bottom, 0px))', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:12 }}>
-          <button onClick={onConfirm} style={{ width:'100%', padding:16, borderRadius:16, border:'none', cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background:'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow:'0 6px 24px rgba(22,163,74,.35)', display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+          <a href={whatsAppUrl} onClick={onClose}
+            style={{ width:'100%', padding:16, borderRadius:16, cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background:'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow:'0 6px 24px rgba(22,163,74,.35)', display:'flex', alignItems:'center', justifyContent:'center', gap:10, textDecoration:'none', boxSizing:'border-box' }}>
             <CheckCircle2 size={20}/> YA TRANSFERÍ — CONFIRMAR PEDIDO
-          </button>
+          </a>
           <p style={{ textAlign:'center', fontSize:11, color:'#9a92a8', margin:0 }}>Se abrirá WhatsApp para enviarnos el comprobante.</p>
         </div>
       </motion.div>
@@ -790,10 +791,8 @@ function CartDrawer() {
   const { items, remove, changeQty, total, open, setOpen, currency } = useCart();
   const sym = CURRENCY_SYMBOLS[currency];
   const [showPayment, setShowPayment] = useState(false);
-  const handleConfirm = () => {
-    window.location.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMsg(items,total,currency)}`;
-    setShowPayment(false); setOpen(false);
-  };
+  const whatsAppUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMsg(items,total,currency)}`;
+  const handleClose = () => { setShowPayment(false); setOpen(false); };
   return (
     <>
       <div onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ position:'fixed', inset:0, zIndex:60, background:'rgba(18,0,61,.4)', backdropFilter:'blur(4px)', opacity:open?1:0, pointerEvents:open?'auto':'none', transition:'opacity 0.3s' }}/>
@@ -838,7 +837,7 @@ function CartDrawer() {
           </button>
         </div>
       </aside>
-      {showPayment && open && <PaymentModal items={items} total={total} onBack={()=>setShowPayment(false)} onConfirm={handleConfirm} currency={currency} setCurrency={setCurrency} />}
+      {showPayment && open && <PaymentModal items={items} total={total} onBack={()=>setShowPayment(false)} whatsAppUrl={whatsAppUrl} onClose={handleClose} currency={currency} setCurrency={setCurrency} />}
     </>
   );
 }
