@@ -687,6 +687,24 @@ function buildWhatsAppMsg(items: CartItem[], total: number, currency: Currency) 
   return encodeURIComponent(["¡Hola! Quiero confirmar mi pedido.","","📋 *DETALLE:*",...ls,"",`💰 *Total: ${sym}${total.toLocaleString("es-AR")} ${currency}*`,"","Ya realicé la transferencia. ¡Gracias!"].join("\n"));
 }
 
+function CopyRow({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:12, padding:'10px 14px', borderRadius:12, background:'#f6f2ff', border:'1px solid rgba(141,44,255,.1)' }}>
+      <div style={{ minWidth:0 }}>
+        <p style={{ fontSize:10, color:'#9a92a8', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.08em', margin:0 }}>{label}</p>
+        <p style={{ fontSize:13, color:'#121212', fontWeight:700, wordBreak:'break-all', margin:'2px 0 0' }}>{value}</p>
+      </div>
+      <button onClick={() => { navigator.clipboard.writeText(value).then(() => { setCopied(true); setTimeout(()=>setCopied(false),2000); }); }}
+        style={{ flexShrink:0, width:32, height:32, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center', border:'none', cursor:'pointer', background: copied ? '#dcfce7' : 'rgba(118,40,240,.12)', color: copied ? '#16a34a' : '#7628f0' }}>
+        {copied ? <CheckCircle2 size={14}/> : <Copy size={14}/>}
+      </button>
+    </div>
+  );
+}
+
+type PayMethod = "ARS" | "MXN" | "EUR" | "PREX" | "OTRA";
+
 // Helper: get price of a cart item in a given currency using the pricing table
 function getItemPriceInCurrency(item: CartItem, targetCurrency: Currency): number {
   for (const svc of SERVICE_GROUPS) {
