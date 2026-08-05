@@ -788,7 +788,7 @@ function PaymentModal({ items, total, onBack, whatsAppUrl, onClose, currency, se
 }
 
 function CartDrawer() {
-  const { items, remove, changeQty, total, open, setOpen, currency } = useCart();
+  const { items, remove, changeQty, total, open, setOpen, currency, setCurrency } = useCart();
   const sym = CURRENCY_SYMBOLS[currency];
   const [showPayment, setShowPayment] = useState(false);
   const whatsAppUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMsg(items,total,currency)}`;
