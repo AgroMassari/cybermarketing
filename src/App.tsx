@@ -709,9 +709,10 @@ type PayMethod = "ARS" | "MXN" | "EUR" | "PREX" | "OTRA";
 function getItemPriceInCurrency(item: CartItem, targetCurrency: Currency): number {
   for (const svc of SERVICE_GROUPS) {
     if (item.id.startsWith(svc.id + '-') || item.id === svc.id) {
-      const tier = svc.tiers.find(t => t.tierQty === item.tierQty);
-      if (tier) {
-        const p = getPrice(tier, targetCurrency);
+      const tierIndex = svc.tiers.findIndex(t => t.tierQty === item.tierQty);
+      if (tierIndex !== -1) {
+        const tier = svc.tiers[tierIndex];
+        const p = getPrice(svc.id, tierIndex, tier.price, targetCurrency);
         return p > 0 ? p : item.price; // fallback to original if 0
       }
     }
