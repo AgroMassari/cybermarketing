@@ -989,7 +989,7 @@ function Header() {
       <div style={{ background:'linear-gradient(135deg,#7628f0 0%,#9c34ff 100%)', overflowX:'auto', scrollbarWidth:'none' }}>
         <div style={{ display:'flex', gap:0, padding:'0 16px', maxWidth:1200, margin:'0 auto', width:'max-content', height: 42 }}>
           {SERVICE_SHORTCUTS.map((s,i)=>(
-            <a key={i} href="#catalogo" style={{ display:'flex', alignItems:'center', gap:6, padding:'0 14px', color:'rgba(255,255,255,.9)', textDecoration:'none', borderRight:'1px solid rgba(255,255,255,.12)', whiteSpace:'nowrap', ...((i===SERVICE_SHORTCUTS.length-1) ? { borderRight: 'none', fontWeight: 800 } : {}) }}>
+            <a key={i} href={s.label === 'PROMOS VIGENTES 🔥' ? '#promos-vigentes' : '#catalogo'} style={{ display:'flex', alignItems:'center', gap:6, padding:'0 14px', color:'rgba(255,255,255,.9)', textDecoration:'none', borderRight:'1px solid rgba(255,255,255,.12)', whiteSpace:'nowrap', ...((i===SERVICE_SHORTCUTS.length-1) ? { borderRight: 'none', fontWeight: 800 } : {}) }}>
               {s.icon && <span style={{ display:'flex', alignItems:'center', opacity: 0.9 }}>{s.icon}</span>}
               <span style={{ fontSize:12, fontWeight:600, color:'#fff' }}>{s.label}</span>
             </a>
@@ -1699,9 +1699,9 @@ function Home() {
     <div style={{ minHeight:'100vh', fontFamily:'Poppins,sans-serif', background:'#f5f6f9' }}>
       <Header/>
       <div style={{ paddingTop:117 }}>
-        <PromosVigentes/>
         <Hero/>
         <StatsBar/>
+        <PromosVigentes/>
         <Catalog/>
         <Benefits/>
         <HowItWorks/>
