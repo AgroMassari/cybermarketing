@@ -909,12 +909,12 @@ function CurrencySelector() {
 // Announcement bar (black) → White header (logo centered, nav centered) → Purple sub-nav scrollable
 
 const SERVICE_SHORTCUTS = [
+  { label:'PROMOS VIGENTES 🔥', icon: null },
   { label:'Instagram', icon: <Instagram size={18} strokeWidth={2} /> },
   { label:'TikTok', icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg> },
   { label:'Facebook', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
   { label:'Youtube', icon: <Youtube size={18} strokeWidth={2} /> },
   { label:'Spotify', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 11.973c2.5-1.473 5.5-.973 7.5.527"></path><path d="M9 15c1.5-1 4-1 5 .5"></path><path d="M7 9c3-2 7-2 9 0"></path></svg> },
-  { label:'PROMOS VIGENTES 🔥', icon: null }
 ];
 
 function Header() {
@@ -1699,9 +1699,9 @@ function Home() {
     <div style={{ minHeight:'100vh', fontFamily:'Poppins,sans-serif', background:'#f5f6f9' }}>
       <Header/>
       <div style={{ paddingTop:117 }}>
-        <PromosVigentes/>
         <Hero/>
         <StatsBar/>
+        <PromosVigentes/>
         <Catalog/>
         <Benefits/>
         <HowItWorks/>
