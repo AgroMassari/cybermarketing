@@ -800,7 +800,7 @@ function PaymentModal({ items, total, onBack, currency }: { items:CartItem[]; to
           </div>
         </div>
         <div style={{ padding:'20px 24px calc(20px + env(safe-area-inset-bottom, 0px))', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:12 }}>
-          <a href={whatsAppUrl} target="_blank" rel="noopener noreferrer"
+          <a href={waUrl} target="_blank" rel="noopener noreferrer"
             style={{ width:'100%', padding:16, borderRadius:16, cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background:'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow:'0 6px 24px rgba(22,163,74,.35)', display:'flex', alignItems:'center', justifyContent:'center', gap:10, textDecoration:'none', boxSizing:'border-box' }}>
             <CheckCircle2 size={20}/> YA TRANSFERÍ — CONFIRMAR PEDIDO
           </a>
