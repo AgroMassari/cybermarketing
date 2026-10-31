@@ -326,23 +326,23 @@ export function ProductDetailView({
             {/* Quality / Variation Tabs (if multiple available) */}
             {matchingGroups.length > 1 && (
               <div style={{
-                background: "#fdfcff",
-                border: "1.5px solid rgba(141,44,255,.14)",
-                borderRadius: 20,
-                padding: "16px",
-                boxShadow: "0 4px 20px rgba(118,40,240,.04)"
+                background: "linear-gradient(180deg, #f5effe 0%, #ece2fb 100%)",
+                border: "2px solid #d8b4fe",
+                borderRadius: 22,
+                padding: "18px 16px",
+                boxShadow: "0 6px 20px rgba(118,40,240,.08), inset 0 2px 4px rgba(255,255,255,.6)"
               }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                  <span style={{ fontSize: 12, fontWeight: 900, color: "#121212", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  <span style={{ fontSize: 12, fontWeight: 900, color: "#4c1d95", textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     ⭐ TIPO DE SERVICIO / CALIDAD:
                   </span>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: "#7628f0" }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, color: "#6d28d9", background: "#ffffff", padding: "3px 10px", borderRadius: 12, border: "1px solid #ddd6fe" }}>
                     Elegí tu opción preferida
                   </span>
                 </div>
                 <div style={{
                   display: "grid",
-                  gridTemplateColumns: `repeat(auto-fit, minmax(${matchingGroups.length === 3 ? "130px" : "160px"}, 1fr))`,
+                  gridTemplateColumns: `repeat(auto-fit, minmax(${matchingGroups.length === 3 ? "125px" : "150px"}, 1fr))`,
                   gap: 10,
                 }}>
                   {matchingGroups.map(g => {
@@ -359,7 +359,7 @@ export function ProductDetailView({
                           }
                         }}
                         style={{
-                          padding: "14px 12px",
+                          padding: "14px 10px",
                           borderRadius: 16,
                           fontWeight: 900,
                           fontSize: 13,
@@ -367,27 +367,27 @@ export function ProductDetailView({
                           fontFamily: "Poppins, sans-serif",
                           letterSpacing: "0.04em",
                           textTransform: "uppercase",
-                          border: isSelected ? "2.5px solid #7628f0" : "2px solid #e5e7eb",
+                          border: isSelected ? "2.5px solid #581c87" : "2px solid #cbd5e1",
                           background: isSelected ? "linear-gradient(135deg, #7f1fff 0%, #9c34ff 100%)" : "#ffffff",
-                          color: isSelected ? "#ffffff" : "#1f2937",
-                          boxShadow: isSelected ? "0 8px 24px rgba(118,40,240,.35)" : "0 2px 8px rgba(0,0,0,.03)",
+                          color: isSelected ? "#ffffff" : "#0f172a",
+                          boxShadow: isSelected ? "0 8px 24px rgba(118,40,240,.45)" : "0 3px 10px rgba(0,0,0,.08)",
                           display: "flex",
                           flexDirection: "column",
                           alignItems: "center",
                           justifyContent: "center",
                           gap: 6,
                           textAlign: "center",
-                          transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                          transition: "all 0.18s ease",
                           transform: isSelected ? "scale(1.02)" : "scale(1)",
                         }}
                       >
                         <span style={{
                           fontSize: 10,
-                          fontWeight: 800,
+                          fontWeight: 900,
                           padding: "2px 8px",
                           borderRadius: 8,
-                          background: isSelected ? "rgba(255,255,255,0.22)" : "#f3f4f6",
-                          color: isSelected ? "#ffffff" : "#6b7280",
+                          background: isSelected ? "rgba(255,255,255,0.25)" : "#f1f5f9",
+                          color: isSelected ? "#ffffff" : "#475569",
                           letterSpacing: "0.06em",
                         }}>
                           {isSelected ? "✓ SELECCIONADO" : "OPCIÓN"}
@@ -428,12 +428,18 @@ export function ProductDetailView({
             </div>
 
             {/* Quantity Selector Pills (SELECCIONÁ LA CANTIDAD) */}
-            <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                <span style={{ fontSize: 12, fontWeight: 800, color: "#121212", textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                  SELECCIONÁ LA CANTIDAD:
+            <div style={{
+              background: "linear-gradient(180deg, #f5effe 0%, #ece2fb 100%)",
+              border: "2px solid #d8b4fe",
+              borderRadius: 22,
+              padding: "18px 16px",
+              boxShadow: "0 6px 20px rgba(118,40,240,.08), inset 0 2px 4px rgba(255,255,255,.6)"
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <span style={{ fontSize: 12, fontWeight: 900, color: "#4c1d95", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  📦 SELECCIONÁ LA CANTIDAD:
                 </span>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#7628f0" }}>
+                <span style={{ fontSize: 11, fontWeight: 800, color: "#6d28d9", background: "#ffffff", padding: "3px 10px", borderRadius: 12, border: "1px solid #ddd6fe" }}>
                   Elegida: {activeTier?.tierQty}
                 </span>
               </div>
@@ -442,7 +448,7 @@ export function ProductDetailView({
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fill, minmax(80px, 1fr))",
-                  gap: 8,
+                  gap: 10,
                 }}
               >
                 {activeGroup?.tiers.map((t, idx) => {
@@ -453,13 +459,13 @@ export function ProductDetailView({
                       type="button"
                       onClick={() => setSelectedTierIndex(idx)}
                       style={{
-                        padding: "10px 8px",
+                        padding: "12px 8px",
                         borderRadius: 14,
-                        border: isSelected ? "2px solid #7628f0" : "1.5px solid #e5e7eb",
-                        background: isSelected ? "#7628f0" : "#fdfcff",
-                        color: isSelected ? "#fff" : "#121212",
+                        border: isSelected ? "2.5px solid #581c87" : "2px solid #cbd5e1",
+                        background: isSelected ? "linear-gradient(135deg, #7f1fff 0%, #9c34ff 100%)" : "#ffffff",
+                        color: isSelected ? "#ffffff" : "#0f172a",
                         fontWeight: 900,
-                        fontSize: 14,
+                        fontSize: 15,
                         cursor: "pointer",
                         fontFamily: "Poppins, sans-serif",
                         display: "flex",
@@ -467,8 +473,9 @@ export function ProductDetailView({
                         alignItems: "center",
                         justifyContent: "center",
                         gap: 2,
-                        boxShadow: isSelected ? "0 6px 18px rgba(118,40,240,.35)" : "none",
-                        transition: "all 0.15s ease",
+                        boxShadow: isSelected ? "0 8px 22px rgba(118,40,240,.45)" : "0 3px 8px rgba(0,0,0,.08)",
+                        transition: "all 0.18s ease",
+                        transform: isSelected ? "scale(1.04)" : "scale(1)",
                       }}
                     >
                       <span>{t.tierQty}</span>
@@ -476,12 +483,13 @@ export function ProductDetailView({
                         <span
                           style={{
                             fontSize: 8,
-                            fontWeight: 800,
-                            padding: "1px 5px",
+                            fontWeight: 900,
+                            padding: "2px 6px",
                             borderRadius: 6,
-                            background: isSelected ? "#fff" : "#fae8ff",
-                            color: isSelected ? "#7628f0" : "#a855f7",
+                            background: isSelected ? "#ffffff" : "#fae8ff",
+                            color: isSelected ? "#7628f0" : "#9333ea",
                             textTransform: "uppercase",
+                            letterSpacing: "0.04em",
                           }}
                         >
                           TOP
