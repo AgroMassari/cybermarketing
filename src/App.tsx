@@ -1962,6 +1962,174 @@ function FAQ() {
   );
 }
 
+// ─── NOTIFICACIONES EN VIVO DE COMPRA (Prueba Social Dinámica) ────────────────
+const NOTIF_NAMES = [
+  "Camila", "Lucas", "Valentina", "Mateo", "Martina", "Santiago", "Sofía",
+  "Joaquín", "Julieta", "Tomás", "Florencia", "Agustín", "Micaela", "Nicolás",
+  "Belén", "Facundo", "Lucía", "Lautaro", "Franco", "Candela", "Ignacio", "Paula", "Gonzalo"
+];
+
+const NOTIF_CITIES = [
+  "CABA", "Córdoba", "Rosario", "Mendoza", "La Plata", "Mar del Plata",
+  "San Isidro", "Vicente López", "Neuquén", "Salta", "Tucumán", "Santa Fe",
+  "Montevideo", "Santiago de Chile", "Buenos Aires", "Quilmes", "Pilar", "Tigre"
+];
+
+const NOTIF_SERVICES = [
+  { item: "1.000 seguidores", platform: "instagram" },
+  { item: "500 likes", platform: "instagram" },
+  { item: "2.500 seguidores", platform: "instagram" },
+  { item: "10.000 visualizaciones", platform: "instagram" },
+  { item: "5.000 seguidores", platform: "instagram" },
+  { item: "250 likes Premium", platform: "instagram" },
+  { item: "Mix de Acciones", platform: "instagram" },
+  { item: "Pack Influencer", platform: "instagram" },
+  { item: "1.000 seguidores", platform: "tiktok" },
+  { item: "500 likes", platform: "tiktok" },
+  { item: "500 seguidores", platform: "facebook" },
+  { item: "1.000 visualizaciones", platform: "youtube" },
+];
+
+function LivePurchaseNotification() {
+  const [currentNotif, setCurrentNotif] = useState<{
+    name: string;
+    city: string;
+    service: string;
+    platform: string;
+    minutesAgo: number;
+  } | null>(null);
+  const [visible, setVisible] = useState(false);
+  const [dismissed, setDismissed] = useState(false);
+
+  useEffect(() => {
+    if (dismissed) return;
+
+    let timeoutId: NodeJS.Timeout;
+    let hideTimeoutId: NodeJS.Timeout;
+
+    const showNext = () => {
+      const randomName = NOTIF_NAMES[Math.floor(Math.random() * NOTIF_NAMES.length)];
+      const randomCity = NOTIF_CITIES[Math.floor(Math.random() * NOTIF_CITIES.length)];
+      const randomService = NOTIF_SERVICES[Math.floor(Math.random() * NOTIF_SERVICES.length)];
+      const randomMinutes = Math.floor(Math.random() * 24) + 2; // entre 2 y 25 minutos
+
+      setCurrentNotif({
+        name: randomName,
+        city: randomCity,
+        service: randomService.item,
+        platform: randomService.platform,
+        minutesAgo: randomMinutes
+      });
+      setVisible(true);
+
+      // Desaparece a los 5.5 segundos
+      hideTimeoutId = setTimeout(() => {
+        setVisible(false);
+        // Próxima notificación en 8 a 15 segundos
+        const nextInterval = Math.floor(Math.random() * 7000) + 8000;
+        timeoutId = setTimeout(showNext, nextInterval);
+      }, 5500);
+    };
+
+    // Primera aparición a los 3.5 segundos de cargar
+    timeoutId = setTimeout(showNext, 3500);
+
+    return () => {
+      clearTimeout(timeoutId);
+      clearTimeout(hideTimeoutId);
+    };
+  }, [dismissed]);
+
+  if (!visible || !currentNotif || dismissed) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 25, scale: 0.96 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 15, scale: 0.96 }}
+      transition={{ type: "spring", stiffness: 350, damping: 26 }}
+      style={{
+        position: 'fixed',
+        bottom: 24,
+        left: 24,
+        zIndex: 55,
+        background: '#ffffff',
+        borderRadius: 18,
+        padding: '10px 14px',
+        boxShadow: '0 12px 36px rgba(0,0,0,0.12), 0 2px 10px rgba(0,0,0,0.04)',
+        border: '1px solid rgba(0,0,0,0.06)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+        maxWidth: 360,
+      }}
+    >
+      {/* Icono de la plataforma */}
+      <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {currentNotif.platform === 'tiktok' ? (
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FaTiktok size={18} color="#fff" />
+          </div>
+        ) : currentNotif.platform === 'facebook' ? (
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: '#1877f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FaFacebook size={18} color="#fff" />
+          </div>
+        ) : currentNotif.platform === 'youtube' ? (
+          <div style={{ width: 34, height: 34, borderRadius: 10, background: '#ff0000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Youtube size={18} color="#fff" />
+          </div>
+        ) : (
+          <div style={{
+            width: 34,
+            height: 34,
+            borderRadius: 10,
+            background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(220,39,67,0.3)'
+          }}>
+            <Instagram size={19} color="#fff" />
+          </div>
+        )}
+      </div>
+
+      {/* Contenido del texto */}
+      <div style={{ flex: 1, minWidth: 0, lineHeight: 1.3 }}>
+        <p style={{ margin: 0, fontSize: 13, fontWeight: 700, color: '#111827', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          <strong>{currentNotif.name}</strong> de <strong>{currentNotif.city}</strong> compró <span style={{ color: '#7628f0', fontWeight: 800 }}>{currentNotif.service}</span>
+        </p>
+        <span style={{ fontSize: 11, color: '#9ca3af', fontWeight: 500, display: 'block', marginTop: 2 }}>
+          hace {currentNotif.minutesAgo} minutos
+        </span>
+      </div>
+
+      {/* Botón de cerrar */}
+      <button
+        onClick={() => setDismissed(true)}
+        title="Ocultar"
+        style={{
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 2,
+          color: '#d1d5db',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '50%',
+          transition: 'color 0.15s',
+          marginLeft: 4,
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#6b7280')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#d1d5db')}
+      >
+        <X size={14} />
+      </button>
+    </motion.div>
+  );
+}
+
 // ─── FLOATING WHATSAPP ────────────────────────────────────────────────────────
 function FloatingWhatsApp() {
   return (
@@ -2003,6 +2171,7 @@ function Home() {
           <p style={{ fontSize:13, color:'#4f4f59', margin:0, fontWeight:500 }}>&copy; {new Date().getFullYear()} Todos los derechos reservados.</p>
         </div>
       </footer>
+      <LivePurchaseNotification/>
       <FloatingWhatsApp/>
     </div>
   );
