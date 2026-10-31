@@ -618,6 +618,8 @@ type CartContextType = {
   setOpen: (v: boolean) => void;
   currency: Currency;
   setCurrency: (v: Currency) => void;
+  activePlatform: string;
+  selectPlatform: (platformId: string) => void;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -658,8 +660,26 @@ function CartProvider({ children }: { children: React.ReactNode }) {
   const total = displayItems.reduce((a, i) => a + i.price * i.qty, 0);
   const count = displayItems.reduce((a, i) => a + i.qty, 0);
 
+  const [activePlatform, setActivePlatform] = useState<string>("instagram");
+
+  const selectPlatform = (platformId: string) => {
+    setActivePlatform(platformId);
+    setTimeout(() => {
+      const el = document.getElementById("services-grid");
+      if (el) {
+        const headerOffset = 150;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
+    }, 60);
+  };
+
   return (
-    <CartContext.Provider value={{ items: displayItems, add, remove, changeQty, total, count, open, setOpen, currency, setCurrency }}>
+    <CartContext.Provider value={{ items: displayItems, add, remove, changeQty, total, count, open, setOpen, currency, setCurrency, activePlatform, selectPlatform }}>
       {children}
     </CartContext.Provider>
   );
@@ -893,7 +913,7 @@ const SERVICE_SHORTCUTS = [
 ];
 
 function Header() {
-  const { count, setOpen } = useCart();
+  const { count, setOpen, activePlatform, selectPlatform } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -968,12 +988,37 @@ function Header() {
       {/* Purple sub-nav with service shortcuts */}
       <div style={{ background:'linear-gradient(135deg,#7628f0 0%,#9c34ff 100%)', overflowX:'auto', scrollbarWidth:'none' }}>
         <div style={{ display:'flex', gap:0, padding:'0 16px', maxWidth:1200, margin:'0 auto', width:'max-content', height: 42 }}>
-          {SERVICE_SHORTCUTS.map((s,i)=>(
-            <a key={i} href="#catalogo" style={{ display:'flex', alignItems:'center', gap:6, padding:'0 16px', color:'rgba(255,255,255,.9)', textDecoration:'none', borderRight: i === SERVICE_SHORTCUTS.length - 1 ? 'none' : '1px solid rgba(255,255,255,.15)', whiteSpace:'nowrap' }}>
-              {s.icon && <span style={{ display:'flex', alignItems:'center', opacity: 0.9 }}>{s.icon}</span>}
-              <span style={{ fontSize:12, fontWeight:700, color:'#fff' }}>{s.label}</span>
-            </a>
-          ))}
+          {SERVICE_SHORTCUTS.map((s,i)=>{
+            const isActive = activePlatform === s.platform;
+            return (
+              <a
+                key={i}
+                href="#services-grid"
+                onClick={(e)=>{
+                  e.preventDefault();
+                  selectPlatform(s.platform);
+                }}
+                style={{
+                  display:'flex',
+                  alignItems:'center',
+                  gap:6,
+                  padding:'0 16px',
+                  color: isActive ? '#fff' : 'rgba(255,255,255,.85)',
+                  background: isActive ? 'rgba(255,255,255,0.22)' : 'transparent',
+                  textDecoration:'none',
+                  borderRight: i === SERVICE_SHORTCUTS.length - 1 ? 'none' : '1px solid rgba(255,255,255,.15)',
+                  whiteSpace:'nowrap',
+                  cursor:'pointer',
+                  transition:'all 0.2s',
+                  fontWeight: isActive ? 800 : 600,
+                  boxShadow: isActive ? 'inset 0 -3px 0 #fff' : 'none',
+                }}
+              >
+                {s.icon && <span style={{ display:'flex', alignItems:'center', opacity: isActive ? 1 : 0.85 }}>{s.icon}</span>}
+                <span style={{ fontSize:12 }}>{s.label}</span>
+              </a>
+            );
+          })}
         </div>
       </div>
 
@@ -994,6 +1039,7 @@ function Header() {
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
 function Hero() {
+  const { selectPlatform } = useCart();
   useEffect(() => {
     gsap.fromTo('.header-logo',
       { opacity: 0, scale: 0.7, filter: 'brightness(0)' },
@@ -1064,7 +1110,7 @@ function Hero() {
               ))}
             </div>
             <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
-              <a href="#catalogo" style={{ display:'inline-flex', alignItems:'center', padding:'16px 32px', borderRadius:14, textDecoration:'none', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:14, color:'#fff', letterSpacing:'0.05em', textTransform:'uppercase', background:'linear-gradient(135deg,#7f1fff 0%,#9c34ff 55%,#bf5bff 100%)', boxShadow:'0 8px 30px rgba(127,31,255,.45)' }}>
+              <a href="#services-grid" onClick={(e)=>{ e.preventDefault(); selectPlatform('instagram'); }} style={{ display:'inline-flex', alignItems:'center', padding:'16px 32px', borderRadius:14, textDecoration:'none', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:14, color:'#fff', letterSpacing:'0.05em', textTransform:'uppercase', background:'linear-gradient(135deg,#7f1fff 0%,#9c34ff 55%,#bf5bff 100%)', boxShadow:'0 8px 30px rgba(127,31,255,.45)', cursor:'pointer' }}>
                 VER PRECIOS Y SERVICIOS
               </a>
               <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'16px 26px', borderRadius:14, textDecoration:'none', fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:14, color:'#fff', background:'rgba(37,211,102,0.2)', border:'1.5px solid #25d366', boxShadow:'0 4px 20px rgba(37,211,102,.25)' }}>
@@ -1343,8 +1389,7 @@ function ServiceTierView({ service }: { service: ServiceGroup }) {
 }
 
 function Catalog() {
-  const [activePlatform, setActivePlatform] = useState<string>("instagram");
-  const { currency, setCurrency } = useCart();
+  const { currency, setCurrency, activePlatform, selectPlatform } = useCart();
 
   const filteredServices = SERVICE_GROUPS.filter(s => s.category === activePlatform);
 
@@ -1509,7 +1554,7 @@ function Catalog() {
         </div>
 
         {/* Services Grid (Always visible for activePlatform!) */}
-        <div id="services-grid">
+        <div id="services-grid" style={{ scrollMarginTop: 160 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
             <h3 style={{ fontWeight: 900, fontSize: 22, color: '#121212', margin: 0 }}>
               Servicios de {PLATFORM_CARDS.find(p => p.id === activePlatform)?.label || activePlatform.toUpperCase()}
