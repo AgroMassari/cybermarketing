@@ -98,6 +98,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     features: [
       "Mejorá tu perfil de inmediato",
       "Mejor relación precio/calidad",
+      "1 reposición gratuita ante caída",
     ],
     icon: <Instagram size={16} />,
     tiers: [
@@ -114,10 +115,10 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     id: "ig-seg-vip",
     category: "instagram",
     name: "Seguidores Instagram",
-    subtitle: "PREMIUM VIP",
+    subtitle: "PREMIUM VIP (CON GARANTÍA)",
     features: [
-      "Máxima calidad garantizada",
-      "Entrega rápida y segura",
+      "Perfiles de calidad",
+      "Garantía 30 días",
     ],
     icon: <Instagram size={16} />,
     tiers: [
@@ -292,7 +293,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     category: "tiktok",
     name: "Likes TikTok",
     features: [
-      "Se pueden dividir en varias publicaciones (mín. 100)",
+      "Se puede dividir publicaciones (consultar)",
       "Perfiles activos",
       "Entrega rápida",
     ],
@@ -337,7 +338,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     groupPopular: true,
     features: [
       "Mejor relación precio/calidad",
-      "Perfiles activos y reales",
+      "Perfiles estables",
       "Sin contraseña",
     ],
     icon: <Globe size={16} />,
