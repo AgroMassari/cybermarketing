@@ -15,11 +15,17 @@ import { FaTiktok } from "react-icons/fa6";
 import { useEffect, useState, createContext, useContext, useMemo, useRef } from "react";
 import { Currency, CURRENCY_SYMBOLS, PRICING_DATA, getPrice } from "./data/pricing";
 import { ErrorBoundary } from "./ErrorBoundary";
+import { gsap } from "gsap";
 
-const WHATSAPP_NUMBER = "5491161789518";
+// ─── CONTACTO OFICIAL ────────────────────────────────────────────────────────
+export const WHATSAPP_LINK = "https://wa.me/message/R5MZG4Q6O67OG1";
 
-// ─── DATOS DE PAGO ────────────────────────────────────────────────────────────
+export function getWhatsAppUrl(text?: string): string {
+  if (!text) return WHATSAPP_LINK;
+  return `${WHATSAPP_LINK}?text=${encodeURIComponent(text)}`;
+}
 
+// ─── DATOS DE PAGO (SOLO TRANSFERENCIA ARGENTINA) ───────────────────────────
 const PAYMENT_ARS = [
   { label: "Banco",    value: "Naranja X" },
   { label: "Titular",  value: "Sebastian Agustin Herrera" },
@@ -28,27 +34,20 @@ const PAYMENT_ARS = [
   { label: "Alias",    value: "CYBER.MARKET" },
 ];
 
-const PAYMENT_MXN = [
-  { label: "Entidad",  value: "Arcus" },
-  { label: "Nombre",   value: "Sebastian Agustin Herrera" },
-  { label: "CLABE",    value: "706969138998275209" },
-];
-
-const PAYMENT_EUR = [
-  { label: "Destinatario", value: "Bridge Building S.A." },
-  { label: "IBAN",         value: "LU17 4080 0000 4761 8383" },
-];
-
-const PAYMENT_PREX = [
-  { label: "Banco",    value: "PREX" },
-  { label: "Nombre",   value: "Sebastián Agustín Herrera" },
-  { label: "Cuenta",   value: "38903837" },
+export const CURRENCY_LIST: { code: Currency; label: string; flag: string }[] = [
+  { code: 'ARS', label: 'ARS (Argentina)', flag: '🇦🇷' },
+  { code: 'USD', label: 'USD (Dólares)', flag: '🇺🇸' },
+  { code: 'CLP', label: 'CLP (Chile)', flag: '🇨🇱' },
+  { code: 'UYU', label: 'UYU (Uruguay)', flag: '🇺🇾' },
+  { code: 'MXN', label: 'MXN (México)', flag: '🇲🇽' },
+  { code: 'COP', label: 'COP (Colombia)', flag: '🇨🇴' },
+  { code: 'BRL', label: 'BRL (Brasil)', flag: '🇧🇷' },
+  { code: 'EUR', label: 'EUR (Europa)', flag: '🇪🇺' },
 ];
 
 const queryClient = new QueryClient();
 
 // ─── TYPES ────────────────────────────────────────────────────────────────────
-
 type ServiceTier = {
   tierQty: string;
   price: number;
@@ -69,7 +68,6 @@ type ServiceGroup = {
 };
 
 // ─── CATÁLOGO COMPLETO ────────────────────────────────────────────────────────
-
 const SERVICE_GROUPS: ServiceGroup[] = [
 
   // ──────────────────────────── INSTAGRAM ────────────────────────────────────
@@ -78,7 +76,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     id: "ig-seg-latinos",
     category: "instagram",
     name: "Seguidores Instagram",
-    subtitle: "LATINOS",
+    subtitle: "LATINO PREMIUM (CON GARANTÍA)",
     features: [
       "Perfiles premium de América Latina",
       "Garantía: 90 días de recarga gratis",
@@ -86,19 +84,19 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Instagram size={16} />,
     tiers: [
-      { tierQty: "100",    price: 3990,   label: "Pack Básico" },
-      { tierQty: "500",    price: 18990 },
-      { tierQty: "1.000",  price: 35990,  popular: true, label: "Pack Más Vendido" },
-      { tierQty: "2.500",  price: 79990 },
-      { tierQty: "5.000",  price: 85990 },
-      { tierQty: "10.000", price: 164990, label: "Pack Influencer" },
+      { tierQty: "100",    price: 10990, label: "Pack Básico" },
+      { tierQty: "500",    price: 25990 },
+      { tierQty: "1.000",  price: 42990, popular: true, label: "Pack Más Vendido" },
+      { tierQty: "2.500",  price: 86990 },
+      { tierQty: "5.000",  price: 92990 },
+      { tierQty: "10.000", price: 171990, label: "Pack Influencer" },
     ],
   },
   {
     id: "ig-seg-globales",
     category: "instagram",
     name: "Seguidores Instagram",
-    subtitle: "GLOBALES",
+    subtitle: "GLOBAL ECONOMICS",
     features: [
       "Mejorá tu perfil de inmediato",
       "Mejor relación precio/calidad",
@@ -106,74 +104,32 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Instagram size={16} />,
     tiers: [
-      { tierQty: "500",    price: 5900 },
-      { tierQty: "1.000",  price: 11100,  discount: "-6%" },
-      { tierQty: "2.500",  price: 26500,  discount: "-10%" },
-      { tierQty: "5.000",  price: 49000,  discount: "-13%" },
-      { tierQty: "10.000", price: 89000,  discount: "-19%" },
-      { tierQty: "20.000", price: 169000, discount: "-22%" },
-      { tierQty: "50.000", price: 390000, discount: "-28%" },
+      { tierQty: "250",    price: 8900 },
+      { tierQty: "500",    price: 12300 },
+      { tierQty: "1.000",  price: 22700, popular: true },
+      { tierQty: "2.500",  price: 53500 },
+      { tierQty: "5.000",  price: 98500 },
+      { tierQty: "10.000", price: 178500 },
+      { tierQty: "20.000", price: 338500 },
     ],
   },
   {
-    id: "ig-seg-premium",
+    id: "ig-seg-vip",
     category: "instagram",
     name: "Seguidores Instagram",
-    subtitle: "PREMIUM GARANTÍA EXTENDIDA",
+    subtitle: "PREMIUM VIP (CON GARANTÍA)",
     features: [
-      "Mejorá tu perfil de inmediato",
-      "Mejor relación precio/calidad",
-      "30 días de garantía · 1 reposición gratuita ante caída",
+      "Máxima calidad garantizada",
+      "Garantía de recarga extendida",
+      "Entrega rápida y segura",
     ],
     icon: <Instagram size={16} />,
     tiers: [
-      { tierQty: "250",    price: 8400 },
-      { tierQty: "500",    price: 11800,  discount: "-6%" },
-      { tierQty: "1.000",  price: 22200,  discount: "-10%" },
-      { tierQty: "2.500",  price: 53000,  discount: "-17%" },
-      { tierQty: "5.000",  price: 98000,  discount: "-25%" },
-      { tierQty: "10.000", price: 178000, discount: "-28%" },
-      { tierQty: "20.000", price: 338000, discount: "-34%" },
-    ],
-  },
-  {
-    id: "ig-likes-mundiales",
-    category: "instagram",
-    name: "Likes Instagram",
-    subtitle: "MUNDIALES",
-    features: [
-      "Perfiles de diferentes países del mundo",
-      "Garantía: 30 días. Permanentes",
-      "Entrega: 30 minutos",
-    ],
-    icon: <Heart size={16} />,
-    tiers: [
-      { tierQty: "100",   price: 500 },
-      { tierQty: "250",   price: 1250 },
-      { tierQty: "500",   price: 2000,  discount: "20% OFF" },
-      { tierQty: "750",   price: 2800,  discount: "25% OFF" },
-      { tierQty: "1.000", price: 3500,  discount: "30% OFF", popular: true },
-      { tierQty: "2.500", price: 8000,  discount: "36% OFF" },
-    ],
-  },
-  {
-    id: "ig-likes-latinos",
-    category: "instagram",
-    name: "Likes Instagram",
-    subtitle: "LATINOS",
-    features: [
-      "Perfiles premium de América Latina",
-      "Garantía: 90 días. Permanentes",
-      "Entrega: 30 minutos",
-    ],
-    icon: <Heart size={16} />,
-    tiers: [
-      { tierQty: "100",   price: 1000 },
-      { tierQty: "250",   price: 2375,  discount: "5% OFF" },
-      { tierQty: "500",   price: 4500,  discount: "10% OFF" },
-      { tierQty: "750",   price: 6600,  discount: "12% OFF" },
-      { tierQty: "1.000", price: 8500,  discount: "15% OFF" },
-      { tierQty: "2.500", price: 20000, discount: "20% OFF" },
+      { tierQty: "200",   price: 8990 },
+      { tierQty: "500",   price: 16000 },
+      { tierQty: "1.000", price: 28500, popular: true },
+      { tierQty: "2.500", price: 57000 },
+      { tierQty: "5.000", price: 100000 },
     ],
   },
   {
@@ -188,74 +144,33 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Heart size={16} />,
     tiers: [
-      { tierQty: "500",    price: 2700 },
-      { tierQty: "1.000",  price: 4600,  discount: "-15%" },
-      { tierQty: "2.500",  price: 9400,  discount: "-21%" },
-      { tierQty: "5.000",  price: 17900, discount: "-33%" },
-      { tierQty: "10.000", price: 35500, discount: "-47%" },
-      { tierQty: "20.000", price: 65000, discount: "-52%" },
-      { tierQty: "50.000", price: 150000, discount: "-56%" },
+      { tierQty: "500",    price: 4700 },
+      { tierQty: "1.000",  price: 6600, popular: true },
+      { tierQty: "2.500",  price: 11400 },
+      { tierQty: "5.000",  price: 19900 },
+      { tierQty: "10.000", price: 37500 },
+      { tierQty: "50.000", price: 152000 },
     ],
   },
   {
-    id: "ig-likes-latinos-arg",
+    id: "ig-likes-latinos",
     category: "instagram",
     name: "Likes Instagram",
-    subtitle: "LATINOS 🇦🇷",
+    subtitle: "PREMIUM",
     features: [
-      "Dale vida a tu post al instante",
-      "Mejorá el impacto de tus posts y reels",
-      "Aumentá tus likes de forma económica",
+      "Perfiles premium de alta interacción",
+      "Garantía y entrega en 30 minutos",
+      "Permanentes",
     ],
     icon: <Heart size={16} />,
     tiers: [
-      { tierQty: "250",    price: 2100 },
-      { tierQty: "500",    price: 4050 },
-      { tierQty: "1.000",  price: 6900,  discount: "-12%" },
-      { tierQty: "2.500",  price: 14100, discount: "-35%" },
-      { tierQty: "5.000",  price: 26850, discount: "-45%" },
-      { tierQty: "10.000", price: 53250, discount: "-58%" },
-      { tierQty: "20.000", price: 97500, discount: "-67%" },
-    ],
-  },
-  {
-    id: "ig-vistas-reels",
-    category: "instagram",
-    name: "Vistas Instagram",
-    subtitle: "REELS",
-    features: [
-      "Perfiles de diferentes países del mundo",
-      "Garantía: 30 días. Permanentes",
-      "Entrega: 30 minutos",
-    ],
-    icon: <Eye size={16} />,
-    tiers: [
-      { tierQty: "2.500",   price: 1250 },
-      { tierQty: "5.000",   price: 2375,  discount: "5% OFF" },
-      { tierQty: "10.000",  price: 4500,  discount: "10% OFF" },
-      { tierQty: "25.000",  price: 10000, discount: "20% OFF" },
-      { tierQty: "50.000",  price: 18750, discount: "25% OFF" },
-      { tierQty: "100.000", price: 35000, discount: "30% OFF" },
-    ],
-  },
-  {
-    id: "ig-vistas-historias",
-    category: "instagram",
-    name: "Vistas Instagram",
-    subtitle: "HISTORIAS",
-    features: [
-      "Perfiles premium de Argentina",
-      "Llegan en todas las historias activas del perfil",
-      "Entrega: 30 minutos",
-    ],
-    icon: <Eye size={16} />,
-    tiers: [
-      { tierQty: "500",    price: 1000 },
-      { tierQty: "1.000",  price: 2000 },
-      { tierQty: "2.500",  price: 4500 },
-      { tierQty: "5.000",  price: 5000 },
-      { tierQty: "10.000", price: 7500,  discount: "25% OFF" },
-      { tierQty: "20.000", price: 12000, discount: "40% OFF" },
+      { tierQty: "250",    price: 4500 },
+      { tierQty: "500",    price: 7300 },
+      { tierQty: "1.000",  price: 8300, popular: true },
+      { tierQty: "2.500",  price: 15500 },
+      { tierQty: "5.000",  price: 28250 },
+      { tierQty: "10.000", price: 54650 },
+      { tierQty: "20.000", price: 99400 },
     ],
   },
   {
@@ -270,13 +185,51 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Eye size={16} />,
     tiers: [
-      { tierQty: "2.000",   price: 2890 },
-      { tierQty: "5.000",   price: 3750,  discount: "-23%" },
-      { tierQty: "10.000",  price: 5500,  discount: "-32%" },
-      { tierQty: "20.000",  price: 7900,  discount: "-36%" },
-      { tierQty: "50.000",  price: 12500, discount: "-57%" },
-      { tierQty: "150.000", price: 27000, discount: "-64%" },
-      { tierQty: "300.000", price: 47000, discount: "-67%" },
+      { tierQty: "2.000",   price: 3500 },
+      { tierQty: "5.000",   price: 5250 },
+      { tierQty: "10.000",  price: 7100, popular: true },
+      { tierQty: "20.000",  price: 9500 },
+      { tierQty: "50.000",  price: 14100 },
+      { tierQty: "150.000", price: 28600 },
+      { tierQty: "300.000", price: 48600 },
+    ],
+  },
+  {
+    id: "ig-mix-acciones",
+    category: "instagram",
+    name: "Mix de Acciones Instagram",
+    subtitle: "REPOSTS + COMPARTIDOS + GUARDADOS",
+    features: [
+      "Mix equilibrado: Reposts + Compartidos + Guardados",
+      "Mejora métricas y alcance orgánico",
+      "Entrega rápida y progresiva",
+    ],
+    icon: <Send size={16} />,
+    tiers: [
+      { tierQty: "MIX 1: 100+100+100",  price: 1500, label: "Básico" },
+      { tierQty: "MIX 2: 300+300+300",  price: 3000, label: "Intermedio" },
+      { tierQty: "MIX 3: 1500+500+500", price: 5000, popular: true, label: "Recomendado" },
+      { tierQty: "MIX 4: 1k+1k+1k",     price: 10000, label: "Pro" },
+    ],
+  },
+  {
+    id: "ig-vistas-historias",
+    category: "instagram",
+    name: "Vistas Instagram",
+    subtitle: "HISTORIAS",
+    features: [
+      "Perfiles premium de Argentina",
+      "Llegan en todas las historias activas del perfil",
+      "Entrega: 30 minutos",
+    ],
+    icon: <Eye size={16} />,
+    tiers: [
+      { tierQty: "500",    price: 2500 },
+      { tierQty: "1.000",  price: 4250 },
+      { tierQty: "2.500",  price: 6100 },
+      { tierQty: "5.000",  price: 8500 },
+      { tierQty: "10.000", price: 13100 },
+      { tierQty: "20.000", price: 27600 },
     ],
   },
   {
@@ -334,19 +287,19 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Music2 size={16} />,
     tiers: [
-      { tierQty: "200",    price: 2200 },
-      { tierQty: "500",    price: 4900,  discount: "-11%" },
-      { tierQty: "1.000",  price: 9500,  discount: "-14%", popular: true },
-      { tierQty: "2.500",  price: 21000, discount: "-24%" },
-      { tierQty: "5.000",  price: 39000, discount: "-30%" },
-      { tierQty: "10.000", price: 55000, discount: "-51%" },
-      { tierQty: "20.000", price: 99000, discount: "-56%" },
+      { tierQty: "200",    price: 6200 },
+      { tierQty: "500",    price: 7900 },
+      { tierQty: "1.000",  price: 13500, popular: true },
+      { tierQty: "2.500",  price: 24000 },
+      { tierQty: "5.000",  price: 43000 },
+      { tierQty: "10.000", price: 59000 },
+      { tierQty: "20.000", price: 103000 },
     ],
   },
   {
     id: "tt-likes",
     category: "tiktok",
-    name: "Likes/Me Gusta TikTok",
+    name: "Likes TikTok",
     features: [
       "Se pueden dividir en varias publicaciones (mín. 100)",
       "Perfiles activos",
@@ -354,13 +307,13 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Heart size={16} />,
     tiers: [
-      { tierQty: "500",    price: 1400 },
-      { tierQty: "1.000",  price: 2600,  discount: "-8%" },
-      { tierQty: "2.500",  price: 6200,  discount: "-12%" },
-      { tierQty: "5.000",  price: 11500, discount: "-18%" },
-      { tierQty: "10.000", price: 21000, discount: "-26%" },
-      { tierQty: "20.000", price: 39000, discount: "-31%" },
-      { tierQty: "50.000", price: 95000, discount: "-33%" },
+      { tierQty: "500",    price: 3700 },
+      { tierQty: "1.000",  price: 4900, popular: true },
+      { tierQty: "2.500",  price: 8500 },
+      { tierQty: "5.000",  price: 13800 },
+      { tierQty: "10.000", price: 23300 },
+      { tierQty: "20.000", price: 41300 },
+      { tierQty: "50.000", price: 97300 },
     ],
   },
   {
@@ -374,13 +327,13 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Eye size={16} />,
     tiers: [
-      { tierQty: "2.000",   price: 3000 },
-      { tierQty: "5.000",   price: 5000 },
-      { tierQty: "10.000",  price: 8000 },
-      { tierQty: "20.000",  price: 13000 },
-      { tierQty: "50.000",  price: 25000 },
-      { tierQty: "150.000", price: 35000 },
-      { tierQty: "300.000", price: 55000 },
+      { tierQty: "2.000",   price: 5000 },
+      { tierQty: "5.000",   price: 7000 },
+      { tierQty: "10.000",  price: 10000 },
+      { tierQty: "20.000",  price: 15000 },
+      { tierQty: "50.000",  price: 27000 },
+      { tierQty: "150.000", price: 37000 },
+      { tierQty: "300.000", price: 57000 },
     ],
   },
 
@@ -398,19 +351,19 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Globe size={16} />,
     tiers: [
-      { tierQty: "500",    price: 2200 },
-      { tierQty: "1.000",  price: 3800 },
-      { tierQty: "2.500",  price: 8800 },
-      { tierQty: "5.000",  price: 16000 },
-      { tierQty: "10.000", price: 29000 },
-      { tierQty: "20.000", price: 55000 },
-      { tierQty: "50.000", price: 125000 },
+      { tierQty: "500",    price: 4100 },
+      { tierQty: "1.000",  price: 5700, popular: true },
+      { tierQty: "2.500",  price: 10700 },
+      { tierQty: "5.000",  price: 17900 },
+      { tierQty: "10.000", price: 30900 },
+      { tierQty: "20.000", price: 56900 },
+      { tierQty: "50.000", price: 126900 },
     ],
   },
   {
     id: "fb-likes-post",
     category: "facebook",
-    name: "Likes en Post Facebook",
+    name: "Likes/Reacciones Facebook",
     features: [
       "Se pueden dividir en varias publicaciones (mín. 100)",
       "La herramienta clave que los influencers no te cuentan",
@@ -418,13 +371,13 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Heart size={16} />,
     tiers: [
-      { tierQty: "200",    price: 1900 },
-      { tierQty: "500",    price: 3500 },
-      { tierQty: "1.000",  price: 6500 },
-      { tierQty: "2.500",  price: 14900 },
-      { tierQty: "5.000",  price: 27500 },
-      { tierQty: "10.000", price: 49900 },
-      { tierQty: "20.000", price: 95000 },
+      { tierQty: "200",    price: 3900 },
+      { tierQty: "500",    price: 5500 },
+      { tierQty: "1.000",  price: 8500, popular: true },
+      { tierQty: "2.500",  price: 16900 },
+      { tierQty: "5.000",  price: 29500 },
+      { tierQty: "10.000", price: 51900 },
+      { tierQty: "20.000", price: 97000 },
     ],
   },
 
@@ -442,13 +395,13 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Youtube size={16} />,
     tiers: [
-      { tierQty: "100",   price: 17500 },
-      { tierQty: "200",   price: 32000,  discount: "-7%" },
-      { tierQty: "300",   price: 46000,  discount: "-10%" },
-      { tierQty: "500",   price: 72500,  discount: "-15%" },
-      { tierQty: "1.000", price: 117000, discount: "-33%", popular: true },
-      { tierQty: "1.500", price: 165000, discount: "-35%" },
-      { tierQty: "2.000", price: 209000, discount: "-39%" },
+      { tierQty: "100",   price: 19500 },
+      { tierQty: "200",   price: 34000,  discount: "-7%" },
+      { tierQty: "300",   price: 48000,  discount: "-10%" },
+      { tierQty: "500",   price: 74500,  discount: "-15%" },
+      { tierQty: "1.000", price: 119000, discount: "-33%", popular: true },
+      { tierQty: "1.500", price: 167000, discount: "-35%" },
+      { tierQty: "2.000", price: 211000, discount: "-39%" },
     ],
   },
   {
@@ -463,12 +416,12 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Youtube size={16} />,
     tiers: [
-      { tierQty: "100", price: 8000 },
-      { tierQty: "200", price: 16000 },
-      { tierQty: "250", price: 19000 },
-      { tierQty: "500", price: 37500 },
-      { tierQty: "750", price: 55000 },
-      { tierQty: "1.000", price: 73000 },
+      { tierQty: "100", price: 19500 },
+      { tierQty: "200", price: 34000 },
+      { tierQty: "250", price: 48000 },
+      { tierQty: "500", price: 74500 },
+      { tierQty: "750", price: 119000 },
+      { tierQty: "1.000", price: 167000 },
     ],
   },
   {
@@ -482,13 +435,13 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Heart size={16} />,
     tiers: [
-      { tierQty: "100",    price: 1400 },
-      { tierQty: "200",    price: 2300 },
-      { tierQty: "500",    price: 4900 },
-      { tierQty: "1.000",  price: 8900 },
-      { tierQty: "2.500",  price: 19000 },
-      { tierQty: "5.000",  price: 32000 },
-      { tierQty: "10.000", price: 59000 },
+      { tierQty: "100",    price: 2000 },
+      { tierQty: "200",    price: 2900 },
+      { tierQty: "500",    price: 5500 },
+      { tierQty: "1.000",  price: 9500 },
+      { tierQty: "2.500",  price: 19600 },
+      { tierQty: "5.000",  price: 32600 },
+      { tierQty: "10.000", price: 59600 },
     ],
   },
   {
@@ -503,12 +456,12 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     ],
     icon: <Heart size={16} />,
     tiers: [
-      { tierQty: "100",   price: 500 },
-      { tierQty: "250",   price: 1250 },
-      { tierQty: "500",   price: 2500 },
-      { tierQty: "1.000", price: 4500,  discount: "10% OFF" },
-      { tierQty: "2.000", price: 9000,  discount: "10% OFF" },
-      { tierQty: "5.000", price: 20000, discount: "20% OFF" },
+      { tierQty: "100",   price: 2000 },
+      { tierQty: "200",   price: 2900 },
+      { tierQty: "500",   price: 5500 },
+      { tierQty: "1.000", price: 9500,  discount: "10% OFF" },
+      { tierQty: "2.000", price: 19600, discount: "10% OFF" },
+      { tierQty: "5.000", price: 32600, discount: "20% OFF" },
     ],
   },
   {
@@ -637,19 +590,36 @@ const SERVICE_GROUPS: ServiceGroup[] = [
   },
 ];
 
-
-
-// ─── CART CONTEXT ─────────────────────────────────────────────────────────────
+// ─── CART CONTEXT & HELPERS ───────────────────────────────────────────────────
 type CartItem = { id: string; serviceName: string; tierQty: string; price: number; qty: number };
+
+function getItemPriceInCurrency(item: CartItem, targetCurrency: Currency): number {
+  for (const svc of SERVICE_GROUPS) {
+    if (item.id.startsWith(svc.id + '-') || item.id === svc.id) {
+      const tierIndex = svc.tiers.findIndex(t => t.tierQty === item.tierQty);
+      if (tierIndex !== -1) {
+        const tier = svc.tiers[tierIndex];
+        const p = getPrice(svc.id, tierIndex, tier.price, targetCurrency);
+        if (p > 0) return p;
+      }
+    }
+  }
+  return item.price;
+}
+
 type CartContextType = {
   items: CartItem[];
   add: (item: Omit<CartItem, "qty">) => void;
   remove: (id: string) => void;
   changeQty: (id: string, delta: number) => void;
-  total: number; count: number;
-  open: boolean; setOpen: (v: boolean) => void;
-  currency: Currency; setCurrency: (v: Currency) => void;
+  total: number;
+  count: number;
+  open: boolean;
+  setOpen: (v: boolean) => void;
+  currency: Currency;
+  setCurrency: (v: Currency) => void;
 };
+
 const CartContext = createContext<CartContextType | null>(null);
 function useCart() { return useContext(CartContext)!; }
 
@@ -657,6 +627,7 @@ function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [open, setOpen] = useState(false);
   const [currency, setCurrency] = useState<Currency>("ARS");
+
   const add = (item: Omit<CartItem, "qty">) => {
     setItems(prev => {
       const ex = prev.find(i => i.id === item.id);
@@ -665,7 +636,9 @@ function CartProvider({ children }: { children: React.ReactNode }) {
     });
     setOpen(true);
   };
+
   const remove = (id: string) => setItems(prev => prev.filter(i => i.id !== id));
+
   const changeQty = (id: string, delta: number) => {
     setItems(prev => prev.map(i => {
       if (i.id !== id) return i;
@@ -673,10 +646,20 @@ function CartProvider({ children }: { children: React.ReactNode }) {
       return nq <= 0 ? null as unknown as CartItem : { ...i, qty: nq };
     }).filter(Boolean));
   };
-  const total = items.reduce((a, i) => a + i.price * i.qty, 0);
-  const count = items.reduce((a, i) => a + i.qty, 0);
+
+  // Dynamically compute item prices in selected currency
+  const displayItems = useMemo(() => {
+    return items.map(item => ({
+      ...item,
+      price: getItemPriceInCurrency(item, currency),
+    }));
+  }, [items, currency]);
+
+  const total = displayItems.reduce((a, i) => a + i.price * i.qty, 0);
+  const count = displayItems.reduce((a, i) => a + i.qty, 0);
+
   return (
-    <CartContext.Provider value={{ items, add, remove, changeQty, total, count, open, setOpen, currency, setCurrency }}>
+    <CartContext.Provider value={{ items: displayItems, add, remove, changeQty, total, count, open, setOpen, currency, setCurrency }}>
       {children}
     </CartContext.Provider>
   );
@@ -684,8 +667,20 @@ function CartProvider({ children }: { children: React.ReactNode }) {
 
 function buildWhatsAppMsg(items: CartItem[], total: number, currency: Currency) {
   const sym = CURRENCY_SYMBOLS[currency];
-  const ls = items.map(i => `• ${i.serviceName} — ${i.tierQty} x${i.qty} = ${sym}${(i.price*i.qty).toLocaleString("es-AR")} ${currency}`);
-  return encodeURIComponent(["¡Hola! Quiero confirmar mi pedido.","","📋 *DETALLE:*",...ls,"",`💰 *Total: ${sym}${total.toLocaleString("es-AR")} ${currency}*`,"","Ya realicé la transferencia. ¡Gracias!"].join("\n"));
+  const ls = items.map(i => `• ${i.serviceName} — ${i.tierQty} x${i.qty} = ${sym}${(i.price * i.qty).toLocaleString("es-AR")} ${currency}`);
+  const footer = currency === "ARS"
+    ? "Ya realicé la transferencia bancaria. Adjunto el comprobante. ¡Muchas gracias!"
+    : "Deseo coordinar el pago por WhatsApp (Binance USDT, PayPal, tarjeta internacional, etc.). ¡Muchas gracias!";
+  return [
+    "¡Hola! Quiero confirmar mi pedido.",
+    "",
+    "📋 *DETALLE:*",
+    ...ls,
+    "",
+    `💰 *Total: ${sym}${total.toLocaleString("es-AR")} ${currency}*`,
+    "",
+    footer
+  ].join("\n");
 }
 
 function CopyRow({ label, value }: { label: string; value: string }) {
@@ -704,119 +699,102 @@ function CopyRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-type PayMethod = "ARS" | "MXN" | "EUR" | "PREX" | "OTRA";
-
-// Helper: get price of a cart item in a given currency using the pricing table
-function getItemPriceInCurrency(item: CartItem, targetCurrency: Currency): number {
-  for (const svc of SERVICE_GROUPS) {
-    if (item.id.startsWith(svc.id + '-') || item.id === svc.id) {
-      const tierIndex = svc.tiers.findIndex(t => t.tierQty === item.tierQty);
-      if (tierIndex !== -1) {
-        const tier = svc.tiers[tierIndex];
-        const p = getPrice(svc.id, tierIndex, tier.price, targetCurrency);
-        return p > 0 ? p : item.price; // fallback to original if 0
-      }
-    }
-  }
-  return item.price; // fallback
-}
-
+// ─── PAYMENT MODAL ────────────────────────────────────────────────────────────
+// Solo muestra opción de transferir para ARS. Para las demás divisas se coordina vía WhatsApp.
 function PaymentModal({ items, total, onBack, currency }: { items:CartItem[]; total:number; onBack:()=>void; currency:Currency }) {
-  const initialTab: PayMethod = currency === "ARS" ? "ARS" :
-                                 currency === "MXN" ? "MXN" :
-                                 currency === "EUR" ? "EUR" :
-                                 (currency === "UYU" || currency === "BRL") ? "PREX" : "OTRA";
-  const [tab, setTab] = useState<PayMethod>(initialTab);
+  const sym = CURRENCY_SYMBOLS[currency];
+  const isArs = currency === "ARS";
 
-  // Map tab → currency for pricing lookup
-  const tabCurrency: Currency = tab === "ARS" ? "ARS" :
-                                tab === "MXN" ? "MXN" :
-                                tab === "EUR" ? "EUR" :
-                                tab === "PREX" ? "UYU" : "USD";
-
-  // Recalculate total in selected tab currency
-  const displayTotal = items.reduce((acc, item) => {
-    return acc + getItemPriceInCurrency(item, tabCurrency) * item.qty;
-  }, 0);
-  const displaySym = CURRENCY_SYMBOLS[tabCurrency];
-  const displayCurrency = tab === "PREX" ? "UYU" : tab === "OTRA" ? "USD" : tabCurrency;
-
-  // Build WhatsApp message in selected currency
-  const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    ["¡Hola! Quiero confirmar mi pedido.","","📋 *DETALLE:*",
-     ...items.map(i => `• ${i.serviceName} — ${i.tierQty} x${i.qty} = ${displaySym}${(getItemPriceInCurrency(i, tabCurrency)*i.qty).toLocaleString("es-AR")} ${displayCurrency}`),
-     "",`💰 *Total: ${displaySym}${displayTotal.toLocaleString("es-AR")} ${displayCurrency}*`,"","Ya realicé la transferencia. ¡Gracias!"].join("\n")
-  )}`;
-
-  let data: {label:string, value:string}[] = [];
-  if (tab === "ARS") data = PAYMENT_ARS;
-  else if (tab === "MXN") data = PAYMENT_MXN;
-  else if (tab === "EUR") data = PAYMENT_EUR;
-  else if (tab === "PREX") data = PAYMENT_PREX;
+  const waMsg = buildWhatsAppMsg(items, total, currency);
+  const waUrl = getWhatsAppUrl(waMsg);
 
   return (
     <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:80, display:'flex', alignItems:'flex-end', justifyContent:'center', background:'rgba(18,0,61,.65)', WebkitTransform:'translateZ(0)', transform:'translateZ(0)' }}>
       <motion.div initial={{ y:80, opacity:0 }} animate={{ y:0, opacity:1 }} transition={{ type:"spring", stiffness:320, damping:26 }}
-        style={{ width:'100%', maxWidth:480, maxHeight:'95vh', display:'flex', flexDirection:'column', borderRadius:'24px 24px 0 0', background:'#fff', overflow:'hidden', boxShadow:'0 -20px 60px rgba(118,40,240,.18)' }}>
+        style={{ width:'100%', maxWidth:500, maxHeight:'95vh', display:'flex', flexDirection:'column', borderRadius:'24px 24px 0 0', background:'#fff', overflow:'hidden', boxShadow:'0 -20px 60px rgba(118,40,240,.18)' }}>
+        
+        {/* Header */}
         <div style={{ display:'flex', alignItems:'center', gap:12, padding:'20px 24px', borderBottom:'1px solid #f3edfc' }}>
           <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', color:'#9a92a8', display:'flex' }}><ChevronLeft size={22}/></button>
           <div style={{ flex:1 }}>
-            <h2 style={{ fontSize:16, fontWeight:800, color:'#121212', margin:0 }}>DATOS DE PAGO</h2>
+            <h2 style={{ fontSize:16, fontWeight:800, color:'#121212', margin:0 }}>
+              {isArs ? "DATOS DE PAGO POR TRANSFERENCIA" : "COORDINAR PAGO INTERNACIONAL"}
+            </h2>
+            <p style={{ fontSize:11, color:'#7628f0', margin:'2px 0 0', fontWeight:600 }}>
+              Moneda: {currency}
+            </p>
           </div>
           <div style={{ textAlign:'right' }}>
             <p style={{ fontSize:10, color:'#9a92a8', margin:0, textTransform:'uppercase', letterSpacing:'0.08em' }}>TOTAL</p>
-            <p style={{ fontSize:20, fontWeight:900, color:'#7628f0', margin:0 }}>{displaySym}{displayTotal.toLocaleString("es-AR")} {displayCurrency}</p>
+            <p style={{ fontSize:20, fontWeight:900, color:'#7628f0', margin:0 }}>{sym}{total.toLocaleString("es-AR")} {currency}</p>
           </div>
         </div>
 
-        <div style={{ padding:'12px 24px 0' }}>
-          <p style={{ fontSize:11, color:'#9a92a8', margin:'0 0 8px', fontWeight:500 }}>Seleccioná tu moneda de pago:</p>
-          <div style={{ display:'flex', gap:6, overflowX:'auto', paddingBottom: 8, whiteSpace: 'nowrap' }}>
-            {(['ARS','MXN','EUR','PREX','OTRA'] as const).map(t => (
-              <button key={t} onClick={() => setTab(t)}
-                style={{ flexShrink: 0, padding:'8px 14px', borderRadius:14, border:'none', cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:12, transition:'all 0.2s', background: tab===t ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : '#f6f2ff', color: tab===t ? '#fff' : '#7628f0' }}>
-                {t==='ARS' ? '🇦🇷 ARS' : t==='MXN' ? '🇲🇽 MXN' : t==='EUR' ? '💶 EUR' : t==='PREX' ? '🌎 Prex (UYU/BRL)' : '🌐 Otra'}
-              </button>
-            ))}
-          </div>
-        </div>
-        
-        <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'16px 24px', display:'flex', flexDirection:'column', gap:8 }}>
-          {data.length > 0 ? (
+        {/* Content body */}
+        <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'18px 24px', display:'flex', flexDirection:'column', gap:12 }}>
+          {isArs ? (
             <>
-              {data.map(row=><CopyRow key={row.label} label={row.label} value={row.value}/>)}
+              <div style={{ background: '#fcfbff', border: '1px solid #e9d5ff', borderRadius: 12, padding: '12px 16px' }}>
+                <p style={{ fontSize: 12, color: '#4f4f59', margin: 0, lineHeight: 1.5 }}>
+                  Realizá la transferencia a la siguiente cuenta oficial de <strong>Naranja X</strong> y luego envianos el comprobante por WhatsApp para iniciar tu pedido de inmediato:
+                </p>
+              </div>
+
+              {PAYMENT_ARS.map(row => (
+                <CopyRow key={row.label} label={row.label} value={row.value}/>
+              ))}
             </>
           ) : (
-            <div style={{ textAlign: 'center', padding: '20px 0', color: '#121212', fontWeight: 600 }}>
-              Por favor, contactanos por WhatsApp para obtener los datos de pago para tu moneda.
+            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+              <div style={{ background: 'linear-gradient(135deg, #f6f2ff 0%, #ede9fe 100%)', border: '1.5px solid #c4b5fd', borderRadius: 16, padding: '18px 20px', textAlign: 'center' }}>
+                <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#7c3aed', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', boxShadow:'0 4px 14px rgba(124,58,237,.35)' }}>
+                  <Globe size={24} />
+                </div>
+                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#5b21b6', margin: '0 0 6px' }}>
+                  Pago Internacional ({currency})
+                </h3>
+                <p style={{ fontSize: 13, color: '#4b5563', margin: 0, lineHeight: 1.6 }}>
+                  Para pagos en <strong>{currency}</strong> u otras divisas fuera de Argentina no se aceptan transferencias bancarias locales. Coordinamos tu pago directamente por WhatsApp con medios internacionales seguros: <strong>Binance (USDT)</strong>, <strong>PayPal</strong> o <strong>tarjetas</strong>.
+                </p>
+              </div>
+
+              <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '14px 16px' }}>
+                <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>
+                  Resumen de tu pedido ({currency})
+                </p>
+                {items.map(item => (
+                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '5px 0', borderBottom: '1px dashed #f3f4f6' }}>
+                    <span style={{ fontWeight: 600, color: '#1f2937' }}>{item.serviceName} ({item.tierQty}) x{item.qty}</span>
+                    <span style={{ fontWeight: 700, color: '#7c3aed' }}>{sym}{(item.price * item.qty).toLocaleString("es-AR")}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
-
-          <div style={{ background: '#f6f2ff', border: '1px solid #e9d5ff', borderRadius: 12, padding: '16px', marginTop: 12 }}>
-            <h3 style={{ fontSize: 14, fontWeight: 800, color: '#7628f0', margin: '0 0 8px 0' }}>¿Querés pagar en otra moneda?</h3>
-            <p style={{ fontSize: 12, color: '#4f4f59', margin: 0, lineHeight: 1.5 }}>
-              Aceptamos USDT, dólares (USD), euros (EUR), soles peruanos (PEN), pesos colombianos (COP), pesos mexicanos (MXN), entre otras. Seleccioná la pestaña correspondiente y contactános por WhatsApp.
-            </p>
-          </div>
         </div>
-        <div style={{ padding:'20px 24px calc(20px + env(safe-area-inset-bottom, 0px))', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:12 }}>
+
+        {/* Footer CTA */}
+        <div style={{ padding:'20px 24px calc(20px + env(safe-area-inset-bottom, 0px))', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:10 }}>
           <a href={waUrl} target="_blank" rel="noopener noreferrer"
             style={{ width:'100%', padding:16, borderRadius:16, cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background:'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow:'0 6px 24px rgba(22,163,74,.35)', display:'flex', alignItems:'center', justifyContent:'center', gap:10, textDecoration:'none', boxSizing:'border-box' }}>
-            <CheckCircle2 size={20}/> YA TRANSFERÍ — CONFIRMAR PEDIDO
+            <FaWhatsapp size={20}/> {isArs ? "YA TRANSFERÍ — ENVIAR COMPROBANTE" : "COORDINAR PAGO POR WHATSAPP"}
           </a>
-          <p style={{ textAlign:'center', fontSize:11, color:'#9a92a8', margin:0 }}>Se abrirá WhatsApp para enviarnos el comprobante.</p>
+          <p style={{ textAlign:'center', fontSize:11, color:'#9a92a8', margin:0 }}>
+            {isArs ? "Se abrirá WhatsApp para enviarnos la captura de la transferencia." : "Se abrirá WhatsApp con el detalle de tu pedido listo para coordinar el pago."}
+          </p>
         </div>
       </motion.div>
     </div>
   );
 }
 
+// ─── CART DRAWER ──────────────────────────────────────────────────────────────
 function CartDrawer() {
-  const { items, remove, changeQty, total, open, setOpen, currency, setCurrency } = useCart();
+  const { items, remove, changeQty, total, open, setOpen, currency } = useCart();
   const sym = CURRENCY_SYMBOLS[currency];
   const [showPayment, setShowPayment] = useState(false);
-  const whatsAppUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${buildWhatsAppMsg(items,total,currency)}`;
-  const handleClose = () => { setShowPayment(false); setOpen(false); };
+  const isArs = currency === "ARS";
+
   return (
     <>
       <div onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:60, background:'rgba(18,0,61,.5)', opacity:open?1:0, pointerEvents:open?'auto':'none', transition:'opacity 0.3s' }}/>
@@ -852,12 +830,12 @@ function CartDrawer() {
         )}
         <div style={{ padding:'20px 24px calc(20px + env(safe-area-inset-bottom, 0px))', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:16 }}>
           <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
-            <span style={{ fontWeight:600, color:'#9a92a8', fontSize:13 }}>Total</span>
+            <span style={{ fontWeight:600, color:'#9a92a8', fontSize:13 }}>Total ({currency})</span>
             <span style={{ fontWeight:900, color:'#121212', fontSize:24 }}>{sym}{total.toLocaleString("es-AR")} {currency}</span>
           </div>
           <button onClick={()=>{if(items.length>0)setShowPayment(true);}} disabled={items.length===0}
-            style={{ width:'100%', padding:16, borderRadius:16, border:'none', cursor:items.length>0?'pointer':'not-allowed', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background:'linear-gradient(135deg,#7f1fff 0%,#9c34ff 55%,#bf5bff 100%)', boxShadow:'0 6px 24px rgba(118,40,240,.35)', opacity:items.length===0?.4:1, display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
-            <Banknote size={20}/> PAGAR AHORA
+            style={{ width:'100%', padding:16, borderRadius:16, border:'none', cursor:items.length>0?'pointer':'not-allowed', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background: isArs ? 'linear-gradient(135deg,#7f1fff 0%,#9c34ff 55%,#bf5bff 100%)' : 'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow: isArs ? '0 6px 24px rgba(118,40,240,.35)' : '0 6px 24px rgba(34,197,94,.35)', opacity:items.length===0?.4:1, display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
+            {isArs ? <><Banknote size={20}/> PAGAR / TRANSFERIR</> : <><FaWhatsapp size={20}/> COORDINAR PAGO EN WHATSAPP</>}
           </button>
         </div>
       </aside>
@@ -872,7 +850,6 @@ function CartDrawer() {
 
 function CurrencySelector() {
   const { currency, setCurrency } = useCart();
-  const currencies: Currency[] = ["ARS","USD","EUR","COP","MXN","UYU","BRL"];
   const [open, setOpen] = useState(false);
   return (
     <div style={{ position:'relative' }}>
@@ -887,16 +864,17 @@ function CurrencySelector() {
           boxShadow:'0 2px 12px rgba(168,85,247,0.45)',
           letterSpacing:'0.04em'
         }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20M2 12h20"/></svg>
+        <Globe size={14}/>
         {currency}
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       {open && (
-        <div style={{ position:'absolute', top:'calc(100% + 8px)', right:0, background:'#1a0035', borderRadius:14, boxShadow:'0 8px 40px rgba(118,40,240,.4)', border:'1px solid rgba(168,85,247,.3)', padding:6, zIndex:100, minWidth:100 }}>
-          {currencies.map(c=>(
-            <button key={c} onClick={()=>{setCurrency(c);setOpen(false);}}
-              style={{ display:'block', width:'100%', padding:'8px 14px', borderRadius:8, border:'none', cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:13, textAlign:'left', background: currency===c ? 'linear-gradient(135deg,#7f1fff,#9c34ff)' : 'transparent', color: currency===c ? '#fff' : 'rgba(255,255,255,0.8)', transition:'background 0.15s' }}>
-              {c}
+        <div style={{ position:'absolute', top:'calc(100% + 8px)', right:0, background:'#1a0035', borderRadius:14, boxShadow:'0 8px 40px rgba(118,40,240,.4)', border:'1px solid rgba(168,85,247,.3)', padding:6, zIndex:100, minWidth:160 }}>
+          {CURRENCY_LIST.map(c=>(
+            <button key={c.code} onClick={()=>{setCurrency(c.code);setOpen(false);}}
+              style={{ display:'flex', alignItems:'center', gap:8, width:'100%', padding:'8px 12px', borderRadius:8, border:'none', cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:12, textAlign:'left', background: currency===c.code ? 'linear-gradient(135deg,#7f1fff,#9c34ff)' : 'transparent', color: currency===c.code ? '#fff' : 'rgba(255,255,255,0.85)', transition:'background 0.15s' }}>
+              <span>{c.flag}</span>
+              <span>{c.label}</span>
             </button>
           ))}
         </div>
@@ -905,28 +883,31 @@ function CurrencySelector() {
   );
 }
 
-// ─── HEADER (pixel perfect) ───────────────────────────────────────────────────
-// Announcement bar (black) → White header (logo centered, nav centered) → Purple sub-nav scrollable
-
+// ─── HEADER ───────────────────────────────────────────────────────────────────
 const SERVICE_SHORTCUTS = [
-  { label:'PROMOS VIGENTES 🔥', icon: null },
-  { label:'Instagram', icon: <Instagram size={18} strokeWidth={2} /> },
-  { label:'TikTok', icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg> },
-  { label:'Facebook', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg> },
-  { label:'Youtube', icon: <Youtube size={18} strokeWidth={2} /> },
-  { label:'Spotify', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 11.973c2.5-1.473 5.5-.973 7.5.527"></path><path d="M9 15c1.5-1 4-1 5 .5"></path><path d="M7 9c3-2 7-2 9 0"></path></svg> },
+  { label:'Instagram', icon: <Instagram size={18} strokeWidth={2} />, platform: 'instagram' },
+  { label:'TikTok', icon: <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/></svg>, platform: 'tiktok' },
+  { label:'Facebook', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>, platform: 'facebook' },
+  { label:'Youtube', icon: <Youtube size={18} strokeWidth={2} />, platform: 'youtube' },
+  { label:'Spotify', icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M8 11.973c2.5-1.473 5.5-.973 7.5.527"></path><path d="M9 15c1.5-1 4-1 5 .5"></path><path d="M7 9c3-2 7-2 9 0"></path></svg>, platform: 'spotify' },
 ];
 
 function Header() {
   const { count, setOpen } = useCart();
   const [mobileOpen, setMobileOpen] = useState(false);
+
   return (
     <div style={{ position:'fixed', top:0, left:0, right:0, zIndex:50 }}>
-      {/* Announcement bar */}
-      <div style={{ background:'linear-gradient(266deg,rgba(5,5,5,1),rgba(65,65,65,1) 100%)', color:'#fff', padding:'7px 24px', display:'flex', alignItems:'center', justifyContent:'center', gap:20 }}>
-        <Instagram size={14} style={{ opacity:.8 }}/>
-        <FaTiktok size={13} style={{ opacity:.8 }}/>
-        <span style={{ fontSize:11, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase' }}>3 CUOTAS SIN INTERES</span>
+      {/* Announcement bar: WhatsApp change notice */}
+      <div style={{ background:'linear-gradient(266deg,#111b21 0%,#1f2c34 100%)', color:'#fff', padding:'8px 24px', display:'flex', alignItems:'center', justifyContent:'center', gap:12, fontSize:12, fontWeight:700, borderBottom:'1px solid rgba(37,211,102,0.3)', flexWrap:'wrap', textAlign:'center' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <FaWhatsapp color="#25d366" size={16}/>
+          <span style={{ color:'#25d366', fontWeight:800 }}>¡NUEVO WHATSAPP OFICIAL!</span>
+        </div>
+        <span style={{ color:'rgba(255,255,255,0.9)' }}>Cambiamos nuestra línea de atención:</span>
+        <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" style={{ color:'#fff', background:'#25d366', padding:'2px 10px', borderRadius:20, textDecoration:'none', fontWeight:800, fontSize:11 }}>
+          CHATEAR AHORA »
+        </a>
       </div>
 
       {/* Main dark header */}
@@ -944,9 +925,10 @@ function Header() {
           {/* Desktop: nav + icons */}
           <div className="desktop-nav" style={{ display:'flex', alignItems:'center', gap:20 }}>
             <nav style={{ display:'flex', alignItems:'center', gap:20 }}>
-              {['Inicio','¿Cómo funciona?','Preguntas Frecuentes'].map(label=>(
-                <a key={label} href="#" style={{ fontSize:13, fontWeight:500, color:'rgba(255,255,255,0.85)', textDecoration:'none' }}>{label}</a>
-              ))}
+              <a href="#home" style={{ fontSize:13, fontWeight:500, color:'rgba(255,255,255,0.85)', textDecoration:'none' }}>Inicio</a>
+              <a href="#catalogo" style={{ fontSize:13, fontWeight:700, color:'#c084fc', textDecoration:'none' }}>Catálogo y Precios</a>
+              <a href="#como-funciona" style={{ fontSize:13, fontWeight:500, color:'rgba(255,255,255,0.85)', textDecoration:'none' }}>¿Cómo funciona?</a>
+              <a href="#faq" style={{ fontSize:13, fontWeight:500, color:'rgba(255,255,255,0.85)', textDecoration:'none' }}>Preguntas Frecuentes</a>
             </nav>
             <div style={{ display:'flex', alignItems:'center', gap:10 }}>
               <CurrencySelector/>
@@ -975,12 +957,10 @@ function Header() {
         {/* Mobile dropdown menu */}
         {mobileOpen && (
           <div style={{ background:'#0d0025', borderTop:'1px solid rgba(168,85,247,.2)', padding:'12px 20px 20px' }}>
-            {['Inicio','¿Cómo funciona?','Preguntas Frecuentes','Saber Más','Blog'].map(label=>(
-              <a key={label} href="#" onClick={()=>setMobileOpen(false)}
-                style={{ display:'block', padding:'12px 0', fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.9)', textDecoration:'none', borderBottom:'1px solid rgba(255,255,255,.06)' }}>
-                {label}
-              </a>
-            ))}
+            <a href="#home" onClick={()=>setMobileOpen(false)} style={{ display:'block', padding:'12px 0', fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.9)', textDecoration:'none', borderBottom:'1px solid rgba(255,255,255,.06)' }}>Inicio</a>
+            <a href="#catalogo" onClick={()=>setMobileOpen(false)} style={{ display:'block', padding:'12px 0', fontSize:15, fontWeight:700, color:'#c084fc', textDecoration:'none', borderBottom:'1px solid rgba(255,255,255,.06)' }}>Catálogo y Precios</a>
+            <a href="#como-funciona" onClick={()=>setMobileOpen(false)} style={{ display:'block', padding:'12px 0', fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.9)', textDecoration:'none', borderBottom:'1px solid rgba(255,255,255,.06)' }}>¿Cómo funciona?</a>
+            <a href="#faq" onClick={()=>setMobileOpen(false)} style={{ display:'block', padding:'12px 0', fontSize:15, fontWeight:600, color:'rgba(255,255,255,0.9)', textDecoration:'none', borderBottom:'1px solid rgba(255,255,255,.06)' }}>Preguntas Frecuentes</a>
           </div>
         )}
       </header>
@@ -989,9 +969,9 @@ function Header() {
       <div style={{ background:'linear-gradient(135deg,#7628f0 0%,#9c34ff 100%)', overflowX:'auto', scrollbarWidth:'none' }}>
         <div style={{ display:'flex', gap:0, padding:'0 16px', maxWidth:1200, margin:'0 auto', width:'max-content', height: 42 }}>
           {SERVICE_SHORTCUTS.map((s,i)=>(
-            <a key={i} href={s.label === 'PROMOS VIGENTES 🔥' ? '#promos-vigentes' : '#catalogo'} style={{ display:'flex', alignItems:'center', gap:6, padding:'0 14px', color:'rgba(255,255,255,.9)', textDecoration:'none', borderRight:'1px solid rgba(255,255,255,.12)', whiteSpace:'nowrap', ...((i===SERVICE_SHORTCUTS.length-1) ? { borderRight: 'none', fontWeight: 800 } : {}) }}>
+            <a key={i} href="#catalogo" style={{ display:'flex', alignItems:'center', gap:6, padding:'0 16px', color:'rgba(255,255,255,.9)', textDecoration:'none', borderRight: i === SERVICE_SHORTCUTS.length - 1 ? 'none' : '1px solid rgba(255,255,255,.15)', whiteSpace:'nowrap' }}>
               {s.icon && <span style={{ display:'flex', alignItems:'center', opacity: 0.9 }}>{s.icon}</span>}
-              <span style={{ fontSize:12, fontWeight:600, color:'#fff' }}>{s.label}</span>
+              <span style={{ fontSize:12, fontWeight:700, color:'#fff' }}>{s.label}</span>
             </a>
           ))}
         </div>
@@ -1013,16 +993,12 @@ function Header() {
 }
 
 // ─── HERO ─────────────────────────────────────────────────────────────────────
-import { gsap } from "gsap";
-
 function Hero() {
   useEffect(() => {
-    // Animate header logo with fade-in + glow pulse
     gsap.fromTo('.header-logo',
       { opacity: 0, scale: 0.7, filter: 'brightness(0)' },
       { opacity: 1, scale: 1, filter: 'brightness(1)', duration: 1.2, ease: 'back.out(1.5)' }
     );
-    // Continuous neon glow pulse on header logo
     gsap.to('.header-logo', {
       filter: 'drop-shadow(0 0 18px rgba(156,52,255,0.9)) drop-shadow(0 0 40px rgba(80,100,255,0.6)) brightness(1.05)',
       duration: 1.8,
@@ -1031,7 +1007,6 @@ function Hero() {
       ease: 'sine.inOut',
       delay: 1.2
     });
-    // Hero text animations
     gsap.fromTo('.hero-title-anim', 
       { opacity: 0, y: 50, scale: 0.9 }, 
       { opacity: 1, y: 0, scale: 1, duration: 1, ease: 'back.out(1.7)', stagger: 0.1 }
@@ -1044,7 +1019,6 @@ function Hero() {
       { opacity: 0, scale: 0.8 },
       { opacity: 1, scale: 1, duration: 0.8, delay: 0.6, ease: 'elastic.out(1, 0.5)' }
     );
-    // Floating animation for decorative shapes
     gsap.to('.hero-shape-anim', {
       y: 'random(-20, 20)',
       rotation: 'random(-15, 15)',
@@ -1058,10 +1032,9 @@ function Hero() {
 
   return (
     <section id="home" style={{
-      paddingTop:130, paddingBottom:90, position:'relative', overflow:'hidden',
+      paddingTop:130, paddingBottom:80, position:'relative', overflow:'hidden',
       background:`radial-gradient(circle at 15% 18%, rgba(141,44,255,.18), transparent 32%), radial-gradient(circle at 85% 78%, rgba(176,82,255,.14), transparent 28%), linear-gradient(135deg, #18003d 0%, #2a0066 36%, #3a008c 72%, #4b0fb0 100%)`
     }}>
-      {/* Decorative subtle shapes */}
       {[
         { left:40, top:'30%', size:70, rotate:15 },
         { left:80, top:'60%', size:40, rotate:-10 },
@@ -1071,29 +1044,33 @@ function Hero() {
       ))}
 
       <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 24px', display:'flex', alignItems:'center', gap:60, flexWrap:'wrap' }}>
-        {/* Left */}
         <div style={{ flex:'1 1 460px', maxWidth:580 }}>
           <div className="hero-subtitle-anim">
             <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'6px 16px', borderRadius:20, background:'rgba(255,255,255,.12)', border:'1px solid rgba(255,255,255,.2)', marginBottom:28 }}>
               <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,.9)', letterSpacing:'0.06em', textTransform:'uppercase' }}>AR</span>
-              <span style={{ fontSize:11, fontWeight:700, color:'#fff' }}>Sitio #1 en Argentina</span>
+              <span style={{ fontSize:11, fontWeight:700, color:'#fff' }}>Sitio #1 en Crecimiento Digital</span>
             </div>
-            <h1 className="hero-title-anim" style={{ fontWeight:900, fontSize:'clamp(42px,6vw,72px)', lineHeight:1.05, color:'#fff', margin:'0 0 24px', letterSpacing:'-2px' }}>
+            <h1 className="hero-title-anim" style={{ fontWeight:900, fontSize:'clamp(40px,5.5vw,70px)', lineHeight:1.05, color:'#fff', margin:'0 0 24px', letterSpacing:'-2px' }}>
               Marketing fácil <br/> <span style={{ color:'transparent', WebkitTextStroke:'1px rgba(255,255,255,.9)' }}>para vender</span><br/>mejor.
             </h1>
-            <p className="hero-subtitle-anim" style={{ fontSize:18, color:'rgba(255,255,255,.7)', lineHeight:1.6, margin:'0 0 40px', fontWeight:500, maxWidth:480 }}>
-              Impulsá tu perfil en minutos, de forma automática y segura.
+            <p className="hero-subtitle-anim" style={{ fontSize:17, color:'rgba(255,255,255,.75)', lineHeight:1.6, margin:'0 0 36px', fontWeight:500, maxWidth:480 }}>
+              Impulsá tus redes con seguidores, likes y reproducciones de calidad. Resultados rápidos, seguros y transparentes.
             </p>
-            <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:36 }}>
-              {[['🤖','Automático con IA'],['🔒','Seguro'],['🚫','Sin contraseña'],['⚡','Entrega rápida']].map(([icon,label])=>(
+            <div style={{ display:'flex', flexWrap:'wrap', gap:8, marginBottom:32 }}>
+              {[['🤖','Automático con IA'],['🔒','100% Seguro'],['🚫','Sin contraseña'],['⚡','Entrega inmediata']].map(([icon,label])=>(
                 <span key={label as string} style={{ padding:'7px 14px', borderRadius:20, background:'rgba(0,0,0,.25)', border:'1px solid rgba(255,255,255,.2)', color:'#fff', fontSize:12, fontWeight:600, display:'flex', alignItems:'center', gap:6 }}>
                   {icon} {label}
                 </span>
               ))}
             </div>
-            <a href="#catalogo" style={{ display:'inline-flex', alignItems:'center', padding:'17px 36px', borderRadius:14, textDecoration:'none', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:14, color:'#fff', letterSpacing:'0.05em', textTransform:'uppercase', background:'linear-gradient(135deg,#7f1fff 0%,#9c34ff 55%,#bf5bff 100%)', boxShadow:'0 8px 30px rgba(127,31,255,.45)' }}>
-              QUIERO IMPULSAR MI PERFIL AHORA
-            </a>
+            <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
+              <a href="#catalogo" style={{ display:'inline-flex', alignItems:'center', padding:'16px 32px', borderRadius:14, textDecoration:'none', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:14, color:'#fff', letterSpacing:'0.05em', textTransform:'uppercase', background:'linear-gradient(135deg,#7f1fff 0%,#9c34ff 55%,#bf5bff 100%)', boxShadow:'0 8px 30px rgba(127,31,255,.45)' }}>
+                VER PRECIOS Y SERVICIOS
+              </a>
+              <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer" style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'16px 26px', borderRadius:14, textDecoration:'none', fontFamily:'Poppins,sans-serif', fontWeight:700, fontSize:14, color:'#fff', background:'rgba(37,211,102,0.2)', border:'1.5px solid #25d366', boxShadow:'0 4px 20px rgba(37,211,102,.25)' }}>
+                <FaWhatsapp size={18} color="#25d366"/> WhatsApp Oficial
+              </a>
+            </div>
           </div>
         </div>
 
@@ -1107,7 +1084,7 @@ function Hero() {
               </div>
               <div>
                 <p style={{ fontWeight:800, fontSize:14, color:'#121212', margin:0 }}>tu perfil con</p>
-                <p style={{ fontWeight:900, fontSize:17, color:'#121212', margin:0 }}>CyberDigital</p>
+                <p style={{ fontWeight:900, fontSize:17, color:'#121212', margin:0 }}>CyberMarketing</p>
                 <p style={{ fontWeight:500, fontSize:12, color:'#9a92a8', margin:'2px 0 0' }}>@tu perfil</p>
               </div>
             </div>
@@ -1121,7 +1098,7 @@ function Hero() {
             </div>
             <div style={{ background:'linear-gradient(135deg,#f6f2ff,#eee7ff)', borderRadius:14, padding:'12px 16px', textAlign:'center', border:'1px solid rgba(118,40,240,.1)' }}>
               <p style={{ fontSize:9, fontWeight:700, color:'#9a92a8', textTransform:'uppercase', letterSpacing:'0.1em', margin:'0 0 4px' }}>VALIDACIÓN INTELIGENTE</p>
-              <p style={{ fontWeight:900, fontSize:14, color:'#7628f0', margin:0, lineHeight:1.3 }}>Perfil detectado<br/>correctamente</p>
+              <p style={{ fontWeight:900, fontSize:14, color:'#7628f0', margin:0, lineHeight:1.3 }}>Entrega garantizada<br/>sin riesgo para tu cuenta</p>
             </div>
           </motion.div>
           <motion.div animate={{ y:[0,-10,0] }} transition={{ repeat:Infinity, duration:4, ease:'easeInOut' }}
@@ -1130,7 +1107,7 @@ function Hero() {
           </motion.div>
           <motion.div animate={{ y:[0,10,0] }} transition={{ repeat:Infinity, duration:5, ease:'easeInOut', delay:1.5 }}
             style={{ position:'absolute', bottom:-14, left:-10, background:'#fff', borderRadius:50, padding:'8px 16px', boxShadow:'0 8px 30px rgba(18,0,61,.18)', display:'flex', alignItems:'center', gap:8, zIndex:3, border:'1px solid rgba(141,44,255,.08)' }}>
-            <span style={{ fontSize:14 }}>🏆</span><span style={{ fontWeight:700, fontSize:12, color:'#121212' }}>Superior a la competencia</span>
+            <span style={{ fontSize:14 }}>🏆</span><span style={{ fontWeight:700, fontSize:12, color:'#121212' }}>Autoridad en tu nicho</span>
           </motion.div>
         </div>
       </div>
@@ -1178,7 +1155,7 @@ function StatsBar() {
   }, []);
 
   return (
-    <div ref={containerRef} style={{ background:'#fff', padding:'36px 24px', borderBottom:'1px solid #ececec' }}>
+    <div ref={containerRef} style={{ background:'#fff', padding:'32px 24px', borderBottom:'1px solid #ececec' }}>
       <div style={{ maxWidth:1200, margin:'0 auto', display:'flex', justifyContent:'center', gap:'clamp(40px,8vw,120px)', flexWrap:'wrap' }}>
         <div style={{ textAlign:'center' }}>
           <p ref={num1Ref} style={{ fontWeight:900, fontSize:'clamp(28px,4vw,48px)', color:'#121212', margin:0, letterSpacing:'-1px' }}>+0</p>
@@ -1193,12 +1170,94 @@ function StatsBar() {
   );
 }
 
+// ─── AVISO DE CAMBIO DE WHATSAPP ──────────────────────────────────────────────
+function WhatsAppNoticeBanner() {
+  return (
+    <section style={{ maxWidth: 1200, margin: '28px auto 10px', padding: '0 24px' }}>
+      <motion.div initial={{ opacity:0, y:14 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
+        style={{
+          background: 'linear-gradient(135deg, #0b141a 0%, #111b21 50%, #1f2c34 100%)',
+          border: '1.5px solid #25d366',
+          borderRadius: 22,
+          padding: '22px 28px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 20,
+          flexWrap: 'wrap',
+          boxShadow: '0 12px 36px rgba(37, 211, 102, 0.18)',
+        }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: '1 1 500px' }}>
+          <div style={{
+            width: 54,
+            height: 54,
+            borderRadius: '50%',
+            background: '#25d366',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            boxShadow: '0 0 24px rgba(37,211,102,0.6)',
+          }}>
+            <FaWhatsapp size={30} color="#fff" />
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginBottom: 4 }}>
+              <span style={{
+                background: '#25d366',
+                color: '#0b141a',
+                fontWeight: 900,
+                fontSize: 10,
+                padding: '3px 10px',
+                borderRadius: 20,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+              }}>
+                COMUNICADO OFICIAL
+              </span>
+              <h4 style={{ margin: 0, color: '#fff', fontWeight: 900, fontSize: 17, letterSpacing: '-0.3px' }}>
+                ¡Cambiamos nuestro número de WhatsApp!
+              </h4>
+            </div>
+            <p style={{ margin: 0, color: 'rgba(255,255,255,0.85)', fontSize: 13, lineHeight: 1.5, fontWeight: 500 }}>
+              Para brindarte una atención más rápida, profesional y directa, toda la comunicación y confirmación de pedidos se gestiona desde nuestro nuevo enlace oficial.
+            </p>
+          </div>
+        </div>
+
+        <a
+          href={WHATSAPP_LINK}
+          target="_blank"
+          rel="noreferrer"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 10,
+            background: 'linear-gradient(135deg, #25d366 0%, #1eb954 100%)',
+            color: '#0b141a',
+            fontWeight: 900,
+            fontSize: 14,
+            padding: '13px 26px',
+            borderRadius: 14,
+            textDecoration: 'none',
+            boxShadow: '0 6px 20px rgba(37,211,102,0.45)',
+            whiteSpace: 'nowrap',
+            transition: 'transform 0.15s ease',
+          }}
+        >
+          <FaWhatsapp size={18} /> Chatear al Nuevo WhatsApp
+        </a>
+      </motion.div>
+    </section>
+  );
+}
+
 // ─── CATALOG (platform cards + service tiers) ─────────────────────────────────
 const PLATFORM_CARDS = [
   { id:'instagram', label:'INSTAGRAM', icon:'/instagram-3d.png', available:true },
   { id:'tiktok',    label:'TIKTOK',    icon:'/tiktok-3d.png', available:true },
-  { id:'youtube',   label:'YOUTUBE',   icon:'/youtube-3d.png', available:true },
   { id:'facebook',  label:'FACEBOOK',  icon:'/facebook-3d.png', available:true },
+  { id:'youtube',   label:'YOUTUBE',   icon:'/youtube-3d.png', available:true },
   { id:'google',    label:'GOOGLE REVIEWS', icon:'/google-reviews-3d.png', available:false },
   { id:'ingresos',  label:'GENERÁ INGRESOS', icon:'/genera-ingresos-3d.png', available:false },
 ];
@@ -1206,31 +1265,71 @@ const PLATFORM_CARDS = [
 function ServiceTierView({ service }: { service: ServiceGroup }) {
   const { add, currency } = useCart();
   const [addedTier, setAddedTier] = useState<string|null>(null);
+  
   const handleAdd = (tier: ServiceTier, price: number) => {
     const name = service.subtitle ? `${service.name} — ${service.subtitle}` : service.name;
     add({ id:`${service.id}-${tier.tierQty}`, serviceName:name, tierQty:tier.tierQty, price });
     setAddedTier(tier.tierQty);
     setTimeout(()=>setAddedTier(null), 1500);
   };
+
+  const name = service.subtitle ? `${service.name} (${service.subtitle})` : service.name;
+
   return (
-    <div style={{ background:'#fff', borderRadius:20, overflow:'hidden', border:'1px solid rgba(141,44,255,.08)', boxShadow:'0 4px 20px rgba(118,40,240,.07)' }}>
-      <div style={{ padding:'20px 20px 14px', textAlign:'center', borderBottom:'1px solid rgba(141,44,255,.06)' }}>
-        <div style={{ fontSize:32, marginBottom:10 }}>{service.icon}</div>
+    <div style={{ background:'#fff', borderRadius:20, overflow:'hidden', border:'1px solid rgba(141,44,255,.08)', boxShadow:'0 4px 20px rgba(118,40,240,.07)', display:'flex', flexDirection:'column' }}>
+      <div style={{ padding:'20px 20px 14px', textAlign:'center', borderBottom:'1px solid rgba(141,44,255,.06)', background:'linear-gradient(180deg, #fdfcff 0%, #fff 100%)' }}>
+        <div style={{ fontSize:30, marginBottom:8 }}>{service.icon}</div>
         <h3 style={{ fontWeight:900, fontSize:17, color:'#121212', margin:0 }}>{service.name}</h3>
-        {service.subtitle && <p style={{ fontWeight:700, fontSize:10, color:'#7628f0', margin:'4px 0 0', textTransform:'uppercase', letterSpacing:'0.1em' }}>{service.subtitle}</p>}
+        {service.subtitle && <p style={{ fontWeight:700, fontSize:10, color:'#7628f0', margin:'4px 0 0', textTransform:'uppercase', letterSpacing:'0.08em' }}>{service.subtitle}</p>}
       </div>
-      <div style={{ padding:14, display:'flex', flexDirection:'column', gap:8 }}>
+      
+      {/* Features preview */}
+      {service.features && service.features.length > 0 && (
+        <div style={{ padding:'10px 16px', background:'#faf9fd', borderBottom:'1px solid rgba(141,44,255,.04)' }}>
+          {service.features.map((f, idx) => (
+            <div key={idx} style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, color:'#6d6282', lineHeight:1.4, margin:'2px 0' }}>
+              <span style={{ color:'#7628f0', fontWeight:800 }}>✓</span>
+              <span>{f}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div style={{ padding:14, display:'flex', flexDirection:'column', gap:8, flex:1 }}>
         {service.tiers.map((tier,i)=>{
           const price = getPrice(service.id, i, tier.price, currency);
+          const quickWaText = `¡Hola! Quiero pedir el servicio:\n• ${name} — Cantidad: ${tier.tierQty}\n• Precio: ${CURRENCY_SYMBOLS[currency]}${price.toLocaleString("es-AR")} ${currency}`;
+          const quickWaUrl = getWhatsAppUrl(quickWaText);
+
           return (
-            <div key={tier.tierQty} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:10, padding:'10px 14px', borderRadius:12, background:'#f9fafb', border:'1.5px solid transparent' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <span style={{ fontWeight:800, fontSize:15, color:'#121212' }}>{tier.tierQty}</span>
-                {tier.discount && <span style={{ fontSize:9, fontWeight:800, padding:'3px 7px', borderRadius:6, background:'#fee2e2', color:'#dc2626', textTransform:'uppercase' }}>{tier.discount}</span>}
+            <div key={tier.tierQty} style={{
+              display:'flex', alignItems:'center', justifyContent:'space-between', gap:8,
+              padding:'10px 12px', borderRadius:12,
+              background: tier.popular ? '#fcf9ff' : '#f9fafb',
+              border: tier.popular ? '1.5px solid #d8b4fe' : '1px solid #f0f0f4',
+              transition:'all 0.15s'
+            }}>
+              <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+                  <span style={{ fontWeight:800, fontSize:15, color:'#121212' }}>{tier.tierQty}</span>
+                  {tier.popular && <span style={{ fontSize:9, fontWeight:800, padding:'2px 6px', borderRadius:6, background:'#fae8ff', color:'#a855f7', textTransform:'uppercase' }}>Popular</span>}
+                  {tier.label && !tier.popular && <span style={{ fontSize:9, fontWeight:700, padding:'2px 6px', borderRadius:6, background:'#f3f4f6', color:'#4b5563', textTransform:'uppercase' }}>{tier.label}</span>}
+                  {tier.discount && <span style={{ fontSize:9, fontWeight:800, padding:'2px 6px', borderRadius:6, background:'#fee2e2', color:'#dc2626', textTransform:'uppercase' }}>{tier.discount}</span>}
+                </div>
               </div>
-              <div style={{ display:'flex', alignItems:'center', gap:10, flexShrink:0 }}>
-                <span style={{ fontWeight:900, fontSize:15, color:'#121212' }}>{CURRENCY_SYMBOLS[currency]}{price.toLocaleString("es-AR")}</span>
-                <button onClick={()=>handleAdd(tier, price)}
+              <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+                <span style={{ fontWeight:900, fontSize:15, color:'#7628f0', letterSpacing:'-0.3px' }}>
+                  {CURRENCY_SYMBOLS[currency]}{price.toLocaleString("es-AR")}
+                </span>
+                
+                {/* Direct WhatsApp request button */}
+                <a href={quickWaUrl} target="_blank" rel="noopener noreferrer" title="Pedir directo por WhatsApp"
+                  style={{ width:34, height:34, borderRadius:10, border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', background:'#22c55e', color:'#fff', boxShadow:'0 3px 10px rgba(34,197,94,.3)', textDecoration:'none' }}>
+                  <FaWhatsapp size={16}/>
+                </a>
+
+                {/* Add to cart button */}
+                <button onClick={()=>handleAdd(tier, price)} title="Agregar al carrito"
                   style={{ width:34, height:34, borderRadius:10, border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', transition:'all 0.2s', background: addedTier===tier.tierQty?'#22c55e':'linear-gradient(135deg,#7f1fff,#bf5bff)', color:'#fff', boxShadow: addedTier===tier.tierQty?'0 4px 12px rgba(34,197,94,.35)':'0 4px 12px rgba(127,31,255,.3)' }}>
                   {addedTier===tier.tierQty ? <CheckCircle2 size={16}/> : <Plus size={16}/>}
                 </button>
@@ -1244,236 +1343,193 @@ function ServiceTierView({ service }: { service: ServiceGroup }) {
 }
 
 function Catalog() {
-  const [activePlatform, setActivePlatform] = useState<string|null>(null);
+  const [activePlatform, setActivePlatform] = useState<string>("instagram");
+  const { currency, setCurrency } = useCart();
 
-  const filteredServices = activePlatform
-    ? SERVICE_GROUPS.filter(s => s.category === activePlatform)
-    : [];
+  const filteredServices = SERVICE_GROUPS.filter(s => s.category === activePlatform);
+
+  const platforms = [
+    { id: 'instagram', label: 'Instagram', icon: <Instagram size={17} /> },
+    { id: 'tiktok',    label: 'TikTok',    icon: <FaTiktok size={15} /> },
+    { id: 'facebook',  label: 'Facebook',  icon: <FaFacebook size={16} /> },
+    { id: 'youtube',   label: 'YouTube',   icon: <Youtube size={17} /> },
+    { id: 'spotify',   label: 'Spotify',   icon: <FaSpotify size={16} /> },
+  ];
 
   return (
-    <section id="catalogo" style={{ background:'linear-gradient(180deg,#f9fafb 0%,#f3f3f6 100%)' }}>
-      {/* Section header */}
-      <div style={{ maxWidth:1200, margin:'0 auto', padding:'60px 24px 48px', textAlign:'center' }}>
-        <motion.div initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}>
-          <div style={{ display:'inline-block', padding:'5px 18px', borderRadius:20, background:'rgba(118,40,240,.1)', border:'1px solid rgba(118,40,240,.15)', marginBottom:18 }}>
-            <span style={{ fontWeight:700, fontSize:11, color:'#7628f0', textTransform:'uppercase', letterSpacing:'0.1em' }}>COLECCIONES</span>
-          </div>
-          <h2 style={{ fontWeight:900, fontSize:'clamp(26px,3.5vw,50px)', color:'#121212', margin:'0 0 14px', letterSpacing:'-1px' }}>
-            Seleccioná la plataforma que querés potenciar
-          </h2>
-          <p style={{ fontSize:15, color:'#6d6282', margin:0, fontWeight:500, maxWidth:540, marginLeft:'auto', marginRight:'auto' }}>
-            Explorá nuestras líneas de servicios y elegí la solución que mejor se adapta a tu presencia digital.
-          </p>
-        </motion.div>
-      </div>
+    <section id="catalogo" style={{ background:'linear-gradient(180deg,#f9fafb 0%,#f3f3f6 100%)', padding:'40px 0 60px' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 24px' }}>
 
-      {/* Platform grid */}
-      <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 24px 40px' }}>
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(200px, 1fr))', gap:20 }}>
-          {PLATFORM_CARDS.map((p,i)=>(
-            <motion.div key={p.id} initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*.07 }}>
-              <button onClick={()=>{ 
-                  if(p.available) {
-                    const isActivating = activePlatform !== p.id;
-                    setActivePlatform(isActivating ? p.id : null); 
-                    if(isActivating) {
-                      setTimeout(() => {
-                        document.getElementById('services-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }, 50);
-                    }
-                  }
+        {/* Section title */}
+        <div style={{ textAlign:'center', marginBottom:28 }}>
+          <motion.div initial={{ opacity:0, y:15 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}>
+            <div style={{ display:'inline-block', padding:'5px 18px', borderRadius:20, background:'rgba(118,40,240,.1)', border:'1px solid rgba(118,40,240,.15)', marginBottom:12 }}>
+              <span style={{ fontWeight:700, fontSize:11, color:'#7628f0', textTransform:'uppercase', letterSpacing:'0.1em' }}>CATÁLOGO Y PRECIOS</span>
+            </div>
+            <h2 style={{ fontWeight:900, fontSize:'clamp(26px,3.5vw,44px)', color:'#121212', margin:'0 0 10px', letterSpacing:'-1px' }}>
+              Servicios Disponibles y Precios
+            </h2>
+            <p style={{ fontSize:15, color:'#6d6282', margin:0, fontWeight:500, maxWidth:580, marginLeft:'auto', marginRight:'auto' }}>
+              Accedé a precios transparentes y actualizados en tu moneda local. Hacé tu pedido por la web o directo por WhatsApp.
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Fast Currency Selector Bar */}
+        <div style={{
+          background: '#fff',
+          borderRadius: 20,
+          padding: '18px 22px',
+          boxShadow: '0 4px 24px rgba(118,40,240,.06)',
+          border: '1px solid rgba(141,44,255,.1)',
+          marginBottom: 24,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          gap: 12,
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#4b5563' }}>
+            <Globe size={16} color="#7628f0" />
+            <span>Seleccioná tu moneda para calcular los precios automáticamente:</span>
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
+            {CURRENCY_LIST.map(c => {
+              const isSelected = currency === c.code;
+              return (
+                <button
+                  key={c.code}
+                  onClick={() => setCurrency(c.code)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: 24,
+                    border: isSelected ? '1.5px solid #7628f0' : '1px solid #e5e7eb',
+                    background: isSelected ? 'linear-gradient(135deg,#7f1fff,#9c34ff)' : '#f9fafb',
+                    color: isSelected ? '#fff' : '#1f2937',
+                    fontWeight: 800,
+                    fontSize: 13,
+                    cursor: 'pointer',
+                    fontFamily: 'Poppins, sans-serif',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    boxShadow: isSelected ? '0 4px 14px rgba(118,40,240,.35)' : 'none',
+                    transition: 'all 0.15s ease',
+                  }}
+                >
+                  <span>{c.flag}</span>
+                  <span>{c.code}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Platform Tabs Selector */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          gap: 8,
+          flexWrap: 'wrap',
+          marginBottom: 28,
+        }}>
+          {platforms.map(p => {
+            const isActive = activePlatform === p.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => setActivePlatform(p.id)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '12px 22px',
+                  borderRadius: 14,
+                  border: isActive ? '2px solid #7628f0' : '1px solid rgba(0,0,0,0.06)',
+                  background: isActive ? '#fff' : '#f0eef6',
+                  color: isActive ? '#7628f0' : '#4b5563',
+                  fontWeight: 800,
+                  fontSize: 14,
+                  cursor: 'pointer',
+                  fontFamily: 'Poppins, sans-serif',
+                  boxShadow: isActive ? '0 8px 24px rgba(118,40,240,.18)' : 'none',
+                  transition: 'all 0.2s',
                 }}
-                style={{ width:'100%', background:'#fff', borderRadius:20, padding:'32px 20px 24px', border: activePlatform===p.id?'2px solid #7628f0':'2px solid transparent', boxShadow: activePlatform===p.id?'0 8px 30px rgba(118,40,240,.2)':'0 4px 16px rgba(118,40,240,.07)', cursor:p.available?'pointer':'default', transition:'all 0.25s', display:'flex', flexDirection:'column', alignItems:'center', gap:14, textAlign:'center', fontFamily:'Poppins,sans-serif' }}>
-                <img src={p.icon} alt={p.label} style={{ width: 100, height: 100, objectFit: 'contain', filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.1))' }} />
-                <strong style={{ fontWeight:900, fontSize:15, color:'#121212', letterSpacing:'0.04em' }}>{p.label}</strong>
+              >
+                <span>{p.icon}</span>
+                <span>{p.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Platform visual 3D cards row */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(180px, 1fr))', gap:14, marginBottom: 36 }}>
+          {PLATFORM_CARDS.map((p) => {
+            const isActive = activePlatform === p.id;
+            return (
+              <button
+                key={p.id}
+                onClick={() => {
+                  if (p.available) setActivePlatform(p.id);
+                }}
+                style={{
+                  background: '#fff',
+                  borderRadius: 16,
+                  padding: '18px 14px',
+                  border: isActive ? '2px solid #7628f0' : '1px solid rgba(141,44,255,.08)',
+                  boxShadow: isActive ? '0 8px 24px rgba(118,40,240,.2)' : '0 2px 10px rgba(0,0,0,.03)',
+                  cursor: p.available ? 'pointer' : 'default',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 8,
+                  opacity: p.available ? 1 : 0.6,
+                  transition: 'all 0.2s',
+                  fontFamily: 'Poppins, sans-serif',
+                }}
+              >
+                <img src={p.icon} alt={p.label} style={{ width: 56, height: 56, objectFit: 'contain' }} />
+                <span style={{ fontWeight: 800, fontSize: 13, color: '#121212' }}>{p.label}</span>
                 {p.available ? (
-                  <div style={{ padding:'10px 28px', borderRadius:8, background: activePlatform===p.id?'linear-gradient(135deg,#7f1fff,#bf5bff)':'linear-gradient(135deg,#7f1fff,#bf5bff)', color:'#fff', fontWeight:800, fontSize:12, letterSpacing:'0.08em', textTransform:'uppercase' }}>
-                    {activePlatform===p.id?'CERRAR':'EXPLORAR'}
-                  </div>
+                  <span style={{
+                    fontSize: 10,
+                    fontWeight: 800,
+                    color: isActive ? '#7628f0' : '#9a92a8',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                  }}>
+                    {isActive ? '● Seleccionado' : 'Ver servicios'}
+                  </span>
                 ) : (
-                  <div style={{ padding:'10px 28px', borderRadius:8, background:'#ececec', color:'#9a92a8', fontWeight:700, fontSize:12, letterSpacing:'0.08em', textTransform:'uppercase' }}>
-                    PRÓXIMAMENTE
-                  </div>
+                  <span style={{ fontSize: 10, fontWeight: 700, color: '#9a92a8' }}>Próximamente</span>
                 )}
               </button>
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
-      </div>
 
-      {/* Service tiers for selected platform */}
-      {activePlatform && filteredServices.length > 0 && (
-        <div id="services-grid" style={{ background:'#fff', borderTop:'1px solid rgba(118,40,240,.08)' }}>
-          <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 24px 60px' }}>
-            <h3 style={{ fontWeight:900, fontSize:22, color:'#121212', marginBottom:28, letterSpacing:'-0.5px' }}>
-              Servicios de {PLATFORM_CARDS.find(p=>p.id===activePlatform)?.label}
+        {/* Services Grid (Always visible for activePlatform!) */}
+        <div id="services-grid">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
+            <h3 style={{ fontWeight: 900, fontSize: 22, color: '#121212', margin: 0 }}>
+              Servicios de {PLATFORM_CARDS.find(p => p.id === activePlatform)?.label || activePlatform.toUpperCase()}
             </h3>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:20 }}>
-              {filteredServices.map(s => <ServiceTierView key={s.id} service={s}/>)}
-            </div>
+            <span style={{ fontSize: 12, fontWeight: 700, color: '#7628f0', background: '#f6f2ff', padding: '6px 14px', borderRadius: 20 }}>
+              Precios en {currency} ({CURRENCY_SYMBOLS[currency]})
+            </span>
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(290px, 1fr))', gap:20 }}>
+            {filteredServices.map(s => <ServiceTierView key={s.id} service={s}/>)}
           </div>
         </div>
-      )}
-    </section>
-  );
-}
 
-// ─── PROMOS VIGENTES ────────────────────────────────────────────────────────────
-const IG_PACKS = [
-  {
-    name: 'Pack Avanzado',
-    emoji: '🚀',
-    popular: false,
-    highlight: 'MÁS POTENTE',
-    desc: '10.000 seguidores global economics + 1.500 likes',
-    prices: { ARS: '$40.000', UYU: '$1.160 UYU', MXN: '$640 MXN', COP: '$153.000 COP', BRL: 'R$ 167', USD: 'US$ 31,50', EUR: '€ 27,20' },
-  },
-  {
-    name: 'Pack Intermedio',
-    emoji: '⚡',
-    popular: true,
-    highlight: 'MÁS ELEGIDO',
-    desc: '5.000 seguidores economics + 1.500 likes',
-    prices: { ARS: '$27.000', UYU: '$783 UYU', MXN: '$320 MXN', COP: '$58.000 COP', BRL: 'R$ 92', USD: 'US$ 18,06', EUR: '€ 15,66' },
-  },
-  {
-    name: 'Pack Básico',
-    emoji: '💜',
-    popular: false,
-    highlight: 'BUENA ENTRADA',
-    desc: '3.000 seguidores economics + 1.000 likes',
-    prices: { ARS: '$20.000', UYU: '$493 UYU', MXN: '$234 MXN', COP: '$65.400 COP', BRL: 'R$ 69', USD: 'US$ 13,38', EUR: '€ 11,56' },
-  },
-  {
-    name: 'Pack Inicial',
-    emoji: '✨',
-    popular: false,
-    highlight: 'PARA EMPEZAR',
-    desc: '1.000 seguidores economics + 1.000 likes',
-    prices: { ARS: '$10.500', UYU: '$305 UYU', MXN: '$121 MXN', COP: '$22.400 COP', BRL: 'R$ 36,00', USD: 'US$ 7,02', EUR: '€ 6,17' },
-  },
-];
-
-const FLAG_LABELS: Record<string, string> = {
-  ARS: '🇦🇷 ARS',
-  UYU: '🇺🇾 UYU',
-  MXN: '🇲🇽 MXN',
-  COP: '🇨🇴 COP',
-  BRL: '🇧🇷 BRL',
-  USD: '🇺🇸 USD',
-  EUR: '🇪🇺 EUR',
-};
-
-function PromosVigentes() {
-  const [activeCurrency, setActiveCurrency] = useState<string>('ARS');
-  const currencies = Object.keys(FLAG_LABELS);
-
-  return (
-    <section id="promos-vigentes" style={{
-      padding: '72px 24px 80px',
-      background: `radial-gradient(ellipse at 20% 50%, rgba(127,31,255,.22) 0%, transparent 50%),
-                   radial-gradient(ellipse at 80% 20%, rgba(200,80,255,.16) 0%, transparent 45%),
-                   linear-gradient(160deg, #0d0020 0%, #1a003a 50%, #0d0020 100%)`,
-    }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
-
-        {/* Header */}
-        <motion.div initial={{ opacity:0, y:24 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}
-          style={{ textAlign:'center', marginBottom:48 }}>
-          <div style={{ display:'inline-flex', alignItems:'center', gap:8, padding:'7px 20px', borderRadius:24,
-            background:'linear-gradient(135deg,rgba(255,80,0,.15),rgba(255,200,0,.1))',
-            border:'1px solid rgba(255,160,0,.35)', marginBottom:18 }}>
-            <span style={{ fontSize:16 }}>🔥</span>
-            <span style={{ fontWeight:800, fontSize:11, color:'#ffb347', textTransform:'uppercase', letterSpacing:'0.14em' }}>PROMOS VIGENTES — INSTAGRAM</span>
-            <span style={{ fontSize:16 }}>🔥</span>
-          </div>
-          <h2 style={{ fontWeight:900, fontSize:'clamp(28px,4vw,52px)', color:'#fff', margin:'0 0 14px', letterSpacing:'-1.5px', lineHeight:1.05 }}>
-            Packs combinados con <span style={{ background:'linear-gradient(135deg,#bf5bff,#ff6ef7)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>descuento</span>
-          </h2>
-          <p style={{ fontSize:15, color:'rgba(255,255,255,.7)', maxWidth:560, margin:'0 auto 28px', lineHeight:1.7, fontWeight:500 }}>
-            Combiná seguidores + likes a un precio especial. Elegí tu moneda y consultanos por WhatsApp.
-          </p>
-
-          {/* Currency pills */}
-          <div style={{ display:'flex', flexWrap:'wrap', justifyContent:'center', gap:8 }}>
-            {currencies.map(c => (
-              <button key={c} onClick={() => setActiveCurrency(c)}
-                style={{ padding:'7px 16px', borderRadius:24, border:`1.5px solid ${activeCurrency===c ? '#bf5bff' : 'rgba(255,255,255,.15)'}`,
-                  background: activeCurrency===c ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : 'rgba(255,255,255,.06)',
-                  color:'#fff', fontWeight:700, fontSize:12, cursor:'pointer', fontFamily:'Poppins,sans-serif',
-                  transition:'all .18s', boxShadow: activeCurrency===c ? '0 4px 18px rgba(127,31,255,.4)' : 'none' }}>
-                {FLAG_LABELS[c]}
-              </button>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* Cards */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(250px, 1fr))', gap:20 }}>
-          {IG_PACKS.map((pack, i) => (
-            <motion.div key={pack.name}
-              initial={{ opacity:0, y:28 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }} transition={{ delay:i*.08 }}
-              style={{ position:'relative', borderRadius:24, overflow:'hidden',
-                border: pack.popular ? '2px solid #bf5bff' : '1px solid rgba(255,255,255,.1)',
-                background: pack.popular
-                  ? 'linear-gradient(150deg,rgba(127,31,255,.25),rgba(190,91,255,.12))'
-                  : 'rgba(255,255,255,.05)',
-                backdropFilter:'blur(8px)',
-                boxShadow: pack.popular ? '0 12px 48px rgba(127,31,255,.35)' : '0 4px 24px rgba(0,0,0,.25)',
-                padding:'28px 24px 24px' }}>
-
-              {pack.popular && (
-                <div style={{ position:'absolute', top:0, left:0, right:0, height:3, background:'linear-gradient(90deg,#7f1fff,#ff6ef7)' }}/>
-              )}
-
-              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:12 }}>
-                <span style={{ fontSize:28 }}>{pack.emoji}</span>
-                <span style={{ fontSize:10, fontWeight:800, letterSpacing:'0.12em', textTransform:'uppercase',
-                  padding:'4px 12px', borderRadius:12,
-                  background: pack.popular ? 'rgba(191,91,255,.3)' : 'rgba(255,255,255,.1)',
-                  color: pack.popular ? '#e8b4ff' : 'rgba(255,255,255,.7)' }}>
-                  {pack.highlight}
-                </span>
-              </div>
-
-              <h3 style={{ fontWeight:900, fontSize:20, color:'#fff', margin:'0 0 8px', letterSpacing:'-0.5px' }}>{pack.name}</h3>
-              <p style={{ fontSize:13, color:'rgba(255,255,255,.65)', margin:'0 0 20px', lineHeight:1.6, fontWeight:500 }}>{pack.desc}</p>
-
-              <div style={{ background:'rgba(0,0,0,.25)', borderRadius:14, padding:'14px 16px', marginBottom:20 }}>
-                <div style={{ fontSize:11, fontWeight:700, color:'rgba(255,255,255,.45)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:8 }}>Precio en {FLAG_LABELS[activeCurrency]}</div>
-                <div style={{ fontWeight:900, fontSize:28, color:'#fff', letterSpacing:'-1px' }}>
-                  {pack.prices[activeCurrency as keyof typeof pack.prices]}
-                </div>
-              </div>
-
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:6 }}>
-                {Object.entries(pack.prices).filter(([c]) => c !== activeCurrency).map(([c, val]) => (
-                  <div key={c} style={{ fontSize:11, color:'rgba(255,255,255,.5)', fontWeight:600 }}>
-                    {FLAG_LABELS[c]}: <span style={{ color:'rgba(255,255,255,.75)' }}>{val}</span>
-                  </div>
-                ))}
-              </div>
-
-              <a href={`https://wa.me/5491161789518?text=${encodeURIComponent(`Hola! Quiero el ${pack.name} de Instagram (${pack.desc}) — Precio: ${pack.prices[activeCurrency as keyof typeof pack.prices]} ${activeCurrency}`)}`}
-                target="_blank" rel="noreferrer"
-                style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:8, marginTop:20,
-                  padding:'12px', borderRadius:14, textDecoration:'none',
-                  background: pack.popular ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : 'rgba(127,31,255,.35)',
-                  color:'#fff', fontWeight:700, fontSize:13, border: pack.popular ? 'none' : '1px solid rgba(127,31,255,.5)',
-                  boxShadow: pack.popular ? '0 6px 24px rgba(127,31,255,.4)' : 'none',
-                  transition:'all .18s' }}>
-                <FaWhatsapp size={16}/>
-                Consultar por WhatsApp
-              </a>
-            </motion.div>
-          ))}
-        </div>
       </div>
     </section>
   );
 }
 
-// ─── BENEFITS (Prueba Social - purple dark) ───────────────────────────────────
+// ─── BENEFITS (Prueba Social) ─────────────────────────────────────────────────
 function Benefits() {
   const benefits = [
     { icon:'⚡', title:'Primera impresión sólida', desc:'Un perfil con buenos números transmite más actividad, presencia y autoridad.' },
@@ -1520,9 +1576,9 @@ function Benefits() {
 // ─── HOW IT WORKS ─────────────────────────────────────────────────────────────
 function HowItWorks() {
   const steps = [
-    { num:'01', title:'Elegí tu servicio', desc:'Navegá el catálogo, encontrá el servicio y agregalo al carrito.' },
-    { num:'02', title:'Enviá tu pedido', desc:'Hacé clic en Pagar Ahora. Te abrimos WhatsApp con los datos listos.' },
-    { num:'03', title:'Confirmás y empezamos', desc:'Abonás por transferencia y activamos el servicio al instante.' },
+    { num:'01', title:'Elegí tu servicio', desc:'Navegá el catálogo y seleccioná el paquete que querés potenciar.' },
+    { num:'02', title:'Hacé tu pedido', desc:'Agregalo al carrito o hacé clic en el botón de WhatsApp directo.' },
+    { num:'03', title:'Confirmamos y activamos', desc:'Abonás en tu moneda (transferencia en ARS o coordinás por WhatsApp) y activamos al instante.' },
   ];
   return (
     <section id="como-funciona" style={{ padding:'80px 24px', background:'#fff' }}>
@@ -1640,14 +1696,16 @@ function Testimonials() {
     </section>
   );
 }
+
+// ─── FAQ ──────────────────────────────────────────────────────────────────────
 function FAQ() {
   const [openIdx, setOpenIdx] = useState<number|null>(null);
   const faqs = [
     { q:'¿Es seguro para mi cuenta?', a:'Sí. Nunca pedimos tu contraseña. Solo necesitamos el link o nombre de usuario de tu perfil.' },
-    { q:'¿Cuánto tarda en llegar?', a:'La mayoría comienzan en menos de 30 minutos. Algunos pueden demorar hasta 24hs.' },
-    { q:'¿Los seguidores son reales?', a:'Trabajamos con perfiles activos para mayor autenticidad y retención.' },
-    { q:'¿Ofrecen garantía?', a:'Sí. Si bajan dentro del período garantizado, los reponemos sin cargo adicional.' },
-    { q:'¿Cómo pago?', a:'Transferencia bancaria en Pesos ARS o Dólares USD. Los datos se muestran al confirmar.' },
+    { q:'¿Cuánto tarda en llegar?', a:'La mayoría de los pedidos comienzan en menos de 30 minutos. Algunos pueden demorar entre 12 y 24hs según el volumen.' },
+    { q:'¿Los seguidores son reales?', a:'Trabajamos con perfiles activos y de alta calidad para mayor autenticidad y excelente retención.' },
+    { q:'¿Ofrecen garantía de reposición?', a:'Sí. Si experimentás alguna baja dentro del período garantizado, los reponemos sin cargo adicional.' },
+    { q:'¿Cuáles son los medios de pago disponibles?', a:'En Argentina podés abonar por transferencia bancaria (Naranja X / Alias / CBU). Para el resto del mundo (USD, EUR, CLP, COP, MXN, UYU, BRL) coordinamos el pago directo por WhatsApp vía Binance USDT, PayPal o tarjetas.' },
   ];
   return (
     <section id="faq" style={{ padding:'80px 24px', background:'#f9fafb' }}>
@@ -1683,7 +1741,7 @@ function FAQ() {
 // ─── FLOATING WHATSAPP ────────────────────────────────────────────────────────
 function FloatingWhatsApp() {
   return (
-    <a href={`https://wa.me/${WHATSAPP_NUMBER}`} target="_blank" rel="noreferrer"
+    <a href={WHATSAPP_LINK} target="_blank" rel="noreferrer"
       style={{ position:'fixed', bottom:24, right:24, zIndex:50, display:'flex', alignItems:'center', gap:10, background:'#fff', padding:'12px 20px', borderRadius:50, boxShadow:'0 8px 32px rgba(18,0,61,.15)', textDecoration:'none', border:'1px solid rgba(141,44,255,.06)' }}>
       <div style={{ width:32, height:32, borderRadius:'50%', background:'#25d366', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
         <FaWhatsapp size={17} color="#fff"/>
@@ -1701,7 +1759,7 @@ function Home() {
       <div style={{ paddingTop:117 }}>
         <Hero/>
         <StatsBar/>
-        <PromosVigentes/>
+        <WhatsAppNoticeBanner/>
         <Catalog/>
         <Benefits/>
         <HowItWorks/>
