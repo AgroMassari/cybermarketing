@@ -251,7 +251,7 @@ export function ProductDetailView({
                 zIndex: 2,
               }}
             >
-              Al comprar {subService.name.toLowerCase()} vas a recibir perfiles con actividad real y entrega garantizada
+              Al comprar {subService.name.toLowerCase()} vas a recibir perfiles de alta calidad y entrega garantizada
             </p>
             <span
               style={{
@@ -325,11 +325,26 @@ export function ProductDetailView({
 
             {/* Quality / Variation Tabs (if multiple available) */}
             {matchingGroups.length > 1 && (
-              <div>
-                <p style={{ fontSize: 11, fontWeight: 800, color: "#6d6282", textTransform: "uppercase", letterSpacing: "0.08em", margin: "0 0 8px" }}>
-                  TIPO DE SERVICIO / CALIDAD:
-                </p>
-                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div style={{
+                background: "#fdfcff",
+                border: "1.5px solid rgba(141,44,255,.14)",
+                borderRadius: 20,
+                padding: "16px",
+                boxShadow: "0 4px 20px rgba(118,40,240,.04)"
+              }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                  <span style={{ fontSize: 12, fontWeight: 900, color: "#121212", textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    ⭐ TIPO DE SERVICIO / CALIDAD:
+                  </span>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "#7628f0" }}>
+                    Elegí tu opción preferida
+                  </span>
+                </div>
+                <div style={{
+                  display: "grid",
+                  gridTemplateColumns: `repeat(auto-fit, minmax(${matchingGroups.length === 3 ? "130px" : "160px"}, 1fr))`,
+                  gap: 10,
+                }}>
                   {matchingGroups.map(g => {
                     const isSelected = g.id === selectedGroupId;
                     const tabLabel = g.subtitle || g.name;
@@ -339,28 +354,47 @@ export function ProductDetailView({
                         type="button"
                         onClick={() => {
                           setSelectedGroupId(g.id);
-                          // reset tier index if out of bounds
                           if (selectedTierIndex >= g.tiers.length) {
                             setSelectedTierIndex(0);
                           }
                         }}
                         style={{
-                          padding: "9px 18px",
-                          borderRadius: 14,
-                          fontWeight: 800,
-                          fontSize: 12,
+                          padding: "14px 12px",
+                          borderRadius: 16,
+                          fontWeight: 900,
+                          fontSize: 13,
                           cursor: "pointer",
                           fontFamily: "Poppins, sans-serif",
-                          letterSpacing: "0.05em",
+                          letterSpacing: "0.04em",
                           textTransform: "uppercase",
-                          border: isSelected ? "2px solid #7628f0" : "1px solid #e5e7eb",
-                          background: isSelected ? "linear-gradient(135deg, #7f1fff, #9c34ff)" : "#f9fafb",
-                          color: isSelected ? "#fff" : "#4b5563",
-                          boxShadow: isSelected ? "0 4px 16px rgba(118,40,240,.3)" : "none",
-                          transition: "all 0.15s ease",
+                          border: isSelected ? "2.5px solid #7628f0" : "2px solid #e5e7eb",
+                          background: isSelected ? "linear-gradient(135deg, #7f1fff 0%, #9c34ff 100%)" : "#ffffff",
+                          color: isSelected ? "#ffffff" : "#1f2937",
+                          boxShadow: isSelected ? "0 8px 24px rgba(118,40,240,.35)" : "0 2px 8px rgba(0,0,0,.03)",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 6,
+                          textAlign: "center",
+                          transition: "all 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
+                          transform: isSelected ? "scale(1.02)" : "scale(1)",
                         }}
                       >
-                        {tabLabel}
+                        <span style={{
+                          fontSize: 10,
+                          fontWeight: 800,
+                          padding: "2px 8px",
+                          borderRadius: 8,
+                          background: isSelected ? "rgba(255,255,255,0.22)" : "#f3f4f6",
+                          color: isSelected ? "#ffffff" : "#6b7280",
+                          letterSpacing: "0.06em",
+                        }}>
+                          {isSelected ? "✓ SELECCIONADO" : "OPCIÓN"}
+                        </span>
+                        <span style={{ fontSize: 13, fontWeight: 900, lineHeight: 1.25 }}>
+                          {tabLabel}
+                        </span>
                       </button>
                     );
                   })}
@@ -528,37 +562,31 @@ export function ProductDetailView({
             </div>
 
             {/* Checkbox for Instagram review guide */}
-            {subService.showReviewCheckbox && (
-              <label
+            <label
                 style={{
                   display: "flex",
                   alignItems: "center",
                   gap: 10,
-                  fontSize: 12,
-                  color: "#4b5563",
+                  fontSize: 13,
+                  color: "#1f2937",
                   fontWeight: 600,
                   cursor: "pointer",
+                  padding: "10px 14px",
+                  background: "#f9fafb",
+                  borderRadius: 14,
+                  border: "1.5px solid #e5e7eb",
                 }}
               >
                 <input
                   type="checkbox"
                   checked={reviewCheckbox}
                   onChange={(e) => setReviewCheckbox(e.target.checked)}
-                  style={{ width: 16, height: 16, accentColor: "#7628f0", cursor: "pointer" }}
+                  style={{ width: 17, height: 17, accentColor: "#7628f0", cursor: "pointer" }}
                 />
                 <span>
-                  Desactivar "Marcar para revisión" en Instagram.{" "}
-                  <a
-                    href="https://wa.me/5491166168096?text=Hola,%20cómo%20desactivo%20marcar%20para%20revisión%20en%20Instagram?"
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{ color: "#7628f0", textDecoration: "underline" }}
-                  >
-                    Ver guía &gt;
-                  </a>
+                  Perfil público para la operación / carga
                 </span>
               </label>
-            )}
 
             {/* CTA Buttons */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 4 }}>

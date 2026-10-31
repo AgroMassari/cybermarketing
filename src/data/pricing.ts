@@ -172,13 +172,13 @@ export const PRICING_DATA: Record<string, PricingTable> = {
   // Seguidores TikTok
   // 200 / 500 / 1.000 / 2.500 / 5.000 / 10.000 / 20.000
   "tt-seguidores": {
-    0: { ARS: 6200,   USD: 4.02,  EUR: 3.61,  BRL: 21.51,  MXN: 75,   UYU: 162,  COP: 12700,  CLP: 3982  },
-    1: { ARS: 7900,   USD: 5.12,  EUR: 4.60,  BRL: 27.41,  MXN: 96,   UYU: 206,  COP: 16100,  CLP: 5074  },
-    2: { ARS: 13500,  USD: 8.76,  EUR: 7.86,  BRL: 46.85,  MXN: 163,  UYU: 352,  COP: 27600,  CLP: 8672  },
-    3: { ARS: 24000,  USD: 15.57, EUR: 13.98, BRL: 83.28,  MXN: 290,  UYU: 625,  COP: 49000,  CLP: 15413 },
-    4: { ARS: 43000,  USD: 27.89, EUR: 25.05, BRL: 149.21, MXN: 520,  UYU: 1121, COP: 87800,  CLP: 27615 },
-    5: { ARS: 59000,  USD: 38.27, EUR: 34.36, BRL: 204.73, MXN: 714,  UYU: 1538, COP: 120400, CLP: 37890 },
-    6: { ARS: 103000, USD: 66.81, EUR: 59.99, BRL: 357.41, MXN: 1246, UYU: 2684, COP: 210200, CLP: 66147 },
+    0: { ARS: 7200,   USD: 4.76,  EUR: 4.06,  BRL: 24.35,  MXN: 82.26,   UYU: 192.73,  COP: 15207,   CLP: 4608  },
+    1: { ARS: 9900,   USD: 6.54,  EUR: 5.58,  BRL: 33.48,  MXN: 113.10,  UYU: 264.93,  COP: 20917,   CLP: 6336  },
+    2: { ARS: 14500,  USD: 9.59,  EUR: 8.18,  BRL: 49.05,  MXN: 165.65,  UYU: 388.06,  COP: 30636,   CLP: 9280  },
+    3: { ARS: 26000,  USD: 17.19, EUR: 14.66, BRL: 87.96,  MXN: 297.09,  UYU: 696.05,  COP: 54927,   CLP: 16640 },
+    4: { ARS: 44000,  USD: 29.09, EUR: 24.80, BRL: 148.86, MXN: 502.77,  UYU: 1177.32, COP: 92953,   CLP: 28160 },
+    5: { ARS: 60000,  USD: 39.67, EUR: 33.84, BRL: 203.26, MXN: 685.59,  UYU: 1605.43, COP: 126754,  CLP: 38400 },
+    6: { ARS: 104000, USD: 68.76, EUR: 58.65, BRL: 352.33, MXN: 1188.36, UYU: 2782.75, COP: 219040,  CLP: 66560 },
   },
 
   // Likes TikTok

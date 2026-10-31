@@ -38,7 +38,7 @@ export const SUB_SERVICES: SubServiceDef[] = [
     bonusPercent: 15,
     bonusLabel: "seguidores de regalo",
     stabilityTitle: "MENOS CAÍDAS, MÁS ESTABILIDAD",
-    stabilityDesc: "Seguidores premium y estables · Tasa de caída aproximada: 10% · Inicio: 0 a 72 hs · Carga orgánica: 200/500 seguidores por día · 30 días de reposición garantizada.",
+    stabilityDesc: "Seguidores premium y estables · Tasa de caída aproximada: 10% · Inicio: 0 a 72 hs · 30 días de reposición garantizada.",
     accountLabel: "¿Tu Instagram está listo para crecer?",
     accountPlaceholder: "@tu.cuenta.de.instagram",
     accountHelper: "Escribí tu usuario. No necesitás contraseña.",
