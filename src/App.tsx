@@ -18,11 +18,11 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import { gsap } from "gsap";
 
 // ─── CONTACTO OFICIAL ────────────────────────────────────────────────────────
-export const WHATSAPP_LINK = "https://wa.me/message/R5MZG4Q6O67OG1";
+export const WHATSAPP_LINK = "https://wa.me/5491166168096";
 
 export function getWhatsAppUrl(text?: string): string {
   if (!text) return WHATSAPP_LINK;
-  return `${WHATSAPP_LINK}?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/5491166168096?text=${encodeURIComponent(text)}`;
 }
 
 // ─── DATOS DE PAGO (SOLO TRANSFERENCIA ARGENTINA) ───────────────────────────
@@ -76,11 +76,9 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     id: "ig-seg-latinos",
     category: "instagram",
     name: "Seguidores Instagram",
-    subtitle: "LATINO PREMIUM (CON GARANTÍA)",
+    subtitle: "LATINO PREMIUM",
     features: [
       "Perfiles premium de América Latina",
-      "Garantía: 90 días de recarga gratis",
-      "Entrega: 30 minutos",
     ],
     icon: <Instagram size={16} />,
     tiers: [
@@ -100,7 +98,6 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     features: [
       "Mejorá tu perfil de inmediato",
       "Mejor relación precio/calidad",
-      "30 días de garantía · 1 reposición gratuita ante caída",
     ],
     icon: <Instagram size={16} />,
     tiers: [
@@ -117,10 +114,9 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     id: "ig-seg-vip",
     category: "instagram",
     name: "Seguidores Instagram",
-    subtitle: "PREMIUM VIP (CON GARANTÍA)",
+    subtitle: "PREMIUM VIP",
     features: [
       "Máxima calidad garantizada",
-      "Garantía de recarga extendida",
       "Entrega rápida y segura",
     ],
     icon: <Instagram size={16} />,
@@ -159,7 +155,6 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     subtitle: "PREMIUM",
     features: [
       "Perfiles premium de alta interacción",
-      "Garantía y entrega en 30 minutos",
       "Permanentes",
     ],
     icon: <Heart size={16} />,
@@ -220,7 +215,6 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     features: [
       "Perfiles premium de Argentina",
       "Llegan en todas las historias activas del perfil",
-      "Entrega: 30 minutos",
     ],
     icon: <Eye size={16} />,
     tiers: [
@@ -238,9 +232,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     name: "Comentarios Instagram",
     subtitle: "P/ REELS & POST",
     features: [
-      "Perfiles de diferentes países del mundo",
-      "Garantía: 30 días. Permanentes. Personalizables",
-      "Entrega: 30 minutos",
+      "Perfiles de diferentes países del mundo", "Comentarios permanentes",
     ],
     icon: <MessageCircle size={16} />,
     tiers: [
@@ -258,8 +250,7 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     name: "Compartidas Instagram",
     subtitle: "P/ REELS & POST",
     features: [
-      "Compartidas por DM",
-      "Garantía: 30 días. Permanentes",
+      "Compartidas por DM", "Permanentes",
       "Entrega: 2 hs",
     ],
     icon: <Send size={16} />,
@@ -390,7 +381,6 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     groupPopular: true,
     features: [
       "Crecimiento real de tu canal",
-      "30 días de garantía",
       "Sin contraseña",
     ],
     icon: <Youtube size={16} />,
@@ -452,7 +442,6 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     features: [
       "Para videos y shorts de YouTube",
       "Hasta 20% OFF en paquetes grandes",
-      "Entrega: 30 minutos",
     ],
     icon: <Heart size={16} />,
     tiers: [
@@ -512,7 +501,6 @@ const SERVICE_GROUPS: ServiceGroup[] = [
     features: [
       "Comentarios personalizables",
       "Para videos de YouTube",
-      "Entrega: 30 minutos",
     ],
     icon: <MessageCircle size={16} />,
     tiers: [
@@ -1747,9 +1735,9 @@ function FAQ() {
   const [openIdx, setOpenIdx] = useState<number|null>(null);
   const faqs = [
     { q:'¿Es seguro para mi cuenta?', a:'Sí. Nunca pedimos tu contraseña. Solo necesitamos el link o nombre de usuario de tu perfil.' },
-    { q:'¿Cuánto tarda en llegar?', a:'La mayoría de los pedidos comienzan en menos de 30 minutos. Algunos pueden demorar entre 12 y 24hs según el volumen.' },
+    { q:'¿Cuánto tarda en llegar?', a:'La mayoría de los pedidos comienzan a procesarse de forma rápida una vez confirmado el pago. Algunos pueden demorar entre 12 y 24hs según el volumen.' },
     { q:'¿Los seguidores son reales?', a:'Trabajamos con perfiles activos y de alta calidad para mayor autenticidad y excelente retención.' },
-    { q:'¿Ofrecen garantía de reposición?', a:'Sí. Si experimentás alguna baja dentro del período garantizado, los reponemos sin cargo adicional.' },
+    { q:'¿Ofrecen soporte y reposición?', a:'Sí. Trabajamos con perfiles de la más alta calidad y brindamos soporte personalizado por WhatsApp ante cualquier consulta.' },
     { q:'¿Cuáles son los medios de pago disponibles?', a:'En Argentina podés abonar por transferencia bancaria (Naranja X / Alias / CBU). Para el resto del mundo (USD, EUR, CLP, COP, MXN, UYU, BRL) coordinamos el pago directo por WhatsApp vía Binance USDT, PayPal o tarjetas.' },
   ];
   return (
