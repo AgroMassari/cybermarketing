@@ -1661,7 +1661,7 @@ function Catalog() {
             return (
               <button
                 key={p.id}
-                onClick={() => setActivePlatform(p.id)}
+                onClick={() => selectPlatform(p.id)}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -1694,7 +1694,7 @@ function Catalog() {
               <button
                 key={p.id}
                 onClick={() => {
-                  if (p.available) setActivePlatform(p.id);
+                  if (p.available) selectPlatform(p.id);
                 }}
                 style={{
                   background: '#fff',
