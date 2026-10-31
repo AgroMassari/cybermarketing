@@ -608,6 +608,11 @@ type CartContextType = {
   setCurrency: (v: Currency) => void;
   activePlatform: string;
   selectPlatform: (platformId: string) => void;
+  checkoutOpen: boolean;
+  startCheckout: (directItem?: CartItem) => void;
+  closeCheckout: () => void;
+  checkoutItems: CartItem[];
+  checkoutTotal: number;
 };
 
 const CartContext = createContext<CartContextType | null>(null);
@@ -649,6 +654,8 @@ function CartProvider({ children }: { children: React.ReactNode }) {
   const count = displayItems.reduce((a, i) => a + i.qty, 0);
 
   const [activePlatform, setActivePlatform] = useState<string>("instagram");
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [directItem, setDirectItem] = useState<CartItem | null>(null);
 
   const selectPlatform = (platformId: string) => {
     setActivePlatform(platformId);
@@ -666,29 +673,65 @@ function CartProvider({ children }: { children: React.ReactNode }) {
     }, 60);
   };
 
+  const startCheckout = (singleItem?: CartItem) => {
+    if (singleItem) {
+      setDirectItem(singleItem);
+    } else {
+      setDirectItem(null);
+    }
+    setCheckoutOpen(true);
+    setOpen(false);
+  };
+
+  const closeCheckout = () => {
+    setCheckoutOpen(false);
+    setDirectItem(null);
+  };
+
+  const checkoutItems = directItem ? [directItem] : displayItems;
+  const checkoutTotal = directItem ? directItem.price * directItem.qty : total;
+
   return (
-    <CartContext.Provider value={{ items: displayItems, add, remove, changeQty, total, count, open, setOpen, currency, setCurrency, activePlatform, selectPlatform }}>
+    <CartContext.Provider value={{
+      items: displayItems, add, remove, changeQty, total, count, open, setOpen,
+      currency, setCurrency, activePlatform, selectPlatform,
+      checkoutOpen, startCheckout, closeCheckout, checkoutItems, checkoutTotal
+    }}>
       {children}
+      {checkoutOpen && <PaymentModal items={checkoutItems} total={checkoutTotal} onBack={closeCheckout} currency={currency} />}
     </CartContext.Provider>
   );
 }
 
-function buildWhatsAppMsg(items: CartItem[], total: number, currency: Currency) {
+function buildWhatsAppMsg(items: CartItem[], total: number, currency: Currency, targetLink: string, contactInfo?: string) {
   const sym = CURRENCY_SYMBOLS[currency];
-  const ls = items.map(i => `• ${i.serviceName} — ${i.tierQty} x${i.qty} = ${sym}${(i.price * i.qty).toLocaleString("es-AR")} ${currency}`);
-  const footer = currency === "ARS"
-    ? "Ya realicé la transferencia bancaria. Adjunto el comprobante. ¡Muchas gracias!"
-    : "Deseo coordinar el pago por WhatsApp (Binance USDT, PayPal, tarjeta internacional, etc.). ¡Muchas gracias!";
-  return [
-    "¡Hola! Quiero confirmar mi pedido.",
+  const isArs = currency === "ARS";
+  const ls = items.map(i => `• *${i.serviceName}* — ${i.tierQty} x${i.qty} = ${sym}${(i.price * i.qty).toLocaleString("es-AR")} ${currency}`);
+  
+  const lines = [
+    "¡Hola! Quiero confirmar mi pedido en *Cyber Marketing Digital*:",
     "",
-    "📋 *DETALLE:*",
+    "📋 *DETALLE DEL PEDIDO:*",
     ...ls,
     "",
-    `💰 *Total: ${sym}${total.toLocaleString("es-AR")} ${currency}*`,
+    "🔗 *LINK / PERFIL DESTINO:*",
+    targetLink && targetLink.trim() ? targetLink.trim() : "(A coordinar por chat)"
+  ];
+
+  if (contactInfo && contactInfo.trim()) {
+    lines.push("", `👤 *CONTACTO:* ${contactInfo.trim()}`);
+  }
+
+  lines.push(
     "",
-    footer
-  ].join("\n");
+    `💰 *TOTAL: ${sym}${total.toLocaleString("es-AR")} ${currency}*`,
+    "",
+    isArs
+      ? "✅ Ya realicé la transferencia bancaria. Te adjunto el comprobante por acá. ¡Muchas gracias!"
+      : "🌎 Deseo coordinar el pago por este medio (Binance USDT, PayPal, tarjeta, etc.). ¡Muchas gracias!"
+  );
+
+  return lines.join("\n");
 }
 
 function CopyRow({ label, value }: { label: string; value: string }) {
@@ -713,94 +756,246 @@ function PaymentModal({ items, total, onBack, currency }: { items:CartItem[]; to
   const sym = CURRENCY_SYMBOLS[currency];
   const isArs = currency === "ARS";
 
-  const waMsg = buildWhatsAppMsg(items, total, currency);
+  const [step, setStep] = useState<1 | 2>(1);
+  const [targetLink, setTargetLink] = useState("");
+  const [contactInfo, setContactInfo] = useState("");
+  const [linkError, setLinkError] = useState(false);
+
+  const firstItem = items[0];
+  const summaryTitle = items.length === 1 && firstItem
+    ? `${firstItem.serviceName} (${firstItem.tierQty})`
+    : `${items.length} servicios seleccionados`;
+
+  const handleContinueToStep2 = () => {
+    if (!targetLink.trim()) {
+      setLinkError(true);
+      return;
+    }
+    setLinkError(false);
+    setStep(2);
+  };
+
+  const waMsg = buildWhatsAppMsg(items, total, currency, targetLink, contactInfo);
   const waUrl = getWhatsAppUrl(waMsg);
 
   return (
-    <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:80, display:'flex', alignItems:'flex-end', justifyContent:'center', background:'rgba(18,0,61,.65)', WebkitTransform:'translateZ(0)', transform:'translateZ(0)' }}>
-      <motion.div initial={{ y:80, opacity:0 }} animate={{ y:0, opacity:1 }} transition={{ type:"spring", stiffness:320, damping:26 }}
-        style={{ width:'100%', maxWidth:500, maxHeight:'95vh', display:'flex', flexDirection:'column', borderRadius:'24px 24px 0 0', background:'#fff', overflow:'hidden', boxShadow:'0 -20px 60px rgba(118,40,240,.18)' }}>
+    <div style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:100, display:'flex', alignItems:'center', justifyContent:'center', background:'rgba(18,0,61,.7)', backdropFilter:'blur(5px)', padding:'16px' }}>
+      <motion.div initial={{ scale:0.95, opacity:0, y:20 }} animate={{ scale:1, opacity:1, y:0 }} transition={{ type:"spring", stiffness:340, damping:28 }}
+        style={{ width:'100%', maxWidth:480, maxHeight:'92vh', display:'flex', flexDirection:'column', borderRadius:24, background:'#fff', overflow:'hidden', boxShadow:'0 24px 70px rgba(0,0,0,.35)', position:'relative' }}>
         
-        {/* Header */}
-        <div style={{ display:'flex', alignItems:'center', gap:12, padding:'20px 24px', borderBottom:'1px solid #f3edfc' }}>
-          <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', color:'#9a92a8', display:'flex' }}><ChevronLeft size={22}/></button>
-          <div style={{ flex:1 }}>
-            <h2 style={{ fontSize:16, fontWeight:800, color:'#121212', margin:0 }}>
-              {isArs ? "DATOS DE PAGO POR TRANSFERENCIA" : "COORDINAR PAGO INTERNACIONAL"}
-            </h2>
-            <p style={{ fontSize:11, color:'#7628f0', margin:'2px 0 0', fontWeight:600 }}>
-              Moneda: {currency}
-            </p>
+        {/* Modal Top Bar */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 24px 12px', borderBottom:'1px solid #f3edfc' }}>
+          {step === 2 ? (
+            <button onClick={() => setStep(1)} style={{ background:'none', border:'none', cursor:'pointer', color:'#7628f0', display:'flex', alignItems:'center', gap:4, fontWeight:700, fontSize:13 }}>
+              <ChevronLeft size={18}/> Volver
+            </button>
+          ) : (
+            <div style={{ width:24 }}/>
+          )}
+
+          {/* Stepper Progress Circles (1) --- (2) */}
+          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <div style={{
+              width:32, height:32, borderRadius:'50%',
+              background: step === 1 ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : '#22c55e',
+              color:'#fff', display:'flex', alignItems:'center', justifyContent:'center',
+              fontWeight:800, fontSize:13, boxShadow:'0 2px 8px rgba(0,0,0,.15)'
+            }}>
+              {step === 1 ? '1' : <CheckCircle2 size={16}/>}
+            </div>
+
+            <div style={{ width:36, height:3, borderRadius:2, background: step === 2 ? '#22c55e' : '#e5e7eb' }}/>
+
+            <div style={{
+              width:32, height:32, borderRadius:'50%',
+              background: step === 2 ? 'linear-gradient(135deg,#7f1fff,#bf5bff)' : '#f3f4f6',
+              color: step === 2 ? '#fff' : '#9ca3af', display:'flex', alignItems:'center', justifyContent:'center',
+              fontWeight:800, fontSize:13, boxShadow: step === 2 ? '0 2px 8px rgba(127,31,255,.3)' : 'none'
+            }}>
+              2
+            </div>
           </div>
-          <div style={{ textAlign:'right' }}>
-            <p style={{ fontSize:10, color:'#9a92a8', margin:0, textTransform:'uppercase', letterSpacing:'0.08em' }}>TOTAL</p>
-            <p style={{ fontSize:20, fontWeight:900, color:'#7628f0', margin:0 }}>{sym}{total.toLocaleString("es-AR")} {currency}</p>
+
+          <button onClick={onBack} style={{ background:'none', border:'none', cursor:'pointer', color:'#9ca3af', display:'flex', padding:4 }}>
+            <X size={20}/>
+          </button>
+        </div>
+
+        {/* Product summary pill */}
+        <div style={{ padding:'12px 24px 0', textAlign:'center' }}>
+          <div style={{ display:'inline-flex', alignItems:'center', gap:6, padding:'6px 14px', borderRadius:20, background:'#f8f6fc', border:'1px solid #ebdffd', fontSize:12, fontWeight:700, color:'#5b21b6' }}>
+            <span>{summaryTitle}</span>
+            <span style={{ color:'#9ca3af' }}>•</span>
+            <span style={{ fontWeight:800, color:'#7628f0' }}>{sym}{total.toLocaleString("es-AR")} {currency}</span>
           </div>
         </div>
 
-        {/* Content body */}
-        <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'18px 24px', display:'flex', flexDirection:'column', gap:12 }}>
-          {isArs ? (
-            <>
-              <div style={{ background: '#fcfbff', border: '1px solid #e9d5ff', borderRadius: 12, padding: '12px 16px' }}>
-                <p style={{ fontSize: 12, color: '#4f4f59', margin: 0, lineHeight: 1.5 }}>
-                  Realizá la transferencia a la siguiente cuenta oficial de <strong>Naranja X</strong> y luego envianos el comprobante por WhatsApp para iniciar tu pedido de inmediato:
-                </p>
+        {/* STEP 1: LINK & CONTACT INFO COLLECTION */}
+        {step === 1 && (
+          <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'20px 24px 24px', display:'flex', flexDirection:'column' }}>
+            <div style={{ textAlign:'center', marginBottom:20 }}>
+              <h2 style={{ fontSize:20, fontWeight:900, color:'#111827', margin:'0 0 6px', letterSpacing:'-0.5px' }}>
+                ¿En qué publicación o perfil querés el servicio?
+              </h2>
+              <p style={{ fontSize:13, color:'#6b7280', margin:0, lineHeight:1.5 }}>
+                Pegá el link directo de tu publicación, reel, video o el @usuario de tu perfil.
+              </p>
+            </div>
+
+            <div style={{ display:'flex', flexDirection:'column', gap:16, flex:1 }}>
+              <div>
+                <label style={{ display:'block', fontSize:12, fontWeight:800, color:'#374151', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:6 }}>
+                  Link del contenido o @usuario <span style={{ color:'#dc2626' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  value={targetLink}
+                  onChange={(e) => {
+                    setTargetLink(e.target.value);
+                    if (linkError) setLinkError(false);
+                  }}
+                  placeholder="https://www.instagram.com/p/... o @tu_usuario"
+                  style={{
+                    width:'100%', boxSizing:'border-box', padding:'14px 16px', borderRadius:14,
+                    border: linkError ? '2px solid #ef4444' : '1.5px solid #d1d5db',
+                    fontSize:14, fontWeight:500, outline:'none', background:'#fafafa',
+                    transition:'all 0.2s', color:'#111827'
+                  }}
+                />
+                {linkError ? (
+                  <p style={{ fontSize:11, color:'#ef4444', fontWeight:700, margin:'5px 0 0' }}>
+                    ⚠️ Por favor pegá el link o usuario de destino para procesar tu orden.
+                  </p>
+                ) : (
+                  <p style={{ fontSize:11, color:'#9ca3af', margin:'5px 0 0', lineHeight:1.4 }}>
+                    Asegurate de que la cuenta sea pública. No solicitamos contraseñas.
+                  </p>
+                )}
               </div>
 
-              {PAYMENT_ARS.map(row => (
-                <CopyRow key={row.label} label={row.label} value={row.value}/>
-              ))}
-            </>
-          ) : (
-            <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
-              <div style={{ background: 'linear-gradient(135deg, #f6f2ff 0%, #ede9fe 100%)', border: '1.5px solid #c4b5fd', borderRadius: 16, padding: '18px 20px', textAlign: 'center' }}>
-                <div style={{ width: 46, height: 46, borderRadius: '50%', background: '#7c3aed', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px', boxShadow:'0 4px 14px rgba(124,58,237,.35)' }}>
-                  <Globe size={24} />
-                </div>
-                <h3 style={{ fontSize: 16, fontWeight: 800, color: '#5b21b6', margin: '0 0 6px' }}>
-                  Pago Internacional ({currency})
-                </h3>
-                <p style={{ fontSize: 13, color: '#4b5563', margin: 0, lineHeight: 1.6 }}>
-                  Para pagos en <strong>{currency}</strong> u otras divisas fuera de Argentina no se aceptan transferencias bancarias locales. Coordinamos tu pago directamente por WhatsApp con medios internacionales seguros: <strong>Binance (USDT)</strong>, <strong>PayPal</strong> o <strong>tarjetas</strong>.
-                </p>
+              <div>
+                <label style={{ display:'block', fontSize:12, fontWeight:700, color:'#4b5563', textTransform:'uppercase', letterSpacing:'0.05em', marginBottom:6 }}>
+                  Email o WhatsApp de contacto <span style={{ fontSize:11, color:'#9ca3af', textTransform:'none' }}>(opcional)</span>
+                </label>
+                <input
+                  type="text"
+                  value={contactInfo}
+                  onChange={(e) => setContactInfo(e.target.value)}
+                  placeholder="tu@email.com o teléfono"
+                  style={{
+                    width:'100%', boxSizing:'border-box', padding:'14px 16px', borderRadius:14,
+                    border:'1.5px solid #e5e7eb', fontSize:14, fontWeight:500, outline:'none',
+                    background:'#fafafa', color:'#111827'
+                  }}
+                />
               </div>
 
-              <div style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: '14px 16px' }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: '#9ca3af', textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 8px' }}>
-                  Resumen de tu pedido ({currency})
-                </p>
-                {items.map(item => (
-                  <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, padding: '5px 0', borderBottom: '1px dashed #f3f4f6' }}>
-                    <span style={{ fontWeight: 600, color: '#1f2937' }}>{item.serviceName} ({item.tierQty}) x{item.qty}</span>
-                    <span style={{ fontWeight: 700, color: '#7c3aed' }}>{sym}{(item.price * item.qty).toLocaleString("es-AR")}</span>
-                  </div>
-                ))}
+              <div style={{ marginTop:'auto', paddingTop:16 }}>
+                <button
+                  type="button"
+                  onClick={handleContinueToStep2}
+                  style={{
+                    width:'100%', padding:'16px', borderRadius:16, border:'none', cursor:'pointer',
+                    fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff',
+                    background:'linear-gradient(135deg,#7f1fff 0%,#9c34ff 55%,#bf5bff 100%)',
+                    boxShadow:'0 8px 24px rgba(127,31,255,.35)', display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                    letterSpacing:'0.02em', transition:'transform 0.15s ease'
+                  }}
+                >
+                  Continuar al Pago →
+                </button>
               </div>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
-        {/* Footer CTA */}
-        <div style={{ padding:'20px 24px calc(20px + env(safe-area-inset-bottom, 0px))', borderTop:'1px solid #f3edfc', display:'flex', flexDirection:'column', gap:10 }}>
-          <a href={waUrl} target="_blank" rel="noopener noreferrer"
-            style={{ width:'100%', padding:16, borderRadius:16, cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background:'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow:'0 6px 24px rgba(22,163,74,.35)', display:'flex', alignItems:'center', justifyContent:'center', gap:10, textDecoration:'none', boxSizing:'border-box' }}>
-            <FaWhatsapp size={20}/> {isArs ? "YA TRANSFERÍ — ENVIAR COMPROBANTE" : "COORDINAR PAGO POR WHATSAPP"}
-          </a>
-          <p style={{ textAlign:'center', fontSize:11, color:'#9a92a8', margin:0 }}>
-            {isArs ? "Se abrirá WhatsApp para enviarnos la captura de la transferencia." : "Se abrirá WhatsApp con el detalle de tu pedido listo para coordinar el pago."}
-          </p>
-        </div>
+        {/* STEP 2: PAYMENT & WHATSAPP CONFIRMATION */}
+        {step === 2 && (
+          <div style={{ flex:1, overflowY:'auto', WebkitOverflowScrolling:'touch', padding:'18px 24px 20px', display:'flex', flexDirection:'column', gap:14 }}>
+            <div style={{ textAlign:'center' }}>
+              <h2 style={{ fontSize:20, fontWeight:900, color:'#111827', margin:'0 0 4px', letterSpacing:'-0.5px' }}>
+                {isArs ? "Elegí tu método de pago" : "Coordinar Pago Internacional"}
+              </h2>
+              <p style={{ fontSize:12, color:'#6b7280', margin:0 }}>
+                {isArs ? "Pago 100% seguro por transferencia bancaria en pesos argentinos" : `Pago protegido y coordinado en ${currency}`}
+              </p>
+            </div>
+
+            {/* Recipient summary badge */}
+            <div style={{ background:'#fcfbff', border:'1px solid #e9d5ff', borderRadius:14, padding:'10px 14px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
+              <div style={{ minWidth:0 }}>
+                <span style={{ fontSize:10, fontWeight:800, color:'#7628f0', textTransform:'uppercase', letterSpacing:'0.06em' }}>DESTINO INGRESADO:</span>
+                <p style={{ fontSize:13, fontWeight:700, color:'#111827', margin:'2px 0 0', overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                  {targetLink}
+                </p>
+              </div>
+              <button onClick={() => setStep(1)} style={{ background:'none', border:'none', cursor:'pointer', color:'#7628f0', fontWeight:800, fontSize:11, padding:'4px 8px' }}>
+                Editar
+              </button>
+            </div>
+
+            {/* ARS Bank Transfer Card */}
+            {isArs ? (
+              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+                <div style={{ background:'#f9fafb', borderRadius:14, padding:'10px 14px', border:'1px solid #e5e7eb' }}>
+                  <p style={{ fontSize:12, color:'#4b5563', margin:0, lineHeight:1.4 }}>
+                    Transferí el total de <strong>${total.toLocaleString("es-AR")} ARS</strong> a nuestra cuenta oficial y hacé clic en el botón de abajo para enviar el comprobante por WhatsApp:
+                  </p>
+                </div>
+                {PAYMENT_ARS.map(row => (
+                  <CopyRow key={row.label} label={row.label} value={row.value}/>
+                ))}
+              </div>
+            ) : (
+              /* International Payment Guidance */
+              <div style={{ display:'flex', flexDirection:'column', gap:12 }}>
+                <div style={{ background:'linear-gradient(135deg, #f6f2ff 0%, #ede9fe 100%)', border:'1.5px solid #c4b5fd', borderRadius:16, padding:'16px 18px', textAlign:'center' }}>
+                  <div style={{ width:42, height:42, borderRadius:'50%', background:'#7c3aed', color:'#fff', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 10px', boxShadow:'0 4px 12px rgba(124,58,237,.3)' }}>
+                    <Globe size={22} />
+                  </div>
+                  <h3 style={{ fontSize:15, fontWeight:800, color:'#5b21b6', margin:'0 0 4px' }}>
+                    Pago Internacional ({currency})
+                  </h3>
+                  <p style={{ fontSize:12, color:'#4b5563', margin:0, lineHeight:1.5 }}>
+                    Para compras fuera de Argentina coordinamos el pago directo por WhatsApp con métodos internacionales: <strong>Binance (USDT)</strong>, <strong>PayPal</strong> o <strong>tarjetas</strong>.
+                  </p>
+                </div>
+
+                <div style={{ background:'#fff', border:'1px solid #e5e7eb', borderRadius:12, padding:'12px 14px' }}>
+                  <p style={{ fontSize:11, fontWeight:700, color:'#9ca3af', textTransform:'uppercase', margin:'0 0 6px' }}>
+                    Resumen del pedido
+                  </p>
+                  {items.map(item => (
+                    <div key={item.id} style={{ display:'flex', justifyContent:'space-between', fontSize:13, padding:'3px 0' }}>
+                      <span style={{ fontWeight:600, color:'#1f2937' }}>{item.serviceName} ({item.tierQty})</span>
+                      <span style={{ fontWeight:700, color:'#7c3aed' }}>{sym}{(item.price * item.qty).toLocaleString("es-AR")}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Final CTA button to WhatsApp */}
+            <div style={{ marginTop:'auto', paddingTop:10, display:'flex', flexDirection:'column', gap:8 }}>
+              <a href={waUrl} target="_blank" rel="noopener noreferrer"
+                style={{ width:'100%', padding:16, borderRadius:16, cursor:'pointer', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background:'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow:'0 6px 24px rgba(22,163,74,.35)', display:'flex', alignItems:'center', justifyContent:'center', gap:10, textDecoration:'none', boxSizing:'border-box' }}>
+                <FaWhatsapp size={20}/> {isArs ? `PAGAR ${sym}${total.toLocaleString("es-AR")} ARS →` : `COORDINAR PAGO ${sym}${total.toLocaleString("es-AR")} ${currency} →`}
+              </a>
+              <p style={{ textAlign:'center', fontSize:11, color:'#9ca3af', margin:0 }}>
+                Se abrirá WhatsApp con el link de tu perfil y el detalle del pedido listo para enviar.
+              </p>
+            </div>
+          </div>
+        )}
+
       </motion.div>
     </div>
   );
 }
-
 // ─── CART DRAWER ──────────────────────────────────────────────────────────────
 function CartDrawer() {
-  const { items, remove, changeQty, total, open, setOpen, currency } = useCart();
+  const { items, remove, changeQty, total, open, setOpen, currency, startCheckout } = useCart();
   const sym = CURRENCY_SYMBOLS[currency];
-  const [showPayment, setShowPayment] = useState(false);
   const isArs = currency === "ARS";
 
   return (
@@ -841,17 +1036,13 @@ function CartDrawer() {
             <span style={{ fontWeight:600, color:'#9a92a8', fontSize:13 }}>Total ({currency})</span>
             <span style={{ fontWeight:900, color:'#121212', fontSize:24 }}>{sym}{total.toLocaleString("es-AR")} {currency}</span>
           </div>
-          <button onClick={()=>{if(items.length>0)setShowPayment(true);}} disabled={items.length===0}
+          <button onClick={()=>{if(items.length>0)startCheckout();}} disabled={items.length===0}
             style={{ width:'100%', padding:16, borderRadius:16, border:'none', cursor:items.length>0?'pointer':'not-allowed', fontFamily:'Poppins,sans-serif', fontWeight:800, fontSize:15, color:'#fff', background: isArs ? 'linear-gradient(135deg,#7f1fff 0%,#9c34ff 55%,#bf5bff 100%)' : 'linear-gradient(135deg,#22c55e,#16a34a)', boxShadow: isArs ? '0 6px 24px rgba(118,40,240,.35)' : '0 6px 24px rgba(34,197,94,.35)', opacity:items.length===0?.4:1, display:'flex', alignItems:'center', justifyContent:'center', gap:10 }}>
             {isArs ? <><Banknote size={20}/> PAGAR / TRANSFERIR</> : <><FaWhatsapp size={20}/> COORDINAR PAGO EN WHATSAPP</>}
           </button>
         </div>
       </aside>
-      {showPayment && open && (
-        <ErrorBoundary>
-          <PaymentModal items={items} total={total} onBack={()=>setShowPayment(false)} currency={currency} />
-        </ErrorBoundary>
-      )}
+
     </>
   );
 }
@@ -1297,7 +1488,7 @@ const PLATFORM_CARDS = [
 ];
 
 function ServiceTierView({ service }: { service: ServiceGroup }) {
-  const { add, currency } = useCart();
+  const { add, currency, startCheckout } = useCart();
   const [addedTier, setAddedTier] = useState<string|null>(null);
   
   const handleAdd = (tier: ServiceTier, price: number) => {
@@ -1357,10 +1548,10 @@ function ServiceTierView({ service }: { service: ServiceGroup }) {
                 </span>
                 
                 {/* Direct WhatsApp request button */}
-                <a href={quickWaUrl} target="_blank" rel="noopener noreferrer" title="Pedir directo por WhatsApp"
-                  style={{ width:34, height:34, borderRadius:10, border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', background:'#22c55e', color:'#fff', boxShadow:'0 3px 10px rgba(34,197,94,.3)', textDecoration:'none' }}>
+                <button type="button" onClick={() => startCheckout({ id:`${service.id}-${tier.tierQty}`, serviceName:name, tierQty:tier.tierQty, price, qty:1 })} title="Pedir por WhatsApp"
+                  style={{ width:34, height:34, borderRadius:10, border:'none', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', background:'#22c55e', color:'#fff', boxShadow:'0 3px 10px rgba(34,197,94,.3)', transition:'transform 0.15s' }}>
                   <FaWhatsapp size={16}/>
-                </a>
+                </button>
 
                 {/* Add to cart button */}
                 <button onClick={()=>handleAdd(tier, price)} title="Agregar al carrito"
