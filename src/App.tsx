@@ -14,6 +14,9 @@ import { FaFacebook, FaSpotify, FaWhatsapp } from "react-icons/fa";
 import { FaTiktok } from "react-icons/fa6";
 import { useEffect, useState, createContext, useContext, useMemo, useRef } from "react";
 import { Currency, CURRENCY_SYMBOLS, PRICING_DATA, getPrice } from "./data/pricing";
+import { SUB_SERVICES, SubServiceDef } from "./data/subServices";
+import { NeonPhoneMockup } from "./components/NeonPhoneMockup";
+import { ProductDetailView } from "./components/ProductDetailView";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { gsap } from "gsap";
 
@@ -609,8 +612,10 @@ type CartContextType = {
   setCurrency: (v: Currency) => void;
   activePlatform: string;
   selectPlatform: (platformId: string) => void;
+  selectedSubServiceId: string | null;
+  selectSubService: (subServiceId: string | null) => void;
   checkoutOpen: boolean;
-  startCheckout: (directItem?: CartItem) => void;
+  startCheckout: (directItem?: CartItem, defaultLink?: string) => void;
   closeCheckout: () => void;
   checkoutItems: CartItem[];
   checkoutTotal: number;
@@ -655,15 +660,18 @@ function CartProvider({ children }: { children: React.ReactNode }) {
   const count = displayItems.reduce((a, i) => a + i.qty, 0);
 
   const [activePlatform, setActivePlatform] = useState<string>("instagram");
+  const [selectedSubServiceId, setSelectedSubServiceId] = useState<string | null>(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [directItem, setDirectItem] = useState<CartItem | null>(null);
+  const [checkoutLink, setCheckoutLink] = useState<string>("");
 
   const selectPlatform = (platformId: string) => {
     setActivePlatform(platformId);
+    setSelectedSubServiceId(null);
     setTimeout(() => {
-      const el = document.getElementById("services-grid");
+      const el = document.getElementById("services-section");
       if (el) {
-        const headerOffset = 150;
+        const headerOffset = 130;
         const elementPosition = el.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
         window.scrollTo({
@@ -674,11 +682,32 @@ function CartProvider({ children }: { children: React.ReactNode }) {
     }, 60);
   };
 
-  const startCheckout = (singleItem?: CartItem) => {
+  const selectSubService = (subServiceId: string | null) => {
+    setSelectedSubServiceId(subServiceId);
+    setTimeout(() => {
+      const el = document.getElementById("services-section");
+      if (el) {
+        const headerOffset = 130;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
+    }, 60);
+  };
+
+  const startCheckout = (singleItem?: CartItem, defaultLink?: string) => {
     if (singleItem) {
       setDirectItem(singleItem);
     } else {
       setDirectItem(null);
+    }
+    if (defaultLink) {
+      setCheckoutLink(defaultLink);
+    } else {
+      setCheckoutLink("");
     }
     setCheckoutOpen(true);
     setOpen(false);
@@ -687,6 +716,7 @@ function CartProvider({ children }: { children: React.ReactNode }) {
   const closeCheckout = () => {
     setCheckoutOpen(false);
     setDirectItem(null);
+    setCheckoutLink("");
   };
 
   const checkoutItems = directItem ? [directItem] : displayItems;
@@ -696,10 +726,11 @@ function CartProvider({ children }: { children: React.ReactNode }) {
     <CartContext.Provider value={{
       items: displayItems, add, remove, changeQty, total, count, open, setOpen,
       currency, setCurrency, activePlatform, selectPlatform,
+      selectedSubServiceId, selectSubService,
       checkoutOpen, startCheckout, closeCheckout, checkoutItems, checkoutTotal
     }}>
       {children}
-      {checkoutOpen && <PaymentModal items={checkoutItems} total={checkoutTotal} onBack={closeCheckout} currency={currency} />}
+      {checkoutOpen && <PaymentModal items={checkoutItems} total={checkoutTotal} onBack={closeCheckout} currency={currency} initialLink={checkoutLink} />}
     </CartContext.Provider>
   );
 }
@@ -753,12 +784,12 @@ function CopyRow({ label, value }: { label: string; value: string }) {
 
 // ─── PAYMENT MODAL ────────────────────────────────────────────────────────────
 // Solo muestra opción de transferir para ARS. Para las demás divisas se coordina vía WhatsApp.
-function PaymentModal({ items, total, onBack, currency }: { items:CartItem[]; total:number; onBack:()=>void; currency:Currency }) {
+function PaymentModal({ items, total, onBack, currency, initialLink }: { items:CartItem[]; total:number; onBack:()=>void; currency:Currency; initialLink?: string }) {
   const sym = CURRENCY_SYMBOLS[currency];
   const isArs = currency === "ARS";
 
   const [step, setStep] = useState<1 | 2>(1);
-  const [targetLink, setTargetLink] = useState("");
+  const [targetLink, setTargetLink] = useState(initialLink || "");
   const [contactInfo, setContactInfo] = useState("");
   const [linkError, setLinkError] = useState(false);
 
@@ -1001,11 +1032,11 @@ function CartDrawer() {
 
   return (
     <>
-      <div onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:60, background:'rgba(18,0,61,.5)', opacity:open?1:0, pointerEvents:open?'auto':'none', transition:'opacity 0.3s' }}/>
+      <div onClick={()=>{setOpen(false);}} style={{ position:'fixed', top:0, left:0, right:0, bottom:0, zIndex:60, background:'rgba(18,0,61,.5)', opacity:open?1:0, pointerEvents:open?'auto':'none', transition:'opacity 0.3s' }}/>
       <aside style={{ position:'fixed', right:0, top:0, height:'100dvh', width:'100%', maxWidth:420, zIndex:70, display:'flex', flexDirection:'column', background:'#fff', boxShadow:'-12px 0 50px rgba(118,40,240,.12)', transform:open?'translateX(0)':'translateX(100%)', transition:'transform 0.3s ease-out', WebkitTransform: open?'translateX(0)':'translateX(100%)' }}>
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'20px 24px', borderBottom:'1px solid #f3edfc' }}>
           <h2 style={{ fontSize:20, fontWeight:900, color:'#121212', margin:0 }}>Tu carrito</h2>
-          <button onClick={()=>{setOpen(false);setShowPayment(false);}} style={{ background:'none', border:'none', cursor:'pointer', color:'#9a92a8', display:'flex' }}><X size={22}/></button>
+          <button onClick={()=>{setOpen(false);}} style={{ background:'none', border:'none', cursor:'pointer', color:'#9a92a8', display:'flex' }}><X size={22}/></button>
         </div>
         {items.length===0 ? (
           <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:16, color:'#9a92a8' }}>
@@ -1569,9 +1600,36 @@ function ServiceTierView({ service }: { service: ServiceGroup }) {
 }
 
 function Catalog() {
-  const { currency, setCurrency, activePlatform, selectPlatform } = useCart();
+  const {
+    currency,
+    setCurrency,
+    activePlatform,
+    selectPlatform,
+    selectedSubServiceId,
+    selectSubService,
+    add,
+    startCheckout,
+  } = useCart();
 
-  const filteredServices = SERVICE_GROUPS.filter(s => s.category === activePlatform);
+  const [viewLegacyList, setViewLegacyList] = useState(false);
+
+  // Filter sub-services for active platform
+  const currentSubServices = useMemo(() => {
+    return SUB_SERVICES.filter(s => s.platform === activePlatform);
+  }, [activePlatform]);
+
+  // Active sub-service if configured
+  const activeSubService = useMemo(() => {
+    if (!selectedSubServiceId) return null;
+    return SUB_SERVICES.find(s => s.id === selectedSubServiceId) || null;
+  }, [selectedSubServiceId]);
+
+  // Fallback filtered raw services for legacy view
+  const filteredServices = useMemo(() => {
+    return SERVICE_GROUPS.filter(s => s.category === activePlatform);
+  }, [activePlatform]);
+
+  const sym = CURRENCY_SYMBOLS[currency] || "$";
 
   const platforms = [
     { id: 'instagram', label: 'Instagram', icon: <Instagram size={17} /> },
@@ -1585,17 +1643,19 @@ function Catalog() {
     <section id="catalogo" style={{ background:'linear-gradient(180deg,#f9fafb 0%,#f3f3f6 100%)', padding:'40px 0 60px' }}>
       <div style={{ maxWidth:1200, margin:'0 auto', padding:'0 24px' }}>
 
-        {/* Section title */}
+        {/* Section title (Easy Marketing Style: ¿Qué querés potenciar?) */}
         <div style={{ textAlign:'center', marginBottom:28 }}>
           <motion.div initial={{ opacity:0, y:15 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true }}>
             <div style={{ display:'inline-block', padding:'5px 18px', borderRadius:20, background:'rgba(118,40,240,.1)', border:'1px solid rgba(118,40,240,.15)', marginBottom:12 }}>
-              <span style={{ fontWeight:700, fontSize:11, color:'#7628f0', textTransform:'uppercase', letterSpacing:'0.1em' }}>CATÁLOGO Y PRECIOS</span>
+              <span style={{ fontWeight:700, fontSize:11, color:'#7628f0', textTransform:'uppercase', letterSpacing:'0.1em' }}>
+                SERVICIOS Y SOLUCIONES DIGITALES
+              </span>
             </div>
-            <h2 style={{ fontWeight:900, fontSize:'clamp(26px,3.5vw,44px)', color:'#121212', margin:'0 0 10px', letterSpacing:'-1px' }}>
-              Servicios Disponibles y Precios
+            <h2 style={{ fontWeight:900, fontSize:'clamp(28px,4vw,46px)', color:'#121212', margin:'0 0 10px', letterSpacing:'-1px' }}>
+              ¿Qué querés potenciar?
             </h2>
             <p style={{ fontSize:15, color:'#6d6282', margin:0, fontWeight:500, maxWidth:580, marginLeft:'auto', marginRight:'auto' }}>
-              Accedé a precios transparentes y actualizados en tu moneda local. Hacé tu pedido por la web o directo por WhatsApp.
+              Explorá nuestras líneas de servicios y elegí la solución que mejor se adapta a tu presencia digital.
             </p>
           </motion.div>
         </div>
@@ -1604,14 +1664,14 @@ function Catalog() {
         <div style={{
           background: '#fff',
           borderRadius: 20,
-          padding: '18px 22px',
+          padding: '16px 20px',
           boxShadow: '0 4px 24px rgba(118,40,240,.06)',
           border: '1px solid rgba(141,44,255,.1)',
           marginBottom: 24,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: 12,
+          gap: 10,
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700, color: '#4b5563' }}>
             <Globe size={16} color="#7628f0" />
@@ -1649,104 +1709,295 @@ function Catalog() {
           </div>
         </div>
 
-        {/* Platform Tabs Selector */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 8,
-          flexWrap: 'wrap',
-          marginBottom: 28,
-        }}>
-          {platforms.map(p => {
-            const isActive = activePlatform === p.id;
-            return (
-              <button
-                key={p.id}
-                onClick={() => selectPlatform(p.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  padding: '12px 22px',
-                  borderRadius: 14,
-                  border: isActive ? '2px solid #7628f0' : '1px solid rgba(0,0,0,0.06)',
-                  background: isActive ? '#fff' : '#f0eef6',
-                  color: isActive ? '#7628f0' : '#4b5563',
-                  fontWeight: 800,
-                  fontSize: 14,
-                  cursor: 'pointer',
-                  fontFamily: 'Poppins, sans-serif',
-                  boxShadow: isActive ? '0 8px 24px rgba(118,40,240,.18)' : 'none',
-                  transition: 'all 0.2s',
-                }}
-              >
-                <span>{p.icon}</span>
-                <span>{p.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Platform visual 3D cards row */}
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(180px, 1fr))', gap:14, marginBottom: 36 }}>
+        {/* Platform 3D cards row with EXPLORAR / PRÓXIMAMENTE buttons */}
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(180px, 1fr))', gap:14, marginBottom: 32 }}>
           {PLATFORM_CARDS.map((p) => {
             const isActive = activePlatform === p.id;
             return (
-              <button
+              <div
                 key={p.id}
                 onClick={() => {
                   if (p.available) selectPlatform(p.id);
                 }}
                 style={{
                   background: '#fff',
-                  borderRadius: 16,
-                  padding: '18px 14px',
+                  borderRadius: 20,
+                  padding: '20px 16px 16px',
                   border: isActive ? '2px solid #7628f0' : '1px solid rgba(141,44,255,.08)',
-                  boxShadow: isActive ? '0 8px 24px rgba(118,40,240,.2)' : '0 2px 10px rgba(0,0,0,.03)',
+                  boxShadow: isActive ? '0 10px 28px rgba(118,40,240,.2)' : '0 2px 10px rgba(0,0,0,.03)',
                   cursor: p.available ? 'pointer' : 'default',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  gap: 8,
+                  gap: 10,
                   opacity: p.available ? 1 : 0.6,
                   transition: 'all 0.2s',
-                  fontFamily: 'Poppins, sans-serif',
+                  position: 'relative',
                 }}
               >
-                <img src={p.icon} alt={p.label} style={{ width: 56, height: 56, objectFit: 'contain' }} />
-                <span style={{ fontWeight: 800, fontSize: 13, color: '#121212' }}>{p.label}</span>
+                <img src={p.icon} alt={p.label} style={{ width: 60, height: 60, objectFit: 'contain' }} />
+                <span style={{ fontWeight: 900, fontSize: 14, color: '#121212', letterSpacing: '-0.2px' }}>
+                  {p.label}
+                </span>
+
                 {p.available ? (
-                  <span style={{
-                    fontSize: 10,
-                    fontWeight: 800,
-                    color: isActive ? '#7628f0' : '#9a92a8',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                  }}>
-                    {isActive ? '● Seleccionado' : 'Ver servicios'}
-                  </span>
+                  <button
+                    type="button"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: 12,
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontWeight: 800,
+                      fontSize: 11,
+                      letterSpacing: '0.08em',
+                      textTransform: 'uppercase',
+                      color: '#fff',
+                      background: isActive
+                        ? 'linear-gradient(135deg,#7f1fff,#bf5bff)'
+                        : 'linear-gradient(135deg,#9333ea,#a855f7)',
+                      boxShadow: isActive ? '0 4px 14px rgba(127,31,255,.35)' : 'none',
+                    }}
+                  >
+                    EXPLORAR
+                  </button>
                 ) : (
-                  <span style={{ fontSize: 10, fontWeight: 700, color: '#9a92a8' }}>Próximamente</span>
+                  <span
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      color: '#9ca3af',
+                      background: '#f3f4f6',
+                      padding: '6px 12px',
+                      borderRadius: 10,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.05em',
+                      width: '100%',
+                      textAlign: 'center',
+                    }}
+                  >
+                    PRÓXIMAMENTE
+                  </span>
                 )}
-              </button>
+              </div>
             );
           })}
         </div>
 
-        {/* Services Grid (Always visible for activePlatform!) */}
-        <div id="services-grid" style={{ scrollMarginTop: 160 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 10 }}>
-            <h3 style={{ fontWeight: 900, fontSize: 22, color: '#121212', margin: 0 }}>
-              Servicios de {PLATFORM_CARDS.find(p => p.id === activePlatform)?.label || activePlatform.toUpperCase()}
-            </h3>
-            <span style={{ fontSize: 12, fontWeight: 700, color: '#7628f0', background: '#f6f2ff', padding: '6px 14px', borderRadius: 20 }}>
-              Precios en {currency} ({CURRENCY_SYMBOLS[currency]})
-            </span>
-          </div>
+        {/* Dynamic Content Area: Step 3 (ProductDetailView) OR Step 2 (Sub-services Grid) */}
+        <div id="services-section" style={{ scrollMarginTop: 140 }}>
+          <span id="services-grid" style={{ display: 'block', position: 'relative', top: -140, visibility: 'hidden' }} />
+          {activeSubService ? (
+            /* STEP 3: INTERACTIVE PRODUCT DETAIL VIEW */
+            <ProductDetailView
+              subService={activeSubService}
+              serviceGroups={SERVICE_GROUPS}
+              currency={currency}
+              onBack={() => selectSubService(null)}
+              onAddToCart={(item) => add(item)}
+              onStartCheckout={(item, account) => startCheckout(item, account)}
+            />
+          ) : (
+            /* STEP 2: ORGANIZED SUB-SERVICES GRID */
+            <div>
+              {/* Platform Title Bar */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginBottom: 22,
+                  flexWrap: 'wrap',
+                  gap: 12,
+                }}
+              >
+                <div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, color: '#7628f0', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    <span>Servicios disponibles</span>
+                  </div>
+                  <h3 style={{ fontWeight: 900, fontSize: 24, color: '#121212', margin: '2px 0 0', letterSpacing: '-0.5px' }}>
+                    Línea de Servicios para {PLATFORM_CARDS.find(p => p.id === activePlatform)?.label || activePlatform.toUpperCase()}
+                  </h3>
+                </div>
 
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(290px, 1fr))', gap:20 }}>
-            {filteredServices.map(s => <ServiceTierView key={s.id} service={s}/>)}
-          </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                  <button
+                    type="button"
+                    onClick={() => setViewLegacyList(!viewLegacyList)}
+                    style={{
+                      background: '#fff',
+                      border: '1px solid rgba(141,44,255,.15)',
+                      borderRadius: 12,
+                      padding: '8px 14px',
+                      color: '#6d6282',
+                      fontSize: 12,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {viewLegacyList ? '← Vista en Tarjetas' : 'Vista en Lista Clásica'}
+                  </button>
+                </div>
+              </div>
+
+              {viewLegacyList ? (
+                /* Traditional Raw Tier View for backwards compatibility */
+                <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(290px, 1fr))', gap:20 }}>
+                  {filteredServices.map(s => <ServiceTierView key={s.id} service={s}/>)}
+                </div>
+              ) : (
+                /* New Easy Marketing Styled Grid (Glowing Phone Mockup Cards) */
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))',
+                    gap: 20,
+                  }}
+                >
+                  {currentSubServices.map((sub) => {
+                    // Compute minimum price for this subservice
+                    let minPrice = Infinity;
+                    sub.serviceGroupIds.forEach(gid => {
+                      const grp = SERVICE_GROUPS.find(g => g.id === gid);
+                      if (grp && grp.tiers.length > 0) {
+                        grp.tiers.forEach((t, tidx) => {
+                          const p = getPrice(grp.id, tidx, t.price, currency);
+                          if (p > 0 && p < minPrice) minPrice = p;
+                        });
+                      }
+                    });
+                    if (minPrice === Infinity) minPrice = 0;
+
+                    return (
+                      <motion.div
+                        key={sub.id}
+                        whileHover={{ y: -6, scale: 1.02 }}
+                        transition={{ duration: 0.2 }}
+                        onClick={() => selectSubService(sub.id)}
+                        style={{
+                          background: '#fff',
+                          borderRadius: 24,
+                          padding: '24px 18px 20px',
+                          border: '1px solid rgba(141,44,255,.1)',
+                          boxShadow: '0 8px 30px rgba(118,40,240,.06)',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          textAlign: 'center',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          userSelect: 'none',
+                        }}
+                      >
+                        {/* Badge if present */}
+                        {sub.badge && (
+                          <div
+                            style={{
+                              position: 'absolute',
+                              top: 12,
+                              right: 12,
+                              fontSize: 9,
+                              fontWeight: 900,
+                              background: 'linear-gradient(135deg, #7f1fff, #bf5bff)',
+                              color: '#fff',
+                              padding: '3px 8px',
+                              borderRadius: 10,
+                              letterSpacing: '0.05em',
+                              textTransform: 'uppercase',
+                              zIndex: 2,
+                            }}
+                          >
+                            {sub.badge}
+                          </div>
+                        )}
+
+                        {/* Neon Phone Preview Mockup */}
+                        <div style={{ marginBottom: 16 }}>
+                          <NeonPhoneMockup type={sub.iconType} label={sub.name} size="sm" />
+                        </div>
+
+                        {/* Subservice Name */}
+                        <h4
+                          style={{
+                            fontWeight: 900,
+                            fontSize: 17,
+                            color: '#121212',
+                            margin: '0 0 6px',
+                            letterSpacing: '-0.3px',
+                          }}
+                        >
+                          {sub.name}
+                        </h4>
+
+                        {/* Tagline */}
+                        <p
+                          style={{
+                            fontSize: 12,
+                            color: '#6d6282',
+                            margin: '0 0 14px',
+                            lineHeight: 1.4,
+                            fontWeight: 500,
+                            flex: 1,
+                          }}
+                        >
+                          {sub.tagline}
+                        </p>
+
+                        {/* Starting price tag */}
+                        <div
+                          style={{
+                            width: '100%',
+                            padding: '8px 12px',
+                            borderRadius: 12,
+                            background: '#fcfaff',
+                            border: '1px solid rgba(141,44,255,.08)',
+                            marginBottom: 12,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                          }}
+                        >
+                          <span style={{ fontSize: 11, color: '#9a92a8', fontWeight: 600 }}>Desde</span>
+                          <span style={{ fontSize: 15, fontWeight: 900, color: '#7628f0' }}>
+                            {sym}{minPrice.toLocaleString('es-AR')} {currency}
+                          </span>
+                        </div>
+
+                        {/* CTA button */}
+                        <button
+                          type="button"
+                          style={{
+                            width: '100%',
+                            padding: '11px 16px',
+                            borderRadius: 14,
+                            border: 'none',
+                            background: 'linear-gradient(135deg, #7f1fff 0%, #9c34ff 100%)',
+                            color: '#fff',
+                            fontWeight: 800,
+                            fontSize: 12,
+                            letterSpacing: '0.04em',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: 6,
+                            boxShadow: '0 4px 16px rgba(127,31,255,.25)',
+                            fontFamily: 'Poppins, sans-serif',
+                          }}
+                        >
+                          <span>CONFIGURAR Y PEDIR</span>
+                          <span>→</span>
+                        </button>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
       </div>
