@@ -104,21 +104,6 @@ export function ProductDetailView({
 
   const sym = CURRENCY_SYMBOLS[currency] || "$";
 
-  // Bonus calculation
-  const bonusInfo = useMemo(() => {
-    if (!activeTier || !subService.bonusPercent) return null;
-    // Try to extract numeric quantity from tierQty like "1.000" -> 1000
-    const cleanNum = parseInt(activeTier.tierQty.replace(/\./g, "").replace(/,/g, "").match(/\d+/)?.[0] || "0", 10);
-    if (!cleanNum || cleanNum < 50) return null;
-    const bonus = Math.round(cleanNum * (subService.bonusPercent / 100));
-    const total = cleanNum + bonus;
-    return {
-      bonusStr: bonus.toLocaleString("es-AR"),
-      totalStr: total.toLocaleString("es-AR"),
-      percent: subService.bonusPercent,
-    };
-  }, [activeTier, subService.bonusPercent]);
-
   // Build full item name for cart/checkout
   const fullName = useMemo(() => {
     if (!activeGroup) return subService.name;
@@ -500,32 +485,6 @@ export function ProductDetailView({
                 })}
               </div>
             </div>
-
-            {/* Gift Bonus Box (Easy Marketing style) */}
-            {bonusInfo && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                style={{
-                  background: "#faf5ff",
-                  border: "1px dashed #c084fc",
-                  borderRadius: 14,
-                  padding: "10px 14px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  fontSize: 12,
-                  color: "#6b21a8",
-                  fontWeight: 600,
-                }}
-              >
-                <span style={{ fontSize: 18 }}>🎁</span>
-                <span>
-                  Incluye <strong>+{bonusInfo.bonusStr} {subService.bonusLabel || "de regalo"}</strong> ({bonusInfo.percent}%).
-                  ¡Recibís <strong>{bonusInfo.totalStr}</strong> en total!
-                </span>
-              </motion.div>
-            )}
 
             {/* Target Account Input Box (Cyan/Lilac container) */}
             <div
