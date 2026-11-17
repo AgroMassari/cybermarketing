@@ -21,11 +21,11 @@ import { ErrorBoundary } from "./ErrorBoundary";
 import { gsap } from "gsap";
 
 // ─── CONTACTO OFICIAL ────────────────────────────────────────────────────────
-export const WHATSAPP_LINK = "https://wa.me/5491166168096";
+export const WHATSAPP_LINK = "https://wa.me/message/EM2F4YPFO3SBP1";
 
 export function getWhatsAppUrl(text?: string): string {
   if (!text) return WHATSAPP_LINK;
-  return `https://wa.me/5491166168096?text=${encodeURIComponent(text)}`;
+  return `https://wa.me/message/EM2F4YPFO3SBP1?text=${encodeURIComponent(text)}`;
 }
 
 // ─── DATOS DE PAGO (SOLO TRANSFERENCIA ARGENTINA) ───────────────────────────
