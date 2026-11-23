@@ -30,11 +30,11 @@ export function getWhatsAppUrl(text?: string): string {
 
 // ─── DATOS DE PAGO (SOLO TRANSFERENCIA ARGENTINA) ───────────────────────────
 const PAYMENT_ARS = [
-  { label: "Banco",    value: "Naranja X" },
-  { label: "Titular",  value: "Sebastian Agustin Herrera" },
+  { label: "Banco",    value: "Lemon Cash" },
+  { label: "Titular",  value: "Sebastián Agustín Herrera" },
   { label: "CUIL",     value: "20414359621" },
-  { label: "CBU",      value: "4530000800017621169436" },
-  { label: "Alias",    value: "CYBER.MARKET" },
+  { label: "CVU / CBU", value: "0000168300000027369119" },
+  { label: "Alias",    value: "Cybermarket.LEMON" },
 ];
 
 export const CURRENCY_LIST: { code: Currency; label: string; flag: string }[] = [
@@ -2181,7 +2181,7 @@ function FAQ() {
     { q:'¿Cuánto tarda en llegar?', a:'La mayoría de los pedidos comienzan a procesarse de forma rápida una vez confirmado el pago. Algunos pueden demorar entre 12 y 24hs según el volumen.' },
     { q:'¿Los seguidores son reales?', a:'Trabajamos con perfiles activos y de alta calidad para mayor autenticidad y excelente retención.' },
     { q:'¿Ofrecen soporte y reposición?', a:'Sí. Trabajamos con perfiles de la más alta calidad y brindamos soporte personalizado por WhatsApp ante cualquier consulta.' },
-    { q:'¿Cuáles son los medios de pago disponibles?', a:'En Argentina podés abonar por transferencia bancaria (Naranja X / Alias / CBU). Para el resto del mundo (USD, EUR, CLP, COP, MXN, UYU, BRL) coordinamos el pago directo por WhatsApp vía Binance USDT, PayPal o tarjetas.' },
+    { q:'¿Cuáles son los medios de pago disponibles?', a:'En Argentina podés abonar por transferencia bancaria (Lemon Cash / Alias / CBU / CVU). Para el resto del mundo (USD, EUR, CLP, COP, MXN, UYU, BRL) coordinamos el pago directo por WhatsApp vía Binance USDT, PayPal o tarjetas.' },
   ];
   return (
     <section id="faq" style={{ padding:'80px 24px', background:'#f9fafb' }}>
